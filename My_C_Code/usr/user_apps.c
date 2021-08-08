@@ -28,6 +28,10 @@
 #include "usr/dac/app_dac.h"
 #endif
 
+#ifdef APP_CABINET
+#include "usr/Cabinet_test/app_cabinet_test.h"
+#endif
+
 void user_apps_init(void)
 {
 #ifdef APP_PCBTEST
@@ -48,5 +52,9 @@ void user_apps_init(void)
 
 #ifdef APP_DAC
     app_dac_init();
+#endif
+
+#ifdef APP_CABINET
+    app_cabinet_test_init();
 #endif
 }

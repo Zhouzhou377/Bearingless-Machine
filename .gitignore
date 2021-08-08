@@ -1,0 +1,13 @@
+/Workspace
+/Packages
+/RemoteSystemsTempFiles
+/data_logging
+/.vscode
+/gen
+**/__pycache__
+**/.ipynb_checkpoints
+**/.metadata/*
+**/.sdk/*
+*.log
+*.o
+*.a

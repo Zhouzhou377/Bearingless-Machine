@@ -27,7 +27,7 @@
 		<link>
 			<name>common</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/common</locationURI>
+			<location>C:/Users/zwang2299/Zhouzhou_AMDC/AMDC-Firmware/sdk/bare/common</location>
 		</link>
 	</linkedResources>
 </projectDescription>
