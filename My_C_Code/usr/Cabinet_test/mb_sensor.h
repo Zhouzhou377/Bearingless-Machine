@@ -6,7 +6,7 @@
 
 #include "usr/Cabinet_test/hardware.h"
 #include "usr/Cabinet_test/inverter.h"
-
+#include <stdint.h>
 
 double read_mb_current_adc(mb_channel_e mbCh);
 double read_mb_current_sensor(mb_sensor sensor);

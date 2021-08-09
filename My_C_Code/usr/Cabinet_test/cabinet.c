@@ -85,13 +85,13 @@
 #define CAB_INV3_ADC_GAIN (-2.98213)*/
 #define CAB_INV4_ADC_GAIN (-1.00516)
 
-#define CAB_INV2_PHA_ADC_GAIN (-9.69133)
-#define CAB_INV2_PHB_ADC_GAIN (-9.69133)
-#define CAB_INV2_PHC_ADC_GAIN (-9.69133)
+#define CAB_INV2_PHA_ADC_GAIN (9.69133)
+#define CAB_INV2_PHB_ADC_GAIN (9.69133)
+#define CAB_INV2_PHC_ADC_GAIN (9.69133)
 
-#define CAB_INV3_PHA_ADC_GAIN (-14.53699)
-#define CAB_INV3_PHB_ADC_GAIN (-14.53699)
-#define CAB_INV3_PHC_ADC_GAIN (-14.53699)
+#define CAB_INV3_PHA_ADC_GAIN (14.53699)
+#define CAB_INV3_PHB_ADC_GAIN (14.53699)
+#define CAB_INV3_PHC_ADC_GAIN (14.53699)
 
 #define CAB_INV5_PHA_ADC_GAIN (-2.96787)
 #define CAB_INV5_PHB_ADC_GAIN (-2.95262)
@@ -146,9 +146,9 @@ static const HW_three_phase_t three_phase_lookup[CABINET_NUM_3PHASE] = {
                 .Ib = {.adcCh = CAB_INV2_PHB_ADC, .adcGain = NO_USE, .adcOffset = NO_USE},
                 .Ic = {.adcCh = CAB_INV2_PHC_ADC, .adcGain = NO_USE, .adcOffset = NO_USE}},
                 
-     .mb_sensor = {.Ia = {.mbCh = CAB_INV2_PHA_ADC, .adcGain = CAB_INV2_PHA_ADC_GAIN, .adcOffset = CAB_INV2_PHA_ADC_OFFSET},
-                .Ib = {.mbCh = CAB_INV2_PHB_ADC, .adcGain = CAB_INV2_PHB_ADC_GAIN, .adcOffset = CAB_INV2_PHB_ADC_OFFSET},
-                .Ic = {.mbCh = CAB_INV2_PHC_ADC, .adcGain = CAB_INV2_PHC_ADC_GAIN, .adcOffset = CAB_INV2_PHC_ADC_OFFSET}}},
+     .mb_csensor = {.mb_Ia = {.mbCh = CAB_INV2_PHA_ADC, .adcGain = CAB_INV2_PHA_ADC_GAIN, .adcOffset = CAB_INV2_PHA_ADC_OFFSET},
+                .mb_Ib = {.mbCh = CAB_INV2_PHB_ADC, .adcGain = CAB_INV2_PHB_ADC_GAIN, .adcOffset = CAB_INV2_PHB_ADC_OFFSET},
+                .mb_Ic = {.mbCh = CAB_INV2_PHC_ADC, .adcGain = CAB_INV2_PHC_ADC_GAIN, .adcOffset = CAB_INV2_PHC_ADC_OFFSET}}},
 
     {.pwm = {.pwmIdxA = CAB_INV3_PHA, .pwmIdxB = CAB_INV3_PHB, .pwmIdxC = CAB_INV3_PHC},
 
@@ -156,9 +156,9 @@ static const HW_three_phase_t three_phase_lookup[CABINET_NUM_3PHASE] = {
                 .Ib = {.adcCh = CAB_INV3_PHB_ADC, .adcGain = NO_USE, .adcOffset = NO_USE},
                 .Ic = {.adcCh = CAB_INV3_PHC_ADC, .adcGain = NO_USE, .adcOffset = NO_USE}},
                 
-    .mb_sensor = {.Ia = {.mbCh = CAB_INV3_PHA_ADC, .adcGain = CAB_INV3_PHA_ADC_GAIN, .adcOffset = CAB_INV3_PHA_ADC_OFFSET},
-                .Ib = {.mbCh = CAB_INV3_PHB_ADC, .adcGain = CAB_INV3_PHB_ADC_GAIN, .adcOffset = CAB_INV3_PHB_ADC_OFFSET},
-                .Ic = {.mbCh = CAB_INV3_PHC_ADC, .adcGain = CAB_INV3_PHC_ADC_GAIN, .adcOffset = CAB_INV3_PHC_ADC_OFFSET}}},
+    .mb_csensor = {.mb_Ia = {.mbCh = CAB_INV3_PHA_ADC, .adcGain = CAB_INV3_PHA_ADC_GAIN, .adcOffset = CAB_INV3_PHA_ADC_OFFSET},
+                .mb_Ib = {.mbCh = CAB_INV3_PHB_ADC, .adcGain = CAB_INV3_PHB_ADC_GAIN, .adcOffset = CAB_INV3_PHB_ADC_OFFSET},
+                .mb_Ic = {.mbCh = CAB_INV3_PHC_ADC, .adcGain = CAB_INV3_PHC_ADC_GAIN, .adcOffset = CAB_INV3_PHC_ADC_OFFSET}}},
 
     {.pwm = {.pwmIdxA = CAB_INV5_PHA, .pwmIdxB = CAB_INV5_PHB, .pwmIdxC = CAB_INV5_PHC},
 
@@ -166,18 +166,18 @@ static const HW_three_phase_t three_phase_lookup[CABINET_NUM_3PHASE] = {
                 .Ib = {.adcCh = CAB_INV5_PHB_ADC, .adcGain = CAB_INV5_PHB_ADC_GAIN, .adcOffset = CAB_INV5_PHB_ADC_OFFSET},
                 .Ic = {.adcCh = CAB_INV5_PHC_ADC, .adcGain = CAB_INV5_PHC_ADC_GAIN, .adcOffset = CAB_INV5_PHC_ADC_OFFSET}},
      
-     .mb_sensor = {.Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ib = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ic = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}}},
+     .mb_csensor = {.mb_Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .mb_Ib = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .mb_Ic = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}}},
     {.pwm = {.pwmIdxA = CAB_INV6_PHA, .pwmIdxB = CAB_INV6_PHB, .pwmIdxC = CAB_INV6_PHC},
 
      .sensor = {.Ia = {.adcCh = CAB_INV6_PHA_ADC, .adcGain = CAB_INV6_PHA_ADC_GAIN, .adcOffset = CAB_INV6_PHA_ADC_OFFSET},
                 .Ib = {.adcCh = CAB_INV6_PHB_ADC, .adcGain = CAB_INV6_PHB_ADC_GAIN, .adcOffset = CAB_INV6_PHB_ADC_OFFSET},
                 .Ic = {.adcCh = CAB_INV6_PHC_ADC, .adcGain = CAB_INV6_PHC_ADC_GAIN, .adcOffset = CAB_INV6_PHC_ADC_OFFSET}},
                 
-    .mb_sensor = {.Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ib = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ic = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}}}
+    .mb_csensor = {.mb_Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .mb_Ib = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .mb_Ic = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}}}
 
 };
 
@@ -245,22 +245,22 @@ int find_invIdex_invID (int inverter){
     int dataId;
     switch(inverter) {
         case 1  :
-            dataId = 1;
+            dataId = 0;
             break; 
         case 2  :
-            dataId = 1;
+            dataId = 0;
             break;
         case 3  :
-            dataId = 2;
+            dataId = 1;
             break; 
         case 4  :
-            dataId = 2;
+            dataId = 1;
             break;
         case 5  :
-            dataId = 3;
+            dataId = 2;
             break; 
         case 6  :
-            dataId = 4;
+            dataId = 3;
             break;
         default : 
             dataId = -1;

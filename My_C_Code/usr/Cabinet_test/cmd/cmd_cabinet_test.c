@@ -58,6 +58,10 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 
 void cmd_cabinet_register(void)
 {
+	OpenLoop_Command *OpenLoop;
+	OpenLoop = &VSI_Openloop_command;
+	default_inverter_setup(0);
+	init_OpenLoop_Command(OpenLoop);
 	// Populate the command entry block (struct)
 	commands_cmd_init(&cmd_entry,
 			"cabinet", "Power Electronics Cabinet Commands",
@@ -330,9 +334,9 @@ int cmd_cabinet(int argc, char **argv)
 		InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
 
 
-		double a = read_mb_current_adc(inv->HW->mb_sensor.Ia.mbCh);
-		double b = read_mb_current_adc(inv->HW->mb_sensor.Ib.mbCh);
-		double c = read_mb_current_adc(inv->HW->mb_sensor.Ic.mbCh);
+		double a = read_mb_current_adc(inv->HW->mb_csensor.mb_Ia.mbCh);
+		double b = read_mb_current_adc(inv->HW->mb_csensor.mb_Ib.mbCh);
+		double c = read_mb_current_adc(inv->HW->mb_csensor.mb_Ic.mbCh);
 
 		debug_printf("%f\n\r", a);
 		debug_printf("%f\n\r", b);
@@ -354,7 +358,7 @@ int cmd_cabinet(int argc, char **argv)
 			InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
 
 			double Iabc[3];
-			input_read_mb_currents_three_phase_abc(&Iabc[0], inv->inverter);
+			input_read_mb_currents_three_phase_abc(&Iabc[0], inv);
 
 			debug_printf("%f\n\r", Iabc[0]);
 			debug_printf("%f\n\r", Iabc[1]);

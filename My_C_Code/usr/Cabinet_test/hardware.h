@@ -41,9 +41,9 @@ typedef struct hw_three_phase_sensor_t {
 //zzw
 typedef struct mb_three_phase_sensor {
 
-    mb_sensor Ia;
-    mb_sensor Ib;
-    mb_sensor Ic;
+    mb_sensor mb_Ia;
+    mb_sensor mb_Ib;
+    mb_sensor mb_Ic;
 
 } mb_three_phase_sensor;
 //
@@ -52,7 +52,7 @@ typedef struct HW_three_phase_t {
 
     hw_three_phase_pwm_t pwm;
     hw_three_phase_sensor_t sensor;
-    mb_three_phase_sensor mb_sensor;
+    mb_three_phase_sensor mb_csensor;
 } HW_three_phase_t;
 
 typedef struct hw_single_phase_pwm_t {

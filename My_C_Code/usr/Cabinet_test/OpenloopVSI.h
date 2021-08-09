@@ -1,15 +1,20 @@
-
+#ifndef OPEN_LOOP_VSI
+#define OPEN_LOOP_VSI
 
 
 
 typedef struct OpenLoop_Command{
-    int enable = 0;
-    int Num_inv = 0;
+    int enable;
+    int Num_inv;
     //store key variables and state information
-    double freq = 0.0;
-    double amp = 0.0;
+    double freq;
+    double amp;
     double command_volatge[3];
 
 } OpenLoop_Command;
 
-void OpenLoop_VSI(double freq, double amp, double *command_volatge);
+OpenLoop_Command VSI_Openloop_command;
+
+void OpenLoop_VSI(OpenLoop_Command *command_volatge);
+void init_OpenLoop_Command(OpenLoop_Command *VSI_Openloop_command);
+#endif

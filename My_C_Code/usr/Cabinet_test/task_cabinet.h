@@ -3,9 +3,11 @@
 
 #include <stdint.h>
 #include "sys/scheduler.h"
-
+#include "usr/Cabinet_test/OpenloopVSI.h"
 #define TASK_CABINET_UPDATES_PER_SEC		(10000)
 #define TASK_CABINET_INTERVAL_USEC		(USEC_IN_SEC / TASK_CABINET_UPDATES_PER_SEC)
+
+
 
 void task_cabinet_init(void);
 void task_cabinet_deinit(void);

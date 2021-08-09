@@ -11,9 +11,7 @@
 #include "sys/debug.h"
 
 //LOGGING VARIABLES
-double LOG_Ia = 0.0;
-double LOG_Ib = 0.0;
-double LOG_Ic = 0.0;
+
 
 
 double LOG_x_star = 0.0;
@@ -48,7 +46,6 @@ double LOG_Ixf = 0.0;
 double LOG_Iyf = 0.0;
 double LOG_Izf = 0.0;
 
-OpenLoop_Command VSI_Openloop_command;
 
 #define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
@@ -80,15 +77,22 @@ uint8_t task_cabinet_is_inited(void)
 //call back function to be run repeatedly
 void task_cabinet_callback(void *arg)
 {
-	if (VSI_Openloop_command->enable){
-		OpenLoop_VSI(VSI_Openloop_command.freq, VSI_Openloop_command.amp, VSI_Openloop_command.command_volatge);
-		InverterThreePhase_t *inv = get_three_phase_inverter(VSI_Openloop_command.Num_inv);
-		set_pole_volts_three_phase(VSI_Openloop_command.command_volatge[0], VSI_Openloop_command.command_volatge[1], VSI_Openloop_command.command_volatge[2], inv);
-		LOG_Ia = inv.HW.sensor.Ia;
-		LOG_Ib = inv.HW.sensor.Ib;
-		LOG_Ic = inv.HW.sensor.Ic;
+	OpenLoop_Command *Openloop_command;
+	Openloop_command = &VSI_Openloop_command;
+	if (Openloop_command->enable){
+		OpenLoop_VSI(Openloop_command);
+		InverterThreePhase_t *inv = get_three_phase_inverter(Openloop_command->Num_inv);
+		set_pole_volts_three_phase(Openloop_command->command_volatge[0], Openloop_command->command_volatge[1], Openloop_command->command_volatge[2], inv);
+
+	}
+	else if(Openloop_command->enable == 0)
+	{
+		InverterThreePhase_t *inv = get_three_phase_inverter(Openloop_command->Num_inv);
+		set_pole_volts_three_phase(0, 0, 0, inv);
+
 	}
 	
+
 
 	//CRAMB_ctxt *cramb = get_CRAMB_ctxt();
 	//CRAMB_Callback(cramb);

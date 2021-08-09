@@ -20,23 +20,32 @@ static double theta = 0.0;        // [rad]
 
 
 
-void OpenLoop_VSI(double freq, double amp, double *command_volatge)
+void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
 {
     // Update theta
     double omega;
-    omega = 2.0*PI*freq;
+    omega = 2.0*PI*OpenLoop->freq;
     theta += (Ts * omega);
     theta = fmod(theta, 2.0 * PI); // Wrap to 2*pi
 
     // Calculate desired duty ratios
-    command_volatge[0] = amp * cos(theta);
-    command_volatge[1] = amp * cos(theta + 2.0 * PI / 3.0);
-    command_volatge[2] = amp * cos(theta + 4.0 * PI / 3.0);
+    OpenLoop->command_volatge[0] = OpenLoop->amp * cos(theta);
+    OpenLoop->command_volatge[1] = OpenLoop->amp * cos(theta + 2.0 * PI / 3.0);
+    OpenLoop->command_volatge[2] = OpenLoop->amp * cos(theta + 4.0 * PI / 3.0);
 
     // Update logging variables
-    LOG_vsi_a = (double) (command_volatge[0]);
-    LOG_vsi_b = (double) (command_volatge[1] );
-    LOG_vsi_c = (double) (command_volatge[2] );
+    LOG_va = (double) (OpenLoop->command_volatge[0]);
+    LOG_vb = (double) (OpenLoop->command_volatge[1] );
+    LOG_vc = (double) (OpenLoop->command_volatge[2] );
+}
+
+void init_OpenLoop_Command(OpenLoop_Command *VSI_Openloop_command)
+{
+    // Update theta
+    VSI_Openloop_command->enable = 0;
+    VSI_Openloop_command->Num_inv = -1;
+    VSI_Openloop_command->freq = 0;
+    VSI_Openloop_command->amp = 0;
 }
 
 

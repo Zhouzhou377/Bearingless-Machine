@@ -192,21 +192,21 @@ class Cabinet():
         if self.debug:
             return out 
 
-    def openloop_vsi_3(self):
+    def openloop_vsi_3(self, inverter, freq, amp):
 
         out = self.amdc.cmd(f'cabinet openloop_vsi_3 {inverter} {freq:.6f} {amp:.6f}')
         if self.debug:
             return out
         
-    def openloop_vsi_3_enable(self):
+    def openloop_vsi_3_enable(self, inverter):
         
-        out = self.amdc.cmd('cabinet openloop_vsi_3_enable')
+        out = self.amdc.cmd(f'cabinet openloop_vsi_3_enable  {inverter}')
         if self.debug:
             return out 
 
-    def openloop_vsi_3_disable(self):
+    def openloop_vsi_3_disable(self, inverter):
         
-        out = self.amdc.cmd('cabinet openloop_vsi_3_disable')
+        out = self.amdc.cmd(f'cabinet openloop_vsi_3_disable  {inverter}')
         if self.debug:
             return out 
         
