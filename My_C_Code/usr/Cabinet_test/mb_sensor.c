@@ -41,7 +41,7 @@ double read_mb_current_sensor(mb_sensor sensor){
 }
 
 void input_read_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv){
-    mb_sensor sensor;
+    mb_sensor *sensor;
     sensor = inv->HW->mb_sensor.Ia;
 	//Iabc[0] = read_mb_current_sensor(sensor);
     Iabc[0] = read_mb_current_adc(sensor.mbCh);

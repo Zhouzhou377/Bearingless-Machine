@@ -169,8 +169,6 @@ class Cabinet():
             if self.debug:
                 return out
             
-            
-
 
     def enable_pwm(self):
         out = self.amdc.cmd('hw pwm on')
@@ -184,16 +182,33 @@ class Cabinet():
     
     def levitate(self):
 
-        out = self.amdc.cmd('Cabinet enable')
+        out = self.amdc.cmd('cabinet enable')
         if self.debug:
             return out
         
     def stop_levitate(self):
         
-        out = self.amdc.cmd('Cabinet disable')
+        out = self.amdc.cmd('cabinet disable')
         if self.debug:
             return out 
+
+    def openloop_vsi_3(self):
+
+        out = self.amdc.cmd(f'cabinet openloop_vsi_3 {inverter} {freq:.6f} {amp:.6f}')
+        if self.debug:
+            return out
         
+    def openloop_vsi_3_enable(self):
+        
+        out = self.amdc.cmd('cabinet openloop_vsi_3_enable')
+        if self.debug:
+            return out 
+
+    def openloop_vsi_3_disable(self):
+        
+        out = self.amdc.cmd('cabinet openloop_vsi_3_disable')
+        if self.debug:
+            return out 
         
     def set_cc_sensor_cutoff_freq(self, fc, inverter):
         

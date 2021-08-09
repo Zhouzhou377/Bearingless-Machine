@@ -3,6 +3,7 @@
 #ifdef APP_CABINET
 
 #include "usr/Cabinet_test/cmd/cmd_cabinet_test.h"
+#include "usr/Cabinet_test/OpenloopVSI.h"
 #include "usr/Cabinet_test/task_cabinet.h"
 #include "usr/Cabinet_test/bearing_control.h"
 #include "usr/Cabinet_test/current_control.h"
@@ -22,7 +23,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(20)
+#define NUM_HELP_ENTRIES	(16)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"setup", "Run Initial Setup"},
 		{"init_cb", "Start Callback Loop"},
@@ -39,14 +40,20 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"cc_gain_3","Set Current Controller Gains for 3 Phase Inverter"},
 		{"cc_gain_1", "Set Current Controller Gains for Single Phase Inverter"},
 		{"cc_sen_tau", "set current sensor filter time constant"},*/
-		{"read_mb_cur_3", "Print Instantaneous Three Phase Currents to Screen"},
+		
 		{"pv3", "Set Pole Volts of 3 Phase Inverter"},
 		{"pv1", "Set Pole Volts of 1 Phase Inverter"},
 		{"phv3", "Set Phase Volts of 3 Phase Inverter"},
 		{"phv1", "Set Phase Volts of 1 Phase Inverter"},
+		{"openloop_vsi_3_enable", "Open Loop VSI enable"},
+		{"openloop_vsi_3_disable", "Open Loop VSI disable"},
+		{"openloop_vsi_3", "Open Loop VSI of 3 Phase Inverter"},
 		{"read_adc_3", "Read ADC for 3 Phase Inverter"},
-		{"read_mb_adc_3", "Read ADC for 3 Phase Inverter"},
-		{"read_adc_1", "Read ADC for 1 Phase Inverter"}
+		{"read_cur_3", "Print Instantaneous Three Phase Currents to Screen"},
+		{"read_mb_adc_3", "Read AMDS ADC for 3 Phase Inverter"},
+		{"read_mb_cur_3", "Print Instantaneous  AMDS Three Phase Currents to Screen"}
+		
+
 };
 
 void cmd_cabinet_register(void)
@@ -389,6 +396,58 @@ int cmd_cabinet(int argc, char **argv)
             return SUCCESS;
         }
     }
+
+	if (strcmp("openloop_vsi_3", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 5) return CMD_INVALID_ARGUMENTS;
+
+		int inverter = atoi(argv[2]);
+		inverter = find_invIdex_invID(inverter);
+		if (inverter == -1)
+		{
+			return CMD_FAILURE;
+		}
+		//double freq, amp;
+		VSI_Openloop_command.Num_inv = inverter;
+		VSI_Openloop_command.freq = strtod(argv[3], NULL);
+		VSI_Openloop_command.amp = strtod(argv[4], NULL);
+
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("openloop_vsi_3_enable", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+		int inverter = atoi(argv[2]);
+		inverter = find_invIdex_invID(inverter);
+		if (inverter == -1)
+		{
+			return CMD_FAILURE;
+		}
+		//double freq, amp;
+		VSI_Openloop_command.Num_inv = inverter;
+		VSI_Openloop_command.enable = 1;
+
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("openloop_vsi_3_disable", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+		int inverter = atoi(argv[2]);
+		inverter = find_invIdex_invID(inverter);
+		if (inverter == -1)
+		{
+			return CMD_FAILURE;
+		}
+		//double freq, amp;
+		VSI_Openloop_command.Num_inv = inverter;
+		VSI_Openloop_command.enable = 0;
+
+		return CMD_SUCCESS;
+	}
 
 	return CMD_INVALID_ARGUMENTS;
 }

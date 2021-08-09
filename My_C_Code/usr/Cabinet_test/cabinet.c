@@ -209,8 +209,8 @@ const analog_sensor_t   pos_sensors[NUM_POS_SENSORS] = {
 
 //create inverters and function to return them out of this file
 
-static InverterSinglePhase_t inverters_single[CABINET_NUM_1PHASE];
-static InverterThreePhase_t inverters_three[CABINET_NUM_3PHASE];
+InverterSinglePhase_t inverters_single[CABINET_NUM_1PHASE];
+InverterThreePhase_t inverters_three[CABINET_NUM_3PHASE];
 
 InverterSinglePhase_t *get_single_phase_inverter(int inverter){
 
