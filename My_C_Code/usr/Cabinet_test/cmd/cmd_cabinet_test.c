@@ -327,12 +327,12 @@ int cmd_cabinet(int argc, char **argv)
 		{
 			return CMD_FAILURE;
 		}
-		Current_Controller_ThreePhase_t *cc_3 = get_three_phase_cc(inverter);
+		InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
 
 
-		double a = read_mb_current_adc(cc_3->inverter->HW->mb_sensor.Ia.mbCh);
-		double b = read_mb_current_adc(cc_3->inverter->HW->mb_sensor.Ib.mbCh);
-		double c = read_mb_current_adc(cc_3->inverter->HW->mb_sensor.Ic.mbCh);
+		double a = read_mb_current_adc(inv->HW->mb_sensor.Ia.mbCh);
+		double b = read_mb_current_adc(inv->HW->mb_sensor.Ib.mbCh);
+		double c = read_mb_current_adc(inv->HW->mb_sensor.Ic.mbCh);
 
 		debug_printf("%f\n\r", a);
 		debug_printf("%f\n\r", b);
@@ -351,10 +351,10 @@ int cmd_cabinet(int argc, char **argv)
 			{
 				return CMD_FAILURE;
 			}
-			Current_Controller_ThreePhase_t *cc_3 = get_three_phase_cc(inverter);
+			InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
 
 			double Iabc[3];
-			input_read_mb_currents_three_phase_abc(Iabc, cc_3->inverter);
+			input_read_mb_currents_three_phase_abc(&Iabc[0], inv->inverter);
 
 			debug_printf("%f\n\r", Iabc[0]);
 			debug_printf("%f\n\r", Iabc[1]);
