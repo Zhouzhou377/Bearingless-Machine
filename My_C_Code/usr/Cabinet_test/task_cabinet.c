@@ -12,6 +12,14 @@
 
 //LOGGING VARIABLES
 
+double LOG_vdc = 0.0;
+double LOG_mb_I1 = 0.0;
+double LOG_mb_I2 = 0.0;
+double LOG_mb_I3 = 0.0;
+double LOG_mb_I4 = 0.0;
+double LOG_mb_I5 = 0.0;
+double LOG_mb_I6 = 0.0;
+
 
 
 double LOG_x_star = 0.0;
@@ -77,21 +85,36 @@ uint8_t task_cabinet_is_inited(void)
 //call back function to be run repeatedly
 void task_cabinet_callback(void *arg)
 {
+	InverterThreePhase_t *inv;
 	OpenLoop_Command *Openloop_command;
 	Openloop_command = &VSI_Openloop_command;
 	if (Openloop_command->enable){
 		OpenLoop_VSI(Openloop_command);
-		InverterThreePhase_t *inv = get_three_phase_inverter(Openloop_command->Num_inv);
-		set_pole_volts_three_phase(Openloop_command->command_volatge[0], Openloop_command->command_volatge[1], Openloop_command->command_volatge[2], inv);
 
+		inv = get_three_phase_inverter(Openloop_command->Num_inv);
+		LOG_vdc = inv->Vdc;
+		set_pole_volts_three_phase(Openloop_command->command_volatge[0]+LOG_vdc/2, Openloop_command->command_volatge[1]+LOG_vdc/2, Openloop_command->command_volatge[2]+LOG_vdc/2, inv);
+		LOG_vdc = inv->Vdc;
 	}
 	else if(Openloop_command->enable == 0)
 	{
-		InverterThreePhase_t *inv = get_three_phase_inverter(Openloop_command->Num_inv);
+		inv = get_three_phase_inverter(Openloop_command->Num_inv);
 		set_pole_volts_three_phase(0, 0, 0, inv);
-
+		LOG_vdc = inv->Vdc;
 	}
-	
+	double Iabc[3];
+	inv = get_three_phase_inverter(0);
+	input_read_mb_currents_three_phase_abc(&Iabc, inv);
+	LOG_mb_I1 = Iabc[0];
+	LOG_mb_I3 = Iabc[1];
+	LOG_mb_I5 = Iabc[2];
+
+	inv = get_three_phase_inverter(1);
+	input_read_mb_currents_three_phase_abc(&Iabc, inv);
+	LOG_mb_I2 = Iabc[0];
+	LOG_mb_I4 = Iabc[1];
+	LOG_mb_I6 = Iabc[2];
+
 
 
 	//CRAMB_ctxt *cramb = get_CRAMB_ctxt();
