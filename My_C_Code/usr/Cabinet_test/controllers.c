@@ -1,8 +1,6 @@
 #include "usr/Cabinet_test/controllers.h"
-//#include "usr/Cabinet_test/twinbearingless_control.h"
 
-
-PI_discrete_para *init_PIregulator(void){
+void populate_PI_Container(double kp, double ki, double Ts, PI_Container *container){
 
     //populate the PI container based on the bilinear transformation to create difference equations
     container->Ts = Ts;

@@ -39,14 +39,14 @@ void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
     LOG_vc = (double) (OpenLoop->command_volatge[2] );
 }
 
-void init_OpenLoop_Command(OpenLoop_Command *VSI_Openloop_command)
+OpenLoop_Command *init_OpenLoop_Command(void)
 {
     // Update theta
-    VSI_Openloop_command->is_init = 1;
-    VSI_Openloop_command->enable = 0;
-    VSI_Openloop_command->Num_inv = -1;
-    VSI_Openloop_command->freq = 0;
-    VSI_Openloop_command->amp = 0;
+    VSI_Openloop_command.enable = 0;
+    VSI_Openloop_command.Num_inv = -1;
+    VSI_Openloop_command.freq = 0;
+    VSI_Openloop_command.amp = 0;
+    return &VSI_Openloop_command;
 }
 
 

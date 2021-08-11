@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 double get_mb_current_adc(mb_channel_e mbCh);
-double get_mb_current_adc(mb_sensor sensor);
+double get_mb_current(mb_sensor sensor);
 void get_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv);
 
 

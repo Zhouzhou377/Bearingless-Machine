@@ -8,7 +8,7 @@
 #include "usr/Cabinet_test/bearing_control.h"
 #include "usr/Cabinet_test/current_control.h"
 #include "usr/Cabinet_test/cabinet.h"
-#include "usr/Cabinet_test/sensor_input.h"
+#include "usr/Cabinet_test/analog_sensor.h"
 #include "usr/Cabinet_test/mb_sensor.h"
 #include "sys/defines.h"
 #include "sys/commands.h"
@@ -18,6 +18,7 @@
 #include <string.h>
 #include "drv/pwm.h"
 #include "drv/analog.h"
+#include <stdbool.h>
 
 #define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
@@ -171,7 +172,7 @@ int cmd_cabinet(int argc, char **argv)
 		Current_Controller_ThreePhase_t *cc_3 = get_three_phase_cc(inverter);
 
 		double Iabc[3];
-		input_read_currents_three_phase_abc(Iabc, cc_3->inverter);
+		get_currents_three_phase_abc(Iabc, cc_3->inverter);
 
 		debug_printf("%f\n\r", Iabc[0]);
 		debug_printf("%f\n\r", Iabc[1]);
@@ -305,9 +306,9 @@ int cmd_cabinet(int argc, char **argv)
 		Current_Controller_ThreePhase_t *cc_3 = get_three_phase_cc(inverter);
 
 
-		double a = read_adc(cc_3->inverter->HW->sensor.Ia.adcCh);
-		double b = read_adc(cc_3->inverter->HW->sensor.Ib.adcCh);
-		double c = read_adc(cc_3->inverter->HW->sensor.Ic.adcCh);
+		double a = get_adc(cc_3->inverter->HW->sensor.Ia.adcCh);
+		double b = get_adc(cc_3->inverter->HW->sensor.Ib.adcCh);
+		double c = get_adc(cc_3->inverter->HW->sensor.Ic.adcCh);
 
 		debug_printf("%f\n\r", a);
 		debug_printf("%f\n\r", b);
@@ -331,9 +332,9 @@ int cmd_cabinet(int argc, char **argv)
 		InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
 
 
-		double a = read_mb_current_adc(inv->HW->mb_csensor.mb_Ia.mbCh);
-		double b = read_mb_current_adc(inv->HW->mb_csensor.mb_Ib.mbCh);
-		double c = read_mb_current_adc(inv->HW->mb_csensor.mb_Ic.mbCh);
+		double a = get_mb_current_adc(inv->HW->mb_csensor.mb_Ia.mbCh);
+		double b = get_mb_current_adc(inv->HW->mb_csensor.mb_Ib.mbCh);
+		double c = get_mb_current_adc(inv->HW->mb_csensor.mb_Ic.mbCh);
 
 		debug_printf("%f\n\r", a);
 		debug_printf("%f\n\r", b);
@@ -355,7 +356,7 @@ int cmd_cabinet(int argc, char **argv)
 			InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
 
 			double Iabc[3];
-			input_read_mb_currents_three_phase_abc(&Iabc[0], inv);
+			get_mb_currents_three_phase_abc(&Iabc[0], inv);
 
 			debug_printf("%f\n\r", Iabc[0]);
 			debug_printf("%f\n\r", Iabc[1]);
@@ -379,7 +380,7 @@ int cmd_cabinet(int argc, char **argv)
 		}
 		Current_Controller_SinglePhase_t *cc_1 = get_single_phase_cc(inverter);
 
-		double a = read_adc(cc_1->inverter->HW->sensor.Iz.adcCh);
+		double a = get_adc(cc_1->inverter->HW->sensor.Iz.adcCh);
 
 		debug_printf("%f\n\r", a);
 
@@ -429,6 +430,7 @@ int cmd_cabinet(int argc, char **argv)
 		//double freq, amp;
 		VSI_Openloop_command.Num_inv = inverter;
 		VSI_Openloop_command.enable = 1;
+		cmd_enable.enable_openloop = 1;
 
 		return CMD_SUCCESS;
 	}
@@ -446,6 +448,7 @@ int cmd_cabinet(int argc, char **argv)
 		//double freq, amp;
 		VSI_Openloop_command.Num_inv = inverter;
 		VSI_Openloop_command.enable = 0;
+		cmd_enable.enable_openloop = 0;
 
 		return CMD_SUCCESS;
 	}

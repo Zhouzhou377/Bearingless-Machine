@@ -1,6 +1,6 @@
 #ifndef OPEN_LOOP_VSI
 #define OPEN_LOOP_VSI
-
+#include <stdbool.h>
 
 
 typedef struct OpenLoop_Command{
@@ -10,12 +10,11 @@ typedef struct OpenLoop_Command{
     double freq;
     double amp;
     double command_volatge[3];
-    bool is_init = 0;
+    bool is_init;
 
 } OpenLoop_Command;
 
 OpenLoop_Command VSI_Openloop_command;
-
 void OpenLoop_VSI(OpenLoop_Command *command_volatge);
-void init_OpenLoop_Command(OpenLoop_Command *VSI_Openloop_command);
+OpenLoop_Command *init_OpenLoop_Command(void);
 #endif

@@ -12,6 +12,7 @@ void app_cabinet_test_init(void)
 {
 	//cmd_cramb_register();
 	cmd_cabinet_register();
+	cmd_twin_register();
 
 	// Configure GPIO mux
 	// 0: top port on AMDC

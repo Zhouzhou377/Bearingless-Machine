@@ -18,7 +18,7 @@ double get_analog_sensor(analog_sensor_t sense){
 
     double adc = get_adc(sense.adcCh);
     double out = sense.adcGain*adc + sense.adcOffset;
-    return out;s
+    return out;
 }
 
 void get_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv){
@@ -35,8 +35,3 @@ void get_currents_three_phase_dq0(double *Idq0, double theta_rad, InverterThreeP
     abc_to_dq0(Iabc, Idq0, theta_rad); 
 }
 
-void input_read_current_single_phase(double *Iz, InverterSinglePhase_t *inv){
-
-	*Iz = read_analog_sensor(inv->HW->sensor.Iz);
-	//LOG_I = *Iz;
-}

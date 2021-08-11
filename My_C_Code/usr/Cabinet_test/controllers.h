@@ -1,21 +1,28 @@
 #ifndef CONTROLLERS_H
 #define CONTROLLERS_H
 
-typedef struct PI_discrete_para{
+typedef struct PI_Container{
 
     //Controller Parameters Calculated from Bilinear Transform
     double Ts;
-    double tau_p;
-    double Ap;
-    double Bp;
-    double wd;
-    double tau_d;
-    double Ad;
-    double Bd;
+    double kp;
+    double kei;
 
-} PI_discrete_para;
+    //Commanded Value
+    double r_star;
 
-/*
+    //store previous error and old manipulations
+    double error_old;
+    double mn_i_old;
+
+    //store current manipulation
+    double mn;
+
+    //clamping status
+    int clamp;
+
+} PI_Container;
+
 typedef struct PID_Container{
 
     //Controller Parameters Calculated from Bilinear Transform
@@ -39,7 +46,7 @@ typedef struct PID_Container{
     //clamping status
     int clamp;
 
-} PID_Container;*/
+} PID_Container;
 
 typedef struct LowPass_Container{
 

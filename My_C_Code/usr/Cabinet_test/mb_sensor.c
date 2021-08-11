@@ -36,7 +36,7 @@ double get_mb_current_adc(mb_channel_e mbCh){
     return (double) 0;
 }
 
-double get_mb_current_adc(mb_sensor sensor){
+double get_mb_current(mb_sensor sensor){
 
     double adc = get_mb_current_adc(sensor.mbCh);
     double out = sensor.adcGain*adc + sensor.adcOffset;
@@ -47,12 +47,12 @@ void get_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv){
 
     //sensor = inv->HW->mb_csensor->mb_Ia;
 	//Iabc[0] = read_mb_current_sensor(sensor);
-    Iabc[0] = get_mb_current_adc(inv->HW->mb_csensor.mb_Ia);
+    Iabc[0] = get_mb_current(inv->HW->mb_csensor.mb_Ia);
     //sensor = inv->HW->mb_csensor->Ib;
-    Iabc[1] = get_mb_current_adc(inv->HW->mb_csensor.mb_Ib);
+    Iabc[1] = get_mb_current(inv->HW->mb_csensor.mb_Ib);
 	//Iabc[1] = read_mb_current_sensor(sensor);
     //sensor = inv->HW->mb_csensor->Ic;
-    Iabc[2] = get_mb_current_adc(inv->HW->mb_csensor.mb_Ic);
+    Iabc[2] = get_mb_current(inv->HW->mb_csensor.mb_Ic);
 	//Iabc[2] = read_mb_current_sensor(sensor);
 }
 

@@ -5,15 +5,12 @@
 //#include "usr/cramb/motion_control.h"
 
 /*typedef struct CRAMB_ctxt{
-
     //store key variables and state information
     int linear;
     double Ixyz_star[3];
-
     Motion_Controller_t *mc;
     Current_Controller_SinglePhase_t *cc_ax;
     Current_Controller_ThreePhase_t *cc_rad;
-
 } CRAMB_ctxt;*/
 
 //CRAMB_ctxt *get_CRAMB_ctxt(void);

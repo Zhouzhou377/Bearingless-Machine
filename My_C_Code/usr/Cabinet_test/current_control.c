@@ -50,22 +50,15 @@ void init_three_phase_cc(Current_Controller_ThreePhase_t *cc){
 }
 
 /*void set_single_phase_cc_gains(double kp, double ki, double Ts, Current_Controller_SinglePhase_t *cc){
-
     populate_PI_Container(kp, ki, Ts, &(cc->cc_z));
-
 }
-
 void set_three_phase_cc_gains(double kp, double ki, double Ts, Current_Controller_ThreePhase_t *cc){
-
     populate_PI_Container(kp, ki, Ts, &(cc->cc_x));
     populate_PI_Container(kp, ki, Ts, &(cc->cc_y));
-
 }
-
 void default_three_phase_gains(double Ts, Current_Controller_ThreePhase_t *cc){
     set_three_phase_cc_gains(KP_I_RAD, KI_I_RAD, Ts, cc);
 }
-
 void default_single_phase_gains(double Ts, Current_Controller_SinglePhase_t *cc){
     set_single_phase_cc_gains(KP_I_AX, KI_I_AX, Ts, cc);
 }
@@ -174,30 +167,20 @@ void disable_all_cc(void){
 }
 
 /*void set_current_commands_three_phase(double Ix_star, double Iy_star, Current_Controller_ThreePhase_t *cc){
-
     cc->cc_x.r_star = Ix_star;
     cc->cc_y.r_star = Iy_star;
     //LOG_I = Ix_star;
-
 }
-
 void set_current_commands_three_phase_abc(double Ia_star, double Ib_star, Current_Controller_ThreePhase_t *cc){
-
-
 	double Ixy_star[2];
     double Iabc_star[3] = {Ia_star, Ib_star, -Ia_star-Ib_star};
-
     abc_to_xy(Ixy_star, Iabc_star);
-
     set_current_commands_three_phase(Ixy_star[0], Ixy_star[1], cc);
 }
-
 void set_current_commands_single_phase(double I_star, Current_Controller_SinglePhase_t *cc){
     cc->cc_z.r_star = I_star;
 }
-
 void update_voltage_commands_three_phase(Current_Controller_ThreePhase_t *cc){
-
     //compute control voltage commands in alpha beta frame and update context
 	if (cc->filter_currents)
 	{
@@ -208,13 +191,10 @@ void update_voltage_commands_three_phase(Current_Controller_ThreePhase_t *cc){
 		cc->Vxy_star[0] = PI_update(&(cc->cc_x), cc->Ixy[0]);
 		cc->Vxy_star[1] = PI_update(&(cc->cc_y), cc->Ixy[1]);
 	}
-
     //update abc current commands in context
     xy_to_abc(cc->Vxy_star, cc->Vabc_star);
 }
-
 void update_voltage_commands_single_phase(Current_Controller_SinglePhase_t *cc){
-
 	if (cc->filter_currents){
 		cc->V_star = PI_update(&(cc->cc_z), cc->I_filtered);
 	}
@@ -222,29 +202,18 @@ void update_voltage_commands_single_phase(Current_Controller_SinglePhase_t *cc){
 		cc->V_star = PI_update(&(cc->cc_z), cc->I);
 	}
 }
-
 void output_voltage_three_phase(Current_Controller_ThreePhase_t *cc){
-
     set_line_volts_three_phase(cc->Vabc_star[0], cc->Vabc_star[1], cc->Vabc_star[2], cc->inverter);
-
 }
-
 void output_voltage_single_phase(Current_Controller_SinglePhase_t *cc){
-
     set_line_volts_single_phase(cc->V_star, cc->inverter);
-
 }*/
 
 /*void anti_windup_three_phase(Current_Controller_ThreePhase_t *cc){
-
     set_three_phase_current_clamp(&(cc->cc_x), &(cc->cc_y), cc->inverter->Vdc);
-
 }
-
 void anti_windup_single_phase(Current_Controller_SinglePhase_t *cc){
-
     set_single_phase_current_clamp(&(cc->cc_z), cc->inverter->Vdc);
-
 }*/
 
 void read_currents_three_phase(Current_Controller_ThreePhase_t *cc){
@@ -263,7 +232,6 @@ void read_currents_single_phase(Current_Controller_SinglePhase_t *cc){
 }
 /*
 void current_control_callback_single_phase(Current_Controller_SinglePhase_t *cc){
-
     if (cc->enable == 1){
         if (SIL) {
             update_voltage_commands_single_phase(cc);
@@ -276,9 +244,7 @@ void current_control_callback_single_phase(Current_Controller_SinglePhase_t *cc)
         }
     }
 }
-
 void current_control_callback_three_phase(Current_Controller_ThreePhase_t *cc){
-
     if (cc->enable == 1){
         if (SIL){
             update_voltage_commands_three_phase(cc);
@@ -291,15 +257,12 @@ void current_control_callback_three_phase(Current_Controller_ThreePhase_t *cc){
         }
     }
 }
-
 void current_control_callback(void){
-
     //loop over each single phase inverter
     for (int i = 0; i < CABINET_NUM_1PHASE; i++) {
         Current_Controller_SinglePhase_t *cc = get_single_phase_cc(i); //grab current controller
         current_control_callback_single_phase(cc);
     }
-
     //loop over each single phase inverter
     for (int i = 0; i < CABINET_NUM_3PHASE; i++) {
         Current_Controller_ThreePhase_t *cc = get_three_phase_cc(i); //grab current controller

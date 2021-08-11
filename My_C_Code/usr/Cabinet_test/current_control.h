@@ -11,7 +11,7 @@ typedef struct Current_Controller_SinglePhase_t {
     double I_filtered;
     double V_star;
     InverterSinglePhase_t *inverter;
-    PI_Container cc_z;
+    //PI_Container cc_z;
     LowPass_Container filter_I;
     int filter_currents;
 
@@ -25,8 +25,8 @@ typedef struct Current_Controller_ThreePhase_t {
     double Vxy_star[2];
     double Vabc_star[3];
     InverterThreePhase_t *inverter;
-    PI_Container cc_x;
-    PI_Container cc_y;
+    //PI_Container cc_x;
+    //PI_Container cc_y;
     LowPass_Container filter_Ix;
     LowPass_Container filter_Iy;
     int filter_currents;
