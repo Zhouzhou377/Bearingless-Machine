@@ -7,7 +7,13 @@
 #define TASK_CABINET_UPDATES_PER_SEC		(10000)
 #define TASK_CABINET_INTERVAL_USEC		(USEC_IN_SEC / TASK_CABINET_UPDATES_PER_SEC)
 
+typedef struct cmd_signal {
 
+    bool enable_openloop = 0;
+    bool enable_currentcontrol = 0;
+    bool enable_log = 0;
+
+} cmd_signal;
 
 void task_cabinet_init(void);
 void task_cabinet_deinit(void);

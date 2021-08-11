@@ -32,6 +32,7 @@ typedef struct hw_three_phase_pwm_t {
 
 typedef struct hw_three_phase_sensor_t {
 
+    bool enable;
     analog_sensor_t Ia;
     analog_sensor_t Ib;
     analog_sensor_t Ic;
@@ -40,7 +41,7 @@ typedef struct hw_three_phase_sensor_t {
 
 //zzw
 typedef struct mb_three_phase_sensor {
-
+    bool enable;
     mb_sensor mb_Ia;
     mb_sensor mb_Ib;
     mb_sensor mb_Ic;

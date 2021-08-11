@@ -42,6 +42,7 @@ void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
 void init_OpenLoop_Command(OpenLoop_Command *VSI_Openloop_command)
 {
     // Update theta
+    VSI_Openloop_command->is_init = 1;
     VSI_Openloop_command->enable = 0;
     VSI_Openloop_command->Num_inv = -1;
     VSI_Openloop_command->freq = 0;

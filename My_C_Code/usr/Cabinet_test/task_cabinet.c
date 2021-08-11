@@ -11,7 +11,7 @@
 #include "sys/debug.h"
 
 //LOGGING VARIABLES
-
+cmd_signal cmd_enable;
 double LOG_vdc = 0.0;
 double LOG_mb_I1 = 0.0;
 double LOG_mb_I2 = 0.0;
@@ -65,6 +65,11 @@ void task_cabinet_init(void)
 	//populate struct
 	scheduler_tcb_init(&tcb, task_cabinet_callback, NULL, "cabinet", TASK_CABINET_INTERVAL_USEC);
 	scheduler_tcb_register(&tcb);
+
+	OpenLoop_Command *OpenLoop;
+	OpenLoop = &VSI_Openloop_command;
+	default_inverter_setup(0);
+	init_OpenLoop_Command(OpenLoop);
 }
 
 //stop task
@@ -86,31 +91,27 @@ uint8_t task_cabinet_is_inited(void)
 void task_cabinet_callback(void *arg)
 {
 	InverterThreePhase_t *inv;
-	OpenLoop_Command *Openloop_command;
-	Openloop_command = &VSI_Openloop_command;
-	if (Openloop_command->enable){
-		OpenLoop_VSI(Openloop_command);
-
-		inv = get_three_phase_inverter(Openloop_command->Num_inv);
-		LOG_vdc = inv->Vdc;
-		set_pole_volts_three_phase(Openloop_command->command_volatge[0]+LOG_vdc/2, Openloop_command->command_volatge[1]+LOG_vdc/2, Openloop_command->command_volatge[2]+LOG_vdc/2, inv);
-		LOG_vdc = inv->Vdc;
+	OpenLoop_Command *OpenLoop;
+	OpenLoop = &VSI_Openloop_command;
+	if (cmd_enable.openloop){
+		OpenLoop_VSI(OpenLoop);
+		inv = get_three_phase_inverter(OpenLoop->Num_inv);
+		set_line_volts_three_phase(OpenLoop->command_volatge[0], OpenLoop->command_volatge[1], OpenLoop->command_volatge[2], inv);
 	}
-	else if(Openloop_command->enable == 0)
+	else if(cmd_enable.openloop)
 	{
-		inv = get_three_phase_inverter(Openloop_command->Num_inv);
-		set_pole_volts_three_phase(0, 0, 0, inv);
-		LOG_vdc = inv->Vdc;
+		double Iabc1[3], Iabc2[3], Iabc3[3];
+
 	}
 	double Iabc[3];
 	inv = get_three_phase_inverter(0);
-	input_read_mb_currents_three_phase_abc(&Iabc, inv);
+	get_mb_currents_three_phase_abc(&Iabc, inv);
 	LOG_mb_I1 = Iabc[0];
 	LOG_mb_I3 = Iabc[1];
 	LOG_mb_I5 = Iabc[2];
 
 	inv = get_three_phase_inverter(1);
-	input_read_mb_currents_three_phase_abc(&Iabc, inv);
+	get_mb_currents_three_phase_abc(&Iabc, inv);
 	LOG_mb_I2 = Iabc[0];
 	LOG_mb_I4 = Iabc[1];
 	LOG_mb_I6 = Iabc[2];

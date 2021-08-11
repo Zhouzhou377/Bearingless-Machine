@@ -79,19 +79,20 @@
 //ADC current sensor gains
 //Calibrated by Nicholas Hemenway 01/24/2020:
 //https://drive.google.com/drive/u/1/folders/1wPNnbSQbDKlm-QNHGPerimLWiv63sxtn
-#define NO_USE (0)
+#define NO_USE (-1)
 #define CAB_INV1_ADC_GAIN (-2.96787)
 /*#define CAB_INV2_ADC_GAIN (-2.95262)
 #define CAB_INV3_ADC_GAIN (-2.98213)*/
 #define CAB_INV4_ADC_GAIN (-1.00516)
 
-#define CAB_INV2_PHA_ADC_GAIN (9.69133)
-#define CAB_INV2_PHB_ADC_GAIN (9.69133)
-#define CAB_INV2_PHC_ADC_GAIN (9.69133)
+#define AMDS_CUR_GAIN (-9.69133)
+#define CAB_INV2_PHA_ADC_GAIN (-9.69133*1.011) //MB1
+#define CAB_INV2_PHB_ADC_GAIN (-9.69133*1.012) //MB3
+#define CAB_INV2_PHC_ADC_GAIN (-9.69133*1.015) //MB5
 
-#define CAB_INV3_PHA_ADC_GAIN (9.69133)
-#define CAB_INV3_PHB_ADC_GAIN (9.69133)
-#define CAB_INV3_PHC_ADC_GAIN (9.69133)
+#define CAB_INV3_PHA_ADC_GAIN (-9.69133*1.017) //MB2
+#define CAB_INV3_PHB_ADC_GAIN (-9.69133*1.013) //MB4
+#define CAB_INV3_PHC_ADC_GAIN (-9.69133*1.013) //MB6
 
 #define CAB_INV5_PHA_ADC_GAIN (-2.96787)
 #define CAB_INV5_PHB_ADC_GAIN (-2.95262)
@@ -108,13 +109,13 @@
 #define CAB_INV3_ADC_OFFSET (0.10395)*/
 #define CAB_INV4_ADC_OFFSET (0.00866636)
 
-#define CAB_INV2_PHA_ADC_OFFSET (0)
-#define CAB_INV2_PHB_ADC_OFFSET (0)
-#define CAB_INV2_PHC_ADC_OFFSET (0)
+#define CAB_INV2_PHA_ADC_OFFSET (9.69133*0.1023) 
+#define CAB_INV2_PHB_ADC_OFFSET (9.69133*0.1014)
+#define CAB_INV2_PHC_ADC_OFFSET (9.69133*0.09866)
 
-#define CAB_INV3_PHA_ADC_OFFSET (0)
-#define CAB_INV3_PHB_ADC_OFFSET (0)
-#define CAB_INV3_PHC_ADC_OFFSET (0)
+#define CAB_INV3_PHA_ADC_OFFSET (-9.69133*0.05318)
+#define CAB_INV3_PHB_ADC_OFFSET (9.69133*0.08723)
+#define CAB_INV3_PHC_ADC_OFFSET (9.69133*0.04513)
 
 #define CAB_INV5_PHA_ADC_OFFSET (0.0751899)
 #define CAB_INV5_PHB_ADC_OFFSET (0.00586923)
@@ -142,40 +143,48 @@ static const HW_three_phase_t three_phase_lookup[CABINET_NUM_3PHASE] = {
 
     {.pwm = {.pwmIdxA = CAB_INV2_PHA, .pwmIdxB = CAB_INV2_PHB, .pwmIdxC = CAB_INV2_PHC},
 
-     .sensor = {.Ia = {.adcCh = CAB_INV2_PHA_ADC, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ib = {.adcCh = CAB_INV2_PHB_ADC, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ic = {.adcCh = CAB_INV2_PHC_ADC, .adcGain = NO_USE, .adcOffset = NO_USE}},
+     .sensor = {.enable = 0;
+                .Ia = {.adcCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .Ib = {.adcCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .Ic = {.adcCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}},
                 
-     .mb_csensor = {.mb_Ia = {.mbCh = CAB_INV2_PHA_ADC, .adcGain = CAB_INV2_PHA_ADC_GAIN, .adcOffset = CAB_INV2_PHA_ADC_OFFSET},
+     .mb_csensor = {.enable = 1;
+                .mb_Ia = {.mbCh = CAB_INV2_PHA_ADC, .adcGain = CAB_INV2_PHA_ADC_GAIN, .adcOffset = CAB_INV2_PHA_ADC_OFFSET},
                 .mb_Ib = {.mbCh = CAB_INV2_PHB_ADC, .adcGain = CAB_INV2_PHB_ADC_GAIN, .adcOffset = CAB_INV2_PHB_ADC_OFFSET},
                 .mb_Ic = {.mbCh = CAB_INV2_PHC_ADC, .adcGain = CAB_INV2_PHC_ADC_GAIN, .adcOffset = CAB_INV2_PHC_ADC_OFFSET}}},
 
     {.pwm = {.pwmIdxA = CAB_INV3_PHA, .pwmIdxB = CAB_INV3_PHB, .pwmIdxC = CAB_INV3_PHC},
 
-     .sensor = {.Ia = {.adcCh = CAB_INV3_PHA_ADC, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ib = {.adcCh = CAB_INV3_PHB_ADC, .adcGain = NO_USE, .adcOffset = NO_USE},
-                .Ic = {.adcCh = CAB_INV3_PHC_ADC, .adcGain = NO_USE, .adcOffset = NO_USE}},
+     .sensor = {.enable = 0;
+                .Ia = {.adcCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .Ib = {.adcCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+                .Ic = {.adcCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}},
                 
-    .mb_csensor = {.mb_Ia = {.mbCh = CAB_INV3_PHA_ADC, .adcGain = CAB_INV3_PHA_ADC_GAIN, .adcOffset = CAB_INV3_PHA_ADC_OFFSET},
+    .mb_csensor = {.enable = 1;
+                .mb_Ia = {.mbCh = CAB_INV3_PHA_ADC, .adcGain = CAB_INV3_PHA_ADC_GAIN, .adcOffset = CAB_INV3_PHA_ADC_OFFSET},
                 .mb_Ib = {.mbCh = CAB_INV3_PHB_ADC, .adcGain = CAB_INV3_PHB_ADC_GAIN, .adcOffset = CAB_INV3_PHB_ADC_OFFSET},
                 .mb_Ic = {.mbCh = CAB_INV3_PHC_ADC, .adcGain = CAB_INV3_PHC_ADC_GAIN, .adcOffset = CAB_INV3_PHC_ADC_OFFSET}}},
 
     {.pwm = {.pwmIdxA = CAB_INV5_PHA, .pwmIdxB = CAB_INV5_PHB, .pwmIdxC = CAB_INV5_PHC},
 
-     .sensor = {.Ia = {.adcCh = CAB_INV5_PHA_ADC, .adcGain = CAB_INV5_PHA_ADC_GAIN, .adcOffset = CAB_INV5_PHA_ADC_OFFSET},
+     .sensor = {.enable = 1;
+                .Ia = {.adcCh = CAB_INV5_PHA_ADC, .adcGain = CAB_INV5_PHA_ADC_GAIN, .adcOffset = CAB_INV5_PHA_ADC_OFFSET},
                 .Ib = {.adcCh = CAB_INV5_PHB_ADC, .adcGain = CAB_INV5_PHB_ADC_GAIN, .adcOffset = CAB_INV5_PHB_ADC_OFFSET},
                 .Ic = {.adcCh = CAB_INV5_PHC_ADC, .adcGain = CAB_INV5_PHC_ADC_GAIN, .adcOffset = CAB_INV5_PHC_ADC_OFFSET}},
      
-     .mb_csensor = {.mb_Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+     .mb_csensor = {.enable = 0;
+                .mb_Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
                 .mb_Ib = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
                 .mb_Ic = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}}},
     {.pwm = {.pwmIdxA = CAB_INV6_PHA, .pwmIdxB = CAB_INV6_PHB, .pwmIdxC = CAB_INV6_PHC},
 
-     .sensor = {.Ia = {.adcCh = CAB_INV6_PHA_ADC, .adcGain = CAB_INV6_PHA_ADC_GAIN, .adcOffset = CAB_INV6_PHA_ADC_OFFSET},
+     .sensor = {.enable = 1;
+                .Ia = {.adcCh = CAB_INV6_PHA_ADC, .adcGain = CAB_INV6_PHA_ADC_GAIN, .adcOffset = CAB_INV6_PHA_ADC_OFFSET},
                 .Ib = {.adcCh = CAB_INV6_PHB_ADC, .adcGain = CAB_INV6_PHB_ADC_GAIN, .adcOffset = CAB_INV6_PHB_ADC_OFFSET},
                 .Ic = {.adcCh = CAB_INV6_PHC_ADC, .adcGain = CAB_INV6_PHC_ADC_GAIN, .adcOffset = CAB_INV6_PHC_ADC_OFFSET}},
                 
-    .mb_csensor = {.mb_Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
+    .mb_csensor = {.enable = 0;
+                .mb_Ia = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
                 .mb_Ib = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE},
                 .mb_Ic = {.mbCh = NO_USE, .adcGain = NO_USE, .adcOffset = NO_USE}}}
 

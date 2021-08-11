@@ -58,10 +58,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 
 void cmd_cabinet_register(void)
 {
-	OpenLoop_Command *OpenLoop;
-	OpenLoop = &VSI_Openloop_command;
-	default_inverter_setup(0);
-	init_OpenLoop_Command(OpenLoop);
+	
 	// Populate the command entry block (struct)
 	commands_cmd_init(&cmd_entry,
 			"cabinet", "Power Electronics Cabinet Commands",

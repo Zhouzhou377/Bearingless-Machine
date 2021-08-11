@@ -14,7 +14,7 @@
 
 
 
-double mb_int32todouble(int32_t data_raw){
+double mb_int32todouble_current(int32_t data_raw){
     double data;
     int32_t data_raw_16;
     data_raw_16 = data_raw & 0x0000FFFF;
@@ -23,11 +23,11 @@ double mb_int32todouble(int32_t data_raw){
     return data;
 }
 
-double read_mb_current_adc(mb_channel_e mbCh){
+double get_mb_current_adc(mb_channel_e mbCh){
     float mb_adc;
     int32_t data_raw;
     if(motherboard_get_data(mbCh, &data_raw)==SUCCESS){
-        mb_adc = mb_int32todouble(data_raw);
+        mb_adc = mb_int32todouble_current(data_raw);
     	//mb_adc = data_raw;
         //return (int32_t) data_raw;
         return (double) mb_adc;
@@ -36,23 +36,23 @@ double read_mb_current_adc(mb_channel_e mbCh){
     return (double) 0;
 }
 
-double read_mb_current_sensor(mb_sensor sensor){
+double get_mb_current_adc(mb_sensor sensor){
 
-    double adc = read_mb_current_adc(sensor.mbCh);
+    double adc = get_mb_current_adc(sensor.mbCh);
     double out = sensor.adcGain*adc + sensor.adcOffset;
     return out;
 }
 
-void input_read_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv){
+void get_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv){
 
     //sensor = inv->HW->mb_csensor->mb_Ia;
 	//Iabc[0] = read_mb_current_sensor(sensor);
-    Iabc[0] = read_mb_current_sensor(inv->HW->mb_csensor.mb_Ia);
+    Iabc[0] = get_mb_current_adc(inv->HW->mb_csensor.mb_Ia);
     //sensor = inv->HW->mb_csensor->Ib;
-    Iabc[1] = read_mb_current_sensor(inv->HW->mb_csensor.mb_Ib);
+    Iabc[1] = get_mb_current_adc(inv->HW->mb_csensor.mb_Ib);
 	//Iabc[1] = read_mb_current_sensor(sensor);
     //sensor = inv->HW->mb_csensor->Ic;
-    Iabc[2] = read_mb_current_sensor(inv->HW->mb_csensor.mb_Ic);
+    Iabc[2] = get_mb_current_adc(inv->HW->mb_csensor.mb_Ic);
 	//Iabc[2] = read_mb_current_sensor(sensor);
 }
 

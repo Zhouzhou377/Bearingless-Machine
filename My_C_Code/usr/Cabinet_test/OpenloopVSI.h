@@ -10,6 +10,7 @@ typedef struct OpenLoop_Command{
     double freq;
     double amp;
     double command_volatge[3];
+    bool is_init = 0;
 
 } OpenLoop_Command;
 

@@ -8,9 +8,9 @@
 #include "usr/Cabinet_test/inverter.h"
 #include <stdint.h>
 
-double read_mb_current_adc(mb_channel_e mbCh);
-double read_mb_current_sensor(mb_sensor sensor);
-void input_read_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv);
+double get_mb_current_adc(mb_channel_e mbCh);
+double get_mb_current_adc(mb_sensor sensor);
+void get_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv);
 
 
 
