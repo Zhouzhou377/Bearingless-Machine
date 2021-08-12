@@ -7,7 +7,7 @@ sys.path
 from AMDC import AMDC
 import time
 
-class Cabinet():
+class cmd():
     
     def __init__(self, Vdc, amdc, debug = True):
         
@@ -229,6 +229,60 @@ class Cabinet():
         out = self.amdc.cmd('cabinet stats reset')
         if self.debug:
             return out
+
+    def init_twin_ctrl(self):
+        
+        out = self.amdc.cmd('twin init')
+        if self.debug:
+            return out 
+    
+    def twin_set_vdc(self, vdc):
+        
+        out = self.amdc.cmd(f'twin set_vdc, {vdc:.6f}')
+        if self.debug:
+            return out 
+
+    def twin_enable_ctrl(self):
+        
+        out = self.amdc.cmd('twin enable_ctrl')
+        if self.debug:
+            return out 
+
+    def twin_enable_log(self):
+        
+        out = self.amdc.cmd('twin enable_log')
+        if self.debug:
+            return out 
+
+    def twin_set_trq(self, i_d, i_q):
+        
+        out = self.amdc.cmd(f'twin set_trq, {i_d:.6f}, {i_q:.6f}')
+        if self.debug:
+            return out 
+    
+    def twin_set_s1(self, i_d, i_q):
+        
+        out = self.amdc.cmd(f'twin set_s1, {i_d:.6f}, {i_q:.6f}')
+        if self.debug:
+            return out 
+
+    def twin_set_s2(self, i_d, i_q):
+        
+        out = self.amdc.cmd(f'twin set_s2, {i_d:.6f}, {i_q:.6f}')
+        if self.debug:
+            return out 
+
+    def twin_set_freq(self, freq):
+        
+        out = self.amdc.cmd(f'twin set_freq, {i_d:.6f}, {i_q:.6f}')
+        if self.debug:
+            return out 
+
+    def twin_disable_ctrl(self):
+        
+        out = self.amdc.cmd('twin disable_ctrl')
+        if self.debug:
+            return out 
     
     
 
@@ -236,21 +290,10 @@ class Cabinet():
 if __name__ == "__main__":
         
     try:
-        Cabinet.disconnect() #disconnect any previous crambs that may still be active
+        cmd.disconnect() #disconnect any previous crambs that may still be active
     except:
         Vdc = 30
-        amdc = AMDC(port = 'COM3', cmdEcho = False)
-        Cabinet = Cabinet(Vdc, amdc, debug = True)     
+        amdc = AMDC(port = 'COM13', cmdEcho = False)
+        cmd = cmd(Vdc, amdc, debug = True)     
         
-    R_test = 1 #ohm
-    L_test = 7.5e-3 #H
-    
-    R_test_1 = 2*R_test
-    L_test_1 = 2*L_test
-    
-    kp_test, ki_test = cc_gain_calc(R_test, L_test, fb = 700)
-    kp_test_1, ki_test_1 = cc_gain_calc(R_test_1, L_test_1, fb = 700)
-    
-    
-    
     

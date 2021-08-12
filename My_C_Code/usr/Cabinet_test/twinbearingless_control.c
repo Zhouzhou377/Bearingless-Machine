@@ -8,6 +8,7 @@
 #include "usr/Cabinet_test/transforms.h"
 #include "usr/Cabinet_test/definitions.h"
 #include <math.h>
+#include <stdbool.h>
 
 
 #define INV1 (5)
@@ -55,8 +56,8 @@ twinbearingless_control *init_twinbearingless(void){
     twin_control.twin_inv2.inv = get_three_phase_inverter(twin_control.twin_inv2.Num_inv);
     twin_control.twin_inv3.inv = get_three_phase_inverter(twin_control.twin_inv3.Num_inv);
     // init machine control parameters
-    para_machine_h *para_machine_data;
-    twin_control.para_machine = init_para_twinmachine_control(para_machine_data);
+
+    twin_control.para_machine = init_para_twinmachine_control(void);
 
     twin_control.tq.PI_regulator = init_PI_para(TS, PI_tq, &twin_control.para_machine->para_tq, WD_TQ);
     twin_control.s1.PI_regulator = init_PI_para(TS, PI_s1, &twin_control.para_machine->para_s1, WD_S1);
@@ -64,19 +65,26 @@ twinbearingless_control *init_twinbearingless(void){
     return &twin_control;
 }
 
+twinbearingless_control *deinit_twinbearingless(void){
 
-void get_inverter_current_abc(twin_threephase_data twin){
-    if (twin.inv->HW->sensor.enable){
-        get_currents_three_phase_abc(twin.Iabc, twin.inv);
+    twin_control.is_init = 0;
+    // init machine control parameters
+    return &twin_control;
+}
+
+
+void get_inverter_current_abc(twin_threephase_data *twin){
+    if (twin->inv->HW->sensor.enable){
+        get_currents_three_phase_abc(twin->Iabc, twin->inv);
     }else{
-        get_mb_currents_three_phase_abc(twin.Iabc, twin.inv);
+        get_mb_currents_three_phase_abc(twin.Iabc, twin->inv);
     }
 }
 
 void get_all_inverter_current_abc(twinbearingless_control* data){
-    get_inverter_current_abc(data->twin_inv1);
-    get_inverter_current_abc(data->twin_inv2);
-    get_inverter_current_abc(data->twin_inv3);
+    get_inverter_current_abc(&(data->twin_inv1));
+    get_inverter_current_abc(&(data->twin_inv2));
+    get_inverter_current_abc(&(data->twin_inv3));
 }
 
 void cal_invI_to_controlI(twinbearingless_control* data){
@@ -177,16 +185,12 @@ void get_theta_we(twinbearingless_control *data){
 }
 
 
-void enable_current_regulation(twinbearingless_control *data)
-{
-    data->enable = 1;
-}
 
 void current_regulation (twinbearingless_control *data)
 {
-    /*if(!data->is_init || data == 0x00000000){
+    if(!data->is_init || data == 0x00000000){
         data = init_twinbearingless(data);
-    }*/
+    }
 
     //update sensed currents
     get_all_inverter_current_abc(data);
@@ -223,9 +227,4 @@ void current_regulation (twinbearingless_control *data)
     vdq0[2] = -data->s2.vdq0_ref[2] + data->s2.vdq0_decouple[2];
 
     dq0_to2_abc(data->twin_inv3.vabc_ref, vdq0, data->s2.theta_rad);
-}
-
-void disable_current_regulation(twinbearingless_control *data)
-{
-    data->enable = 0;
 }

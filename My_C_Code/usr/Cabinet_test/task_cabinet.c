@@ -22,15 +22,34 @@ double LOG_mb_I6 = 0.0;
 
 
 
-double LOG_Iabc1_1 = 0.0;
-double LOG_Iabc1_2 = 0.0;
-double LOG_Iabc1_3 = 0.0;
-double LOG_Iabc2_1 = 0.0;
-double LOG_Iabc2_2 = 0.0;
-double LOG_Iabc2_3 = 0.0;
-double LOG_Iabc3_1 = 0.0;
-double LOG_Iabc3_2 = 0.0;
-double LOG_Iabc3_3 = 0.0;
+double LOG_Iabc1_a = 0.0;
+double LOG_Iabc1_b = 0.0;
+double LOG_Iabc1_c = 0.0;
+double LOG_Iabc2_a = 0.0;
+double LOG_Iabc2_b = 0.0;
+double LOG_Iabc2_c = 0.0;
+double LOG_Iabc3_a = 0.0;
+double LOG_Iabc3_b = 0.0;
+double LOG_Iabc3_c = 0.0;
+
+double LOG_vabc1_a = 0.0;
+double LOG_vabc1_b = 0.0;
+double LOG_vabc1_c = 0.0;
+double LOG_vabc2_a = 0.0;
+double LOG_vabc2_b = 0.0;
+double LOG_vabc2_c = 0.0;
+double LOG_vabc3_a = 0.0;
+double LOG_vabc3_b = 0.0;
+double LOG_vabc3_c = 0.0;
+
+double LOG_Itq_d_ref = 0.0;
+double LOG_Itq_q_ref = 0.0;
+
+double LOG_Is1_d_ref = 0.0;
+double LOG_Is1_q_ref = 0.0;
+
+double LOG_Is2_d_ref = 0.0;
+double LOG_Is2_q_ref = 0.0;
 
 double LOG_Itq_d = 0.0;
 double LOG_Itq_q = 0.0;
@@ -41,7 +60,14 @@ double LOG_Is1_q = 0.0;
 double LOG_Is2_d = 0.0;
 double LOG_Is2_q = 0.0;
 
+double LOG_err_tq_d = 0.0;
+double LOG_err_tq_q = 0.0;
 
+double LOG_err_s1_d = 0.0;
+double LOG_err_s1_q = 0.0;
+
+double LOG_err_s2_d = 0.0;
+double LOG_err_s2_q = 0.0;
 
 //sensed values
 double LOG_x = 0.0;
@@ -60,9 +86,19 @@ double LOG_zf = 0.0;
 double LOG_Ixf = 0.0;
 double LOG_Iyf = 0.0;
 double LOG_Izf = 0.0;
+
+para_PI_discrete PI_tq;
+para_PI_discrete PI_s1;
+para_PI_discrete PI_s2;
+twinbearingless_control twin_control;
+para_twinmachine_control para_machine_control;
+para_machine_h para_machine_data;
 twinbearingless_control *twin_data;
 
+OpenLoop_Command VSI_Openloop_command;
 OpenLoop_Command *OpenLoop;
+
+cmd_signal cmd_enable;
 
 #define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
@@ -78,6 +114,8 @@ void task_cabinet_init(void)
 	default_inverter_setup(0);
 	OpenLoop = init_OpenLoop_Command();
 	twin_data = init_twinbearingless();
+	cmd_enable.enable_openloop = 0;
+	cmd_enable.enable_currentcontrol = 0;
 }
 
 //stop task
@@ -86,16 +124,13 @@ void task_cabinet_deinit(void)
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
 	scheduler_tcb_unregister(&tcb);
-
-	//(get_mc());
+	twin_data = deinit_twinbearingless();
 
 }
 
 //function to determine if task has been started
 uint8_t task_cabinet_is_inited(void)
 {	
-	cmd_enable.enable_openloop = 0;
-	cmd_enable.enable_currentcontrol = 0;
 	return scheduler_tcb_is_registered(&tcb);
 }
 
@@ -103,14 +138,16 @@ uint8_t task_cabinet_is_inited(void)
 void task_cabinet_callback(void *arg)
 {
 	InverterThreePhase_t *inv;
-	OpenLoop = &VSI_Openloop_command;
+
 	if (cmd_enable.enable_openloop){
+		OpenLoop = &VSI_Openloop_command;
 		OpenLoop_VSI(OpenLoop);
 		inv = get_three_phase_inverter(OpenLoop->Num_inv);
 		set_line_volts_three_phase(OpenLoop->command_volatge[0], OpenLoop->command_volatge[1], OpenLoop->command_volatge[2], inv);
 	}
 	else if(cmd_enable.enable_currentcontrol)
 	{
+		twin_data = &twin_control;
 		current_regulation (twin_data);
 
 		set_line_volts_three_phase(twin_data->twin_inv1.vabc_ref[0], twin_data->twin_inv1.vabc_ref[1], twin_data->twin_inv1.vabc_ref[2], twin_data->twin_inv1.inv);
@@ -118,61 +155,60 @@ void task_cabinet_callback(void *arg)
 		set_line_volts_three_phase(twin_data->twin_inv3.vabc_ref[0], twin_data->twin_inv3.vabc_ref[1], twin_data->twin_inv3.vabc_ref[2], twin_data->twin_inv3.inv);
 	}
 
-	if (cmd_enable.enable_log && cmd_enable.enable_currentcontrol){
-		LOG_Iabc1_1 = twin_data->twin_inv1.Iabc[0];
-		LOG_Iabc1_2 = twin_data->twin_inv1.Iabc[1];
-		LOG_Iabc1_3 = twin_data->twin_inv1.Iabc[3];
-		LOG_Iabc2_1 = twin_data->twin_inv2.Iabc[0];
-		LOG_Iabc2_2 = twin_data->twin_inv2.Iabc[1];
-		LOG_Iabc2_3 = twin_data->twin_inv2.Iabc[2];
-		LOG_Iabc3_1 = twin_data->twin_inv3.Iabc[0];
-		LOG_Iabc3_2 = twin_data->twin_inv3.Iabc[1];
-		LOG_Iabc3_3 = twin_data->twin_inv3.Iabc[2];
+	if (cmd_enable.enable_log){
+		twin_data = &twin_control;
+		//log three phase inv current
+		LOG_Iabc1_a = twin_data->twin_inv1.Iabc[0];
+		LOG_Iabc1_b = twin_data->twin_inv1.Iabc[1];
+		LOG_Iabc1_c = twin_data->twin_inv1.Iabc[3];
+		LOG_Iabc2_a = twin_data->twin_inv2.Iabc[0];
+		LOG_Iabc2_b = twin_data->twin_inv2.Iabc[1];
+		LOG_Iabc2_c = twin_data->twin_inv2.Iabc[2];
+		LOG_Iabc3_a = twin_data->twin_inv3.Iabc[0];
+		LOG_Iabc3_b = twin_data->twin_inv3.Iabc[1];
+		LOG_Iabc3_c = twin_data->twin_inv3.Iabc[2];
+		//log torque current
+
+		LOG_Itq_d_ref = twin_data->tq.Idq0_ref[0];
+		LOG_Itq_q_ref = twin_data->tq.Idq0_ref[1];
 
 		LOG_Itq_d = twin_data->tq.Idq0[0];
 		LOG_Itq_q = twin_data->tq.Idq0[1];
 
+		LOG_Is1_d_ref = twin_data->s1.Idq0_ref[0];
+		LOG_Is1_q_ref = twin_data->s1.Idq0_ref[1];
+
 		LOG_Is1_d = twin_data->s1.Idq0[0];
 		LOG_Is1_q = twin_data->s1.Idq0[1];
 
+		LOG_Is2_d_ref = twin_data->s2.Idq0_ref[0];
+		LOG_Is2_q_ref = twin_data->s2.Idq0_ref[2];
+
 		LOG_Is2_d = twin_data->s2.Idq0[0];
 		LOG_Is2_q = twin_data->s2.Idq0[2];
+
+		LOG_vabc1_a = twin_data->twin_inv1.vabc_ref[0];
+		LOG_vabc1_b = twin_data->twin_inv1.vabc_ref[1];
+		LOG_vabc1_c = twin_data->twin_inv1.vabc_ref[2];
+		LOG_vabc2_a = twin_data->twin_inv2.vabc_ref[0];
+		LOG_vabc2_b = twin_data->twin_inv2.vabc_ref[1];
+		LOG_vabc2_c = twin_data->twin_inv2.vabc_ref[2];
+		LOG_vabc3_a = twin_data->twin_inv3.vabc_ref[0];
+		LOG_vabc3_b = twin_data->twin_inv3.vabc_ref[1];
+		LOG_vabc3_c = twin_data->twin_inv3.vabc_ref[2];
+
+		LOG_err_tq_d = twin_data->tq.error[0];
+		LOG_err_tq_q = twin_data->tq.error[1];
+
+		LOG_err_s1_d = twin_data->s1.error[0];
+		LOG_err_s1_q = twin_data->s1.error[1];
+
+		LOG_err_s2_d = twin_data->s2.error[0];
+		LOG_err_s2_q = twin_data->s2.error[1];
+
 	}
 
 
-
-	//CRAMB_ctxt *cramb = get_CRAMB_ctxt();
-	//CRAMB_Callback(cramb);
-/*
-	LOG_x_star = cramb->mc->controller_x.r_star;
-	LOG_y_star = cramb->mc->controller_y.r_star;
-	LOG_z_star = cramb->mc->controller_z.r_star;
-	LOG_Fx_star = cramb->mc->Fxyz_star[0];
-	LOG_Fy_star = cramb->mc->Fxyz_star[1];
-	LOG_Fz_star = cramb->mc->Fxyz_star[2];
-	LOG_Ix_star = cramb->cc_rad->cc_x.r_star;
-	LOG_Iy_star = cramb->cc_rad->cc_y.r_star;
-	LOG_Iz_star = cramb->cc_ax->cc_z.r_star;
-	LOG_Va_star = cramb->cc_rad->Vabc_star[0];
-	LOG_Vb_star = cramb->cc_rad->Vabc_star[1];
-	LOG_Vc_star = cramb->cc_rad->Vabc_star[2];
-	LOG_Vz_star = cramb->cc_ax->V_star;
-
-	LOG_x = cramb->mc->xyz[0];
-	LOG_y = cramb->mc->xyz[1];
-	LOG_z = cramb->mc->xyz[2];
-
-	LOG_Ix = cramb->cc_rad->Ixy[0];
-	LOG_Iy = cramb->cc_rad->Ixy[1];
-	LOG_Iz = cramb->cc_ax->I;
-
-	LOG_xf = cramb->mc->xyz_filtered[0];
-	LOG_yf = cramb->mc->xyz_filtered[1];
-	LOG_zf = cramb->mc->xyz_filtered[2];
-
-	LOG_Ixf = cramb->cc_rad->Ixy_filtered[0];
-	LOG_Iyf = cramb->cc_rad->Ixy_filtered[1];
-	LOG_Izf = cramb->cc_ax->I_filtered;*/
 }
 
 

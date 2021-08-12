@@ -16,7 +16,7 @@ typedef struct cmd_signal {
 
 }cmd_signal;
 
-cmd_signal cmd_enable;
+extern cmd_signal cmd_enable;
 
 void task_cabinet_init(void);
 void task_cabinet_deinit(void);

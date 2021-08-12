@@ -1,10 +1,10 @@
-#ifndef TWINBEARINGLESS_CONTROL
-#define TWINBEARINGLESS_CONTROL
+#ifndef TWINBEARINGLESS_CONTROL_H
+#define TWINBEARINGLESS_CONTROL_H
 
 #include "usr/Cabinet_test/cabinet.h"
 #include "usr/Cabinet_test/para_machine.h"
 //#include "usr/Cabinet_test/controllers.h"
-//#include <stdbool.h>
+#include <stdbool.h>
 
 typedef struct para_PI_discrete{
 
@@ -47,7 +47,7 @@ typedef struct twin_control_data{
 
 typedef struct twinbearingless_control{
     bool is_init;
-    bool enable;
+
     //inv1
     twin_threephase_data twin_inv1;
     //inv2
@@ -63,9 +63,21 @@ typedef struct twinbearingless_control{
 
 } twinbearingless_control;
 
-twinbearingless_control twin_control;
 
+extern para_PI_discrete PI_tq;
+extern para_PI_discrete PI_s1;
+extern para_PI_discrete PI_s2;
+extern twinbearingless_control twin_control;
 
 twinbearingless_control *init_twinbearingless(void);
+twinbearingless_control *deinit_twinbearingless(void)
 void current_regulation (twinbearingless_control *data);
-#endif
+void get_inverter_current_abc(twin_threephase_data *twin);
+void get_all_inverter_current_abc(twinbearingless_control* data);
+void cal_invI_to_controlI(twinbearingless_control* data);
+void update_control_current(twin_control_data *data);
+void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m);
+void decouple(twinbearingless_control *data);
+void get_theta_we(twinbearingless_control *data);
+
+#endif// TWINBEARINGLESS_CONTROL_H

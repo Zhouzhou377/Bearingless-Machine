@@ -3,9 +3,9 @@
 #ifdef APP_CABINET
 
 #include "usr/Cabinet_test/app_cabinet_test.h"
-//#include "usr/Cabinet_test/cmd/cmd_cramb.h"
+#include "usr/Cabinet_test/cmd/cmd_twin_ctrl.h"
 #include "usr/Cabinet_test/cmd/cmd_cabinet_test.h"
-//#include "drv/eddy_current_sensor.h"
+
 #include "drv/gpio_mux.h"
 
 void app_cabinet_test_init(void)

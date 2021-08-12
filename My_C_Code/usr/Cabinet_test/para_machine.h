@@ -1,5 +1,5 @@
-#ifndef MACHINE_H
-#define MACHINE_H
+#ifndef PARA_MACHINE_H
+#define PARA_MACHINE_H
 
 
 typedef struct para_machine_h {
@@ -29,6 +29,9 @@ typedef struct para_twinmachine_control {
 } para_twinmachine_control;
 
 
-para_twinmachine_control *init_para_twinmachine_control(para_machine_h *para_machine_data);
+extern para_twinmachine_control para_machine_control;
+extern para_machine_h para_machine_data;
 
-#endif // MACHINE_H
+para_twinmachine_control *init_para_twinmachine_control(void);
+
+#endif // PARA_MACHINE_H

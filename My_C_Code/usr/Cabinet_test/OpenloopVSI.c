@@ -18,7 +18,7 @@ double LOG_vc = 0;
 static double Ts = 1.0 / 10000.0; // [sec]
 static double theta = 0.0;        // [rad]
 
-
+OpenLoop_Command VSI_Openloop_command;
 
 void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
 {

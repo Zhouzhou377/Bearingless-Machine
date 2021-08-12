@@ -17,6 +17,9 @@
 
 #include "drv/analog.h"
 
+twinbearingless_control twin_control;
+cmd_signal cmd_enable;
+
 //#define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
 static command_entry_t cmd_entry;
@@ -25,12 +28,12 @@ static command_entry_t cmd_entry;
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"set_vdc", "Set DC Bus for a Specific Inverter"},
-		{"enable_cctrl", "Enable current regulation"},
+		{"enable_ctrl", "Enable current regulation"},
 		{"set_trq", "Set torque current references dq0"},
 		{"set_s1", "Set suspension 1 current references dq0"},
 		{"set_s2", "Set suspension 2 current references dq0"},
 		{"set_freq", "Set rotating frequency Hz"},
-		{"disable_cctrl", "Enable current regulation"}
+		{"disable_ctrl", "Enable current regulation"}
 
 };
 
@@ -80,11 +83,20 @@ int cmd_twin(int argc, char **argv)
 	}
 
 	
-	if (strcmp("enable_cctrl", argv[1]) == 0) {
+	if (strcmp("enable_ctrl", argv[1]) == 0) {
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 
 		cmd_enable.enable_currentcontrol = 1;
+		
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("enable_log", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+
+		cmd_enable.enable_log = 1;
 		
 		return CMD_SUCCESS;
 	}
@@ -145,7 +157,7 @@ int cmd_twin(int argc, char **argv)
 		return CMD_SUCCESS;
 	}
 	
-	if (strcmp("disable_cctrl", argv[1]) == 0) {
+	if (strcmp("disable_ctrl", argv[1]) == 0) {
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 
