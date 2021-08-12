@@ -14,10 +14,10 @@
 #define INV1 (5)
 #define INV2 (2)
 #define INV3 (3)
-#define TS (1/100000)
-#define WD_TQ (2*PI*100)
-#define WD_S1 (2*PI*100)
-#define WD_S2 (2*PI*100)
+#define TS (1.0/10000.0)
+#define WD_TQ (2.0*PI*100.0)
+#define WD_S1 (2.0*PI*100.0)
+#define WD_S2 (2.0*PI*100.0)
 
 
 para_PI_discrete PI_tq;
@@ -25,24 +25,25 @@ para_PI_discrete PI_s1;
 para_PI_discrete PI_s2;
 twinbearingless_control twin_control;
 
-para_PI_discrete *init_PI_para(double Ts, para_PI_discrete PI_inv1, para_twinmachine_control_single *para_machine, double wd){
-    PI_inv1.wd = wd;
-    PI_inv1.Ts = Ts;
-    PI_inv1.tau_p = para_machine->L/para_machine->R;
-    PI_inv1.Ap = (double)exp(-PI_inv1.Ts/PI_inv1.tau_p);
-    PI_inv1.Bp = 1 - PI_inv1.Ap;
-    PI_inv1.tau_d = 1/PI_inv1.wd;
-    PI_inv1.Ad = (double)exp(-PI_inv1.Ts/PI_inv1.tau_d);
-    PI_inv1.Bd = 1 - PI_inv1.Ad;
-    PI_inv1.state_1[0] = 0.0;
-    PI_inv1.state_1[1] = 0.0;
-    PI_inv1.state_1[2] = 0.0;
-    PI_inv1.state_2[0] = 0.0;
-    PI_inv1.state_2[1] = 0.0;
-    PI_inv1.state_2[2] = 0.0;
-    PI_inv1.state_3[0] = 0.0;
-    PI_inv1.state_3[1] = 0.0;
-    PI_inv1.state_3[2] = 0.0;
+void init_PI_para(double Ts, para_PI_discrete *PI_inv1, para_twinmachine_control_single *para_machine, double wd){
+    PI_inv1->wd = wd;
+    PI_inv1->Ts = Ts;
+    PI_inv1->tau_p = para_machine->L/para_machine->R;
+    PI_inv1->Ap = (double)exp(-PI_inv1->Ts/PI_inv1->tau_p);
+    PI_inv1->Bp = 1 - PI_inv1->Ap;
+    PI_inv1->tau_d = 1/PI_inv1->wd;
+    PI_inv1->Ad = (double)exp(-PI_inv1->Ts/PI_inv1->tau_d);
+    PI_inv1->Bd = 1 - PI_inv1->Ad;
+    PI_inv1->state_1[0] = 0.0;
+    PI_inv1->state_1[1] = 0.0;
+    PI_inv1->state_1[2] = 0.0;
+    PI_inv1->state_2[0] = 0.0;
+    PI_inv1->state_2[1] = 0.0;
+    PI_inv1->state_2[2] = 0.0;
+    PI_inv1->state_3[0] = 0.0;
+    PI_inv1->state_3[1] = 0.0;
+    PI_inv1->state_3[2] = 0.0;
+
 }
 
 
@@ -52,16 +53,22 @@ twinbearingless_control *init_twinbearingless(void){
     twin_control.twin_inv1.Num_inv = INV1;
     twin_control.twin_inv2.Num_inv = INV2;
     twin_control.twin_inv3.Num_inv = INV3;
-    twin_control.twin_inv1.inv = get_three_phase_inverter(twin_control.twin_inv1.Num_inv);
-    twin_control.twin_inv2.inv = get_three_phase_inverter(twin_control.twin_inv2.Num_inv);
-    twin_control.twin_inv3.inv = get_three_phase_inverter(twin_control.twin_inv3.Num_inv);
+    int idx_inv;
+    idx_inv = find_invIdex_invID (twin_control.twin_inv1.Num_inv);
+    twin_control.twin_inv1.inv = get_three_phase_inverter(idx_inv);
+    idx_inv = find_invIdex_invID (twin_control.twin_inv2.Num_inv);
+    twin_control.twin_inv2.inv = get_three_phase_inverter(idx_inv);
+    idx_inv = find_invIdex_invID (twin_control.twin_inv3.Num_inv);
+    twin_control.twin_inv3.inv = get_three_phase_inverter(idx_inv);
     // init machine control parameters
 
-    twin_control.para_machine = init_para_twinmachine_control(void);
-
-    twin_control.tq.PI_regulator = init_PI_para(TS, PI_tq, &twin_control.para_machine->para_tq, WD_TQ);
-    twin_control.s1.PI_regulator = init_PI_para(TS, PI_s1, &twin_control.para_machine->para_s1, WD_S1);
-    twin_control.s2.PI_regulator = init_PI_para(TS, PI_s2, &twin_control.para_machine->para_s2, WD_S2);
+    twin_control.para_machine = init_para_twinmachine_control();
+    twin_control.tq.PI_regulator = &PI_tq;
+    init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
+    twin_control.s1.PI_regulator = &PI_s1;
+    init_PI_para(TS, twin_control.s1.PI_regulator, &twin_control.para_machine->para_s1, WD_S1);
+    twin_control.s2.PI_regulator = &PI_s2;
+    init_PI_para(TS, twin_control.s2.PI_regulator, &twin_control.para_machine->para_s2, WD_S2);
     return &twin_control;
 }
 
@@ -77,7 +84,7 @@ void get_inverter_current_abc(twin_threephase_data *twin){
     if (twin->inv->HW->sensor.enable){
         get_currents_three_phase_abc(twin->Iabc, twin->inv);
     }else{
-        get_mb_currents_three_phase_abc(twin.Iabc, twin->inv);
+        get_mb_currents_three_phase_abc(twin->Iabc, twin->inv);
     }
 }
 
@@ -112,7 +119,7 @@ void update_control_current(twin_control_data *data){
     data->Idq0_m1[1] = data->Idq0[1];
     data->Idq0_m1[2] = data->Idq0[2];
 
-    abc_to_dq0(data->Iabc, data->Idq0, data->theta_rad);
+    abc_to_dq0((data->Iabc), (data->Idq0), data->theta_rad);
 
 }
 
@@ -127,6 +134,8 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
     double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
     double u1[2];
     double u2[2];
+    data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
+    data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
     u1[0] = data_ctrl->error[0] * K1;
     u1[1] = data_ctrl->error[1] * K1;
     u2[0] = u1[0] - data_ctrl->PI_regulator->state_1[0] + data_ctrl->PI_regulator->state_2[0] + data_ctrl->PI_regulator->state_3[0];
@@ -189,7 +198,7 @@ void get_theta_we(twinbearingless_control *data){
 void current_regulation (twinbearingless_control *data)
 {
     if(!data->is_init || data == 0x00000000){
-        data = init_twinbearingless(data);
+        data = init_twinbearingless();
     }
 
     //update sensed currents

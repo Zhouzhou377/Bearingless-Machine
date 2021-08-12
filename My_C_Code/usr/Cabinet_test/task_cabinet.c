@@ -69,6 +69,10 @@ double LOG_err_s1_q = 0.0;
 double LOG_err_s2_d = 0.0;
 double LOG_err_s2_q = 0.0;
 
+double LOG_theta_tq = 0.0;
+double LOG_theta_s1 = 0.0;
+double LOG_theta_s2 = 0.0;
+
 //sensed values
 double LOG_x = 0.0;
 double LOG_y = 0.0;
@@ -160,7 +164,7 @@ void task_cabinet_callback(void *arg)
 		//log three phase inv current
 		LOG_Iabc1_a = twin_data->twin_inv1.Iabc[0];
 		LOG_Iabc1_b = twin_data->twin_inv1.Iabc[1];
-		LOG_Iabc1_c = twin_data->twin_inv1.Iabc[3];
+		LOG_Iabc1_c = twin_data->twin_inv1.Iabc[2];
 		LOG_Iabc2_a = twin_data->twin_inv2.Iabc[0];
 		LOG_Iabc2_b = twin_data->twin_inv2.Iabc[1];
 		LOG_Iabc2_c = twin_data->twin_inv2.Iabc[2];
@@ -205,6 +209,10 @@ void task_cabinet_callback(void *arg)
 
 		LOG_err_s2_d = twin_data->s2.error[0];
 		LOG_err_s2_q = twin_data->s2.error[1];
+
+		LOG_theta_tq = twin_data->tq.theta_rad;
+		LOG_theta_s1 = twin_data->s1.theta_rad;
+		LOG_theta_s2 = twin_data->s2.theta_rad;
 
 	}
 

@@ -33,7 +33,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_s1", "Set suspension 1 current references dq0"},
 		{"set_s2", "Set suspension 2 current references dq0"},
 		{"set_freq", "Set rotating frequency Hz"},
-		{"disable_ctrl", "Enable current regulation"}
+		{"disable_ctrl", "Enable current regulation"},
 
 };
 
@@ -109,9 +109,9 @@ int cmd_twin(int argc, char **argv)
 		double trq_d = strtod(argv[2], NULL);
 		double trq_q = strtod(argv[3], NULL);
 
-		twin_control.tq.Idq0[0] = trq_d;
-		twin_control.tq.Idq0[1] = trq_q;
-		twin_control.tq.Idq0[2] = 0.0;
+		twin_control.tq.Idq0_ref[0] = trq_d;
+		twin_control.tq.Idq0_ref[1] = trq_q;
+		twin_control.tq.Idq0_ref[2] = 0.0;
 		return CMD_SUCCESS;
 	}
 
@@ -123,9 +123,9 @@ int cmd_twin(int argc, char **argv)
 		double I_d = strtod(argv[2], NULL);
 		double I_q = strtod(argv[3], NULL);
 
-		twin_control.s1.Idq0[0] = I_d;
-		twin_control.s1.Idq0[1] = I_q;
-		twin_control.s1.Idq0[2] = 0.0;
+		twin_control.s1.Idq0_ref[0] = I_d;
+		twin_control.s1.Idq0_ref[1] = I_q;
+		twin_control.s1.Idq0_ref[2] = 0.0;
 		return CMD_SUCCESS;
 	}
 
@@ -137,9 +137,9 @@ int cmd_twin(int argc, char **argv)
 		double I_d = strtod(argv[2], NULL);
 		double I_q = strtod(argv[3], NULL);
 
-		twin_control.s2.Idq0[0] = I_d;
-		twin_control.s2.Idq0[1] = I_q;
-		twin_control.s2.Idq0[2] = 0.0;
+		twin_control.s2.Idq0_ref[0] = I_d;
+		twin_control.s2.Idq0_ref[1] = I_q;
+		twin_control.s2.Idq0_ref[2] = 0.0;
 		return CMD_SUCCESS;
 	}
 
@@ -170,9 +170,3 @@ int cmd_twin(int argc, char **argv)
 }
 
 #endif //APP_CABINET
-
-
-
-
-
-

@@ -238,7 +238,7 @@ class cmd():
     
     def twin_set_vdc(self, vdc):
         
-        out = self.amdc.cmd(f'twin set_vdc, {vdc:.6f}')
+        out = self.amdc.cmd(f'twin set_vdc {vdc:.6f}')
         if self.debug:
             return out 
 
@@ -256,25 +256,25 @@ class cmd():
 
     def twin_set_trq(self, i_d, i_q):
         
-        out = self.amdc.cmd(f'twin set_trq, {i_d:.6f}, {i_q:.6f}')
+        out = self.amdc.cmd(f'twin set_trq {i_d:.6f} {i_q:.6f}')
         if self.debug:
             return out 
     
     def twin_set_s1(self, i_d, i_q):
         
-        out = self.amdc.cmd(f'twin set_s1, {i_d:.6f}, {i_q:.6f}')
+        out = self.amdc.cmd(f'twin set_s1 {i_d:.6f} {i_q:.6f}')
         if self.debug:
             return out 
 
     def twin_set_s2(self, i_d, i_q):
         
-        out = self.amdc.cmd(f'twin set_s2, {i_d:.6f}, {i_q:.6f}')
+        out = self.amdc.cmd(f'twin set_s2 {i_d:.6f} {i_q:.6f}')
         if self.debug:
             return out 
 
     def twin_set_freq(self, freq):
         
-        out = self.amdc.cmd(f'twin set_freq, {i_d:.6f}, {i_q:.6f}')
+        out = self.amdc.cmd(f'twin set_freq {freq:.6f}')
         if self.debug:
             return out 
 

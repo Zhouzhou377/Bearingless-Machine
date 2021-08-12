@@ -14,7 +14,7 @@ typedef struct cmd_signal {
     bool enable_currentcontrol;
     bool enable_log;
 
-}cmd_signal;
+} cmd_signal;
 
 extern cmd_signal cmd_enable;
 
