@@ -21,7 +21,7 @@ extern cmd_signal cmd_enable;
 void task_cabinet_init(void);
 void task_cabinet_deinit(void);
 void task_cabinet_callback(void *arg);
-uint8_t task_cabinet_is_inited(void);
+bool task_cabinet_is_inited(void);
 void task_cabinet_stats_print(void);
 void task_cabinet_stats_reset(void);
 

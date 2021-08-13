@@ -71,6 +71,8 @@ extern twinbearingless_control twin_control;
 
 twinbearingless_control *init_twinbearingless(void);
 twinbearingless_control *deinit_twinbearingless(void);
+
+void reset_regulator(void);
 void current_regulation (twinbearingless_control *data);
 void get_inverter_current_abc(twin_threephase_data *twin);
 void get_all_inverter_current_abc(twinbearingless_control* data);

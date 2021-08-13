@@ -63,6 +63,7 @@ twinbearingless_control *init_twinbearingless(void){
     // init machine control parameters
 
     twin_control.para_machine = init_para_twinmachine_control();
+    
     twin_control.tq.PI_regulator = &PI_tq;
     init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
     twin_control.s1.PI_regulator = &PI_s1;
@@ -72,9 +73,30 @@ twinbearingless_control *init_twinbearingless(void){
     return &twin_control;
 }
 
+void reset_regulator_single(para_PI_discrete *PI_inv1){
+
+    PI_inv1->state_1[0] = 0.0;
+    PI_inv1->state_1[1] = 0.0;
+    PI_inv1->state_1[2] = 0.0;
+    PI_inv1->state_2[0] = 0.0;
+    PI_inv1->state_2[1] = 0.0;
+    PI_inv1->state_2[2] = 0.0;
+    PI_inv1->state_3[0] = 0.0;
+    PI_inv1->state_3[1] = 0.0;
+    PI_inv1->state_3[2] = 0.0;
+}
+
+void reset_regulator(void){
+
+    reset_regulator_single(twin_control.tq.PI_regulator);
+    reset_regulator_single(twin_control.s1.PI_regulator);
+    reset_regulator_single(twin_control.s2.PI_regulator);
+}
+
 twinbearingless_control *deinit_twinbearingless(void){
 
     twin_control.is_init = 0;
+    reset_regulator();
     // init machine control parameters
     return &twin_control;
 }

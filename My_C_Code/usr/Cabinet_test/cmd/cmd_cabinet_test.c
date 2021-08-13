@@ -23,6 +23,7 @@
 #define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
 static command_entry_t cmd_entry;
+cmd_signal cmd_enable;
 
 #define NUM_HELP_ENTRIES	(16)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
@@ -218,7 +219,8 @@ int cmd_cabinet(int argc, char **argv)
 		Va = strtod(argv[3], NULL);
 		Vb = strtod(argv[4], NULL);
 		Vc = strtod(argv[5], NULL);
-
+		cmd_enable.enable_openloop = 0;
+    	cmd_enable.enable_currentcontrol = 0;
 		Current_Controller_ThreePhase_t *cc_3 = get_three_phase_cc(inverter);
 
 		set_pole_volts_three_phase(Va, Vb, Vc, cc_3->inverter);
@@ -241,6 +243,8 @@ int cmd_cabinet(int argc, char **argv)
 		Va = strtod(argv[3], NULL);
 		Vb = strtod(argv[4], NULL);
 		Vc = strtod(argv[5], NULL);
+		cmd_enable.enable_openloop = 0;
+    	cmd_enable.enable_currentcontrol = 0;
 
 		Current_Controller_ThreePhase_t *cc_3 = get_three_phase_cc(inverter);
 

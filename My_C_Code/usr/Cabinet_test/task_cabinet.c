@@ -10,6 +10,7 @@
 #include "sys/scheduler.h"
 #include "sys/debug.h"
 
+
 //LOGGING VARIABLES
 
 double LOG_vdc = 0.0;
@@ -111,6 +112,9 @@ static task_control_block_t tcb;
 //register and begin task
 void task_cabinet_init(void)
 {
+	if (task_cabinet_is_inited){
+		return;
+	}
 	//populate struct
 	scheduler_tcb_init(&tcb, task_cabinet_callback, NULL, "cabinet", TASK_CABINET_INTERVAL_USEC);
 	scheduler_tcb_register(&tcb);
@@ -120,6 +124,7 @@ void task_cabinet_init(void)
 	twin_data = init_twinbearingless();
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
+	cmd_enable.enable_log = 0;
 }
 
 //stop task
@@ -127,13 +132,13 @@ void task_cabinet_deinit(void)
 {
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
+	cmd_enable.enable_log = 0;
 	scheduler_tcb_unregister(&tcb);
 	twin_data = deinit_twinbearingless();
-
 }
 
 //function to determine if task has been started
-uint8_t task_cabinet_is_inited(void)
+bool task_cabinet_is_inited(void)
 {	
 	return scheduler_tcb_is_registered(&tcb);
 }

@@ -24,9 +24,11 @@ cmd_signal cmd_enable;
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(8)
+#define NUM_HELP_ENTRIES	(10)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
+		{"deinit", "Deinitialize control loop"},
+		{"reset", "Reset regulator"},
 		{"set_vdc", "Set DC Bus for a Specific Inverter"},
 		{"enable_ctrl", "Enable current regulation"},
 		{"set_trq", "Set torque current references dq0"},
@@ -68,6 +70,26 @@ int cmd_twin(int argc, char **argv)
 		return CMD_SUCCESS;
 	}
 
+	if (strcmp("deinit", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+
+		// Make sure cabinet task was not already inited
+		twinbearingless_control *twin = deinit_twinbearingless();
+		
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("reset", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+
+		// Make sure cabinet task was not already inited
+		reset_regulator();
+		
+		return CMD_SUCCESS;
+	}
+
 
 	if (strcmp("set_vdc", argv[1]) == 0) {
 		// Check correct number of arguments
@@ -88,7 +110,8 @@ int cmd_twin(int argc, char **argv)
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 
 		cmd_enable.enable_currentcontrol = 1;
-		
+		cmd_enable.enable_openloop = 0;
+		reset_regulator();
 		return CMD_SUCCESS;
 	}
 
@@ -162,6 +185,7 @@ int cmd_twin(int argc, char **argv)
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 
 		cmd_enable.enable_currentcontrol = 0;
+		reset_regulator();
 		
 		return CMD_SUCCESS;
 	}

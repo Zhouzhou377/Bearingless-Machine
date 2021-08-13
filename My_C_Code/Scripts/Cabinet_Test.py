@@ -235,6 +235,17 @@ class cmd():
         out = self.amdc.cmd('twin init')
         if self.debug:
             return out 
+
+    def deinit_twin_ctrl(self):
+        
+        out = self.amdc.cmd('twin deinit')
+        if self.debug:
+            return out 
+    def reset_twin_ctrl(self):
+        
+        out = self.amdc.cmd('twin reset')
+        if self.debug:
+            return out 
     
     def twin_set_vdc(self, vdc):
         

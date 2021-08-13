@@ -3,20 +3,19 @@
 #include <math.h>
 
 
-
 void func_Clarke(double *afbe0, double *abc){
 
-	afbe0[0] = 2.0/3.0*(abc[0] - 0.5*abc[1] - 0.5*abc[2]);
-	afbe0[1] = 2.0/3.0*(abc[1] - abc[2]);
-	afbe0[2] = 1.0/3.0*(abc[0] + abc[1] + abc[2]);
+	afbe0[0] = CONS_2_3*(abc[0] - 0.5*abc[1] - 0.5*abc[2]);
+	afbe0[1] = CONS_2_3*(abc[1] - abc[2]);
+	afbe0[2] = CONS_1_3*(abc[0] + abc[1] + abc[2]);
 
 }
 
 void func_Clarke_inverse(double *afbe0, double *abc){
 
 	abc[0] = afbe0[0] + afbe0[2];
-	abc[1] = -1.0/2.0*afbe0[0] + SQRT3/2.0*afbe0[1] + afbe0[2];
-	abc[2] = -1.0/2.0*afbe0[0] - SQRT3/2.0*afbe0[1] + afbe0[2];
+	abc[1] = -0.5*afbe0[0] + SQRT3_2*afbe0[1] + afbe0[2];
+	abc[2] = -0.5*afbe0[0] - SQRT3_2*afbe0[1] + afbe0[2];
 
 }
 
