@@ -23,8 +23,11 @@
 para_PI_discrete PI_tq;
 para_PI_discrete PI_s1;
 para_PI_discrete PI_s2;
-twinbearingless_control twin_control;
+para_PR PR_tq;
+para_PR PR_s1;
+para_PR PR_s2;
 
+twinbearingless_control twin_control;
 void init_PI_para(double Ts, para_PI_discrete *PI_inv1, para_twinmachine_control_single *para_machine, double wd){
     PI_inv1->wd = wd;
     PI_inv1->Ts = Ts;
@@ -46,6 +49,21 @@ void init_PI_para(double Ts, para_PI_discrete *PI_inv1, para_twinmachine_control
 
 }
 
+void init_PR_para(double Ts, para_PR *PR_inv1, para_twinmachine_control_single *para_machine, double wd){
+    PR_inv1->wd = wd;
+    PR_inv1->Ts = Ts;
+    PR_inv1->Kr = PR_inv1->wd*para_machine->R*10.0;
+    PR_inv1->Kp = PR_inv1->wd*para_machine->L;
+    PR_inv1->state_1[0] = 0.0;
+    PR_inv1->state_1[1] = 0.0;
+    PR_inv1->state_1[2] = 0.0;
+    PR_inv1->state_2[0] = 0.0;
+    PR_inv1->state_2[1] = 0.0;
+    PR_inv1->state_2[2] = 0.0;
+
+}
+
+
 
 twinbearingless_control *init_twinbearingless(void){
 
@@ -63,34 +81,57 @@ twinbearingless_control *init_twinbearingless(void){
     // init machine control parameters
 
     twin_control.para_machine = init_para_twinmachine_control();
-    
+    twin_control.tq.PR_regulator = &PR_tq;
+	twin_control.s1.PR_regulator = &PR_s1;
+	twin_control.s2.PR_regulator = &PR_s2;
     twin_control.tq.PI_regulator = &PI_tq;
     init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
+    init_PR_para(TS, twin_control.tq.PR_regulator, &twin_control.para_machine->para_tq, WD_TQ);
     twin_control.s1.PI_regulator = &PI_s1;
     init_PI_para(TS, twin_control.s1.PI_regulator, &twin_control.para_machine->para_s1, WD_S1);
+    init_PR_para(TS, twin_control.s1.PR_regulator, &twin_control.para_machine->para_s1, WD_S1);
     twin_control.s2.PI_regulator = &PI_s2;
     init_PI_para(TS, twin_control.s2.PI_regulator, &twin_control.para_machine->para_s2, WD_S2);
+    init_PR_para(TS, twin_control.s2.PR_regulator, &twin_control.para_machine->para_s2, WD_S2);
+
     return &twin_control;
 }
 
-void reset_regulator_single(para_PI_discrete *PI_inv1){
+void reset_regulator_single(twin_control_data *data){
 
-    PI_inv1->state_1[0] = 0.0;
-    PI_inv1->state_1[1] = 0.0;
-    PI_inv1->state_1[2] = 0.0;
-    PI_inv1->state_2[0] = 0.0;
-    PI_inv1->state_2[1] = 0.0;
-    PI_inv1->state_2[2] = 0.0;
-    PI_inv1->state_3[0] = 0.0;
-    PI_inv1->state_3[1] = 0.0;
-    PI_inv1->state_3[2] = 0.0;
+    data->PI_regulator->state_1[0] = 0.0;
+    data->PI_regulator->state_1[1] = 0.0;
+    data->PI_regulator->state_1[2] = 0.0;
+    data->PI_regulator->state_2[0] = 0.0;
+    data->PI_regulator->state_2[1] = 0.0;
+    data->PI_regulator->state_2[2] = 0.0;
+    data->PI_regulator->state_3[0] = 0.0;
+    data->PI_regulator->state_3[1] = 0.0;
+    data->PI_regulator->state_3[2] = 0.0;
+
+    data->PR_regulator->state_1[0] = 0.0;
+    data->PR_regulator->state_1[1] = 0.0;
+    data->PR_regulator->state_1[2] = 0.0;
+    data->PR_regulator->state_2[0] = 0.0;
+    data->PR_regulator->state_2[1] = 0.0;
+    data->PR_regulator->state_2[2] = 0.0;
 }
 
 void reset_regulator(void){
+	if (!twin_control.is_init)
+	{
+		init_twinbearingless();
+	}
+	twin_control.tq.PI_regulator = &PI_tq;
+	twin_control.s1.PI_regulator = &PI_s1;
+	twin_control.s2.PI_regulator = &PI_s2;
+    twin_control.tq.PR_regulator = &PR_tq;
+	twin_control.s1.PR_regulator = &PR_s1;
+	twin_control.s2.PR_regulator = &PR_s2;
 
-    reset_regulator_single(twin_control.tq.PI_regulator);
-    reset_regulator_single(twin_control.s1.PI_regulator);
-    reset_regulator_single(twin_control.s2.PI_regulator);
+    reset_regulator_single(&(twin_control.tq));
+    reset_regulator_single(&(twin_control.s1));
+    reset_regulator_single(&(twin_control.s2));
 }
 
 twinbearingless_control *deinit_twinbearingless(void){
@@ -183,6 +224,28 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
     data_ctrl->PI_regulator->state_3[1] = u2[1]*data_ctrl->PI_regulator->Bd;
 }
 
+
+void regulator_PR_current(twin_control_data *data_ctrl){
+    
+    double u1[2], u2[2];
+
+    data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
+    data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
+    u1[0] = (data_ctrl->error[0] + data_ctrl->PR_regulator->state_1[0]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
+    u1[1] = (data_ctrl->error[1] + data_ctrl->PR_regulator->state_1[1]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
+    u2[0] = (data_ctrl->error[0] + data_ctrl->PR_regulator->state_2[0]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
+    u2[1] = (data_ctrl->error[1] + data_ctrl->PR_regulator->state_2[1]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
+    
+    double theta;
+    theta = data_ctrl->we*(-2.0)*data_ctrl->PR_regulator->Ts;
+    exp_jtheta(theta, u1, data_ctrl->PR_regulator->state_1);
+    exp_jtheta(-1.0*theta, u2, data_ctrl->PR_regulator->state_2);
+
+
+    data_ctrl->PR_regulator->v_PR[0] = u1[0] + u2[0];
+    data_ctrl->PR_regulator->v_PR[1] = u1[1]+ u2[1];
+}
+
 void decouple(twinbearingless_control *data){
     data->tq.vdq0_decouple[0] = 0.0;
     data->tq.vdq0_decouple[1] = 0.0;
@@ -237,6 +300,14 @@ void current_regulation (twinbearingless_control *data)
     regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
     regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
     regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
+
+    regulator_PR_current(&(data->tq));
+    regulator_PR_current(&(data->s1));
+    regulator_PR_current(&(data->s2));
+
+    data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] +  data->tq.PR_regulator->v_PR[0]*1.0;
+    data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] +  data->tq.PR_regulator->v_PR[1]*1.0;
+    data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] +  data->tq.PR_regulator->v_PR[2]*1.0;
 
     decouple(data);
     //

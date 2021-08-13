@@ -33,6 +33,19 @@ double LOG_Iabc3_a = 0.0;
 double LOG_Iabc3_b = 0.0;
 double LOG_Iabc3_c = 0.0;
 
+double LOG_Ia1_a = 0.0;
+double LOG_Ia1_b = 0.0;
+double LOG_Ia1_c = 0.0;
+double LOG_Ib1_a = 0.0;
+double LOG_Ib1_b = 0.0;
+double LOG_Ib1_c = 0.0;
+double LOG_Ia2_a = 0.0;
+double LOG_Ia2_b = 0.0;
+double LOG_Ia2_c = 0.0;
+double LOG_Ib2_a = 0.0;
+double LOG_Ib2_b = 0.0;
+double LOG_Ib2_c = 0.0;
+
 double LOG_vabc1_a = 0.0;
 double LOG_vabc1_b = 0.0;
 double LOG_vabc1_c = 0.0;
@@ -70,9 +83,18 @@ double LOG_err_s1_q = 0.0;
 double LOG_err_s2_d = 0.0;
 double LOG_err_s2_q = 0.0;
 
+double LOG_vr_tq_d = 0.0;
+double LOG_vr_tq_q = 0.0;
+
+double LOG_v_tq_d = 0.0;
+double LOG_v_tq_q = 0.0;
+
 double LOG_theta_tq = 0.0;
+
 double LOG_theta_s1 = 0.0;
 double LOG_theta_s2 = 0.0;
+
+double LOG_we_tq = 0.0;
 
 //sensed values
 double LOG_x = 0.0;
@@ -112,9 +134,9 @@ static task_control_block_t tcb;
 //register and begin task
 void task_cabinet_init(void)
 {
-	if (task_cabinet_is_inited){
+	/*if (task_cabinet_is_inited){
 		return;
-	}
+	}*/
 	//populate struct
 	scheduler_tcb_init(&tcb, task_cabinet_callback, NULL, "cabinet", TASK_CABINET_INTERVAL_USEC);
 	scheduler_tcb_register(&tcb);
@@ -176,6 +198,19 @@ void task_cabinet_callback(void *arg)
 		LOG_Iabc3_a = twin_data->twin_inv3.Iabc[0];
 		LOG_Iabc3_b = twin_data->twin_inv3.Iabc[1];
 		LOG_Iabc3_c = twin_data->twin_inv3.Iabc[2];
+
+		LOG_Ia1_a = twin_data->twin_inv1.Iabc[0]*0.5 + twin_data->twin_inv2.Iabc[0];
+		LOG_Ia1_b = twin_data->twin_inv1.Iabc[1]*0.5 + twin_data->twin_inv2.Iabc[1];
+		LOG_Ia1_c = twin_data->twin_inv1.Iabc[2]*0.5 + twin_data->twin_inv2.Iabc[2];
+		LOG_Ib1_a = twin_data->twin_inv1.Iabc[0]*0.5;
+		LOG_Ib1_b = twin_data->twin_inv1.Iabc[1]*0.5;
+		LOG_Ib1_c = twin_data->twin_inv1.Iabc[2]*0.5;
+		LOG_Ia2_a = twin_data->twin_inv1.Iabc[0]*0.5 + twin_data->twin_inv3.Iabc[0];
+		LOG_Ia2_b = twin_data->twin_inv1.Iabc[1]*0.5 + twin_data->twin_inv3.Iabc[1];
+		LOG_Ia2_c = twin_data->twin_inv1.Iabc[2]*0.5 + twin_data->twin_inv3.Iabc[2];
+		LOG_Ib2_a = twin_data->twin_inv1.Iabc[0]*0.5;
+		LOG_Ib2_b = twin_data->twin_inv1.Iabc[1]*0.5;
+		LOG_Ib2_c = twin_data->twin_inv1.Iabc[2]*0.5;
 		//log torque current
 
 		LOG_Itq_d_ref = twin_data->tq.Idq0_ref[0];
@@ -218,6 +253,13 @@ void task_cabinet_callback(void *arg)
 		LOG_theta_tq = twin_data->tq.theta_rad;
 		LOG_theta_s1 = twin_data->s1.theta_rad;
 		LOG_theta_s2 = twin_data->s2.theta_rad;
+
+		LOG_vr_tq_d = twin_data->tq.PR_regulator->v_PR[0];
+		LOG_vr_tq_q = twin_data->tq.PR_regulator->v_PR[1];
+
+		LOG_v_tq_d = twin_data->tq.vdq0_ref[0];
+		LOG_v_tq_q = twin_data->tq.vdq0_ref[1];
+		LOG_we_tq = twin_data->tq.we;
 
 	}
 

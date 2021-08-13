@@ -56,6 +56,6 @@ void user_apps_init(void)
 
 #ifdef APP_CABINET
     app_cabinet_test_init();
-    task_cabinet_init();
+    //task_cabinet_init();
 #endif
 }

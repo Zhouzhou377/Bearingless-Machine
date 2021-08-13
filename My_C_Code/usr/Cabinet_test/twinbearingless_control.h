@@ -23,6 +23,20 @@ typedef struct para_PI_discrete{
 
 } para_PI_discrete;
 
+typedef struct para_PR{
+
+    //Controller Parameters Calculated from Bilinear Transform
+    int enable;
+    double Ts;
+    double wd;
+    double Kr;
+    double Kp;
+    double state_1[3];
+    double state_2[3];
+    double v_PR[3];
+
+} para_PR;
+
 typedef struct twin_threephase_data{
     int Num_inv;
     InverterThreePhase_t *inv;
@@ -42,6 +56,7 @@ typedef struct twin_control_data{
     double theta_rad;
     double we;
     para_PI_discrete *PI_regulator;
+    para_PR *PR_regulator;
 
 }twin_control_data;
 
@@ -81,5 +96,5 @@ void update_control_current(twin_control_data *data);
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m);
 void decouple(twinbearingless_control *data);
 void get_theta_we(twinbearingless_control *data);
-
+void regulator_PR_current(twin_control_data *data_ctrl);
 #endif// TWINBEARINGLESS_CONTROL_H
