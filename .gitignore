@@ -11,4 +11,5 @@
 *.log
 *.o
 *.a
-My_C_Code/Scripts/*.xlsx
+My_C_Code/Scripts/*.csv
+*.xlsx
