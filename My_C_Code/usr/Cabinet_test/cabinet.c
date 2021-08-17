@@ -28,9 +28,9 @@
 #define CAB_INV5_PHB	(14)
 #define CAB_INV5_PHC	(13)
 
-#define CAB_INV6_PHA	(22)
+#define CAB_INV6_PHA	(21)
 #define CAB_INV6_PHB	(23)
-#define CAB_INV6_PHC	(21)
+#define CAB_INV6_PHC	(22)
 
 /*
  * Required ADC connections
@@ -98,9 +98,9 @@
 #define CAB_INV5_PHB_ADC_GAIN (-1.516)
 #define CAB_INV5_PHC_ADC_GAIN (-1.503)
 
-#define CAB_INV6_PHA_ADC_GAIN (-3.04059)
-#define CAB_INV6_PHB_ADC_GAIN (-3.00316)
-#define CAB_INV6_PHC_ADC_GAIN (-2.98568)
+#define CAB_INV6_PHA_ADC_GAIN (-1.5)
+#define CAB_INV6_PHB_ADC_GAIN (-1.5)
+#define CAB_INV6_PHC_ADC_GAIN (-1.5)
 
 //ADC current sensor offsets
 

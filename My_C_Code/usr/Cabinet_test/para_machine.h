@@ -25,6 +25,7 @@ typedef struct para_twinmachine_control {
     para_twinmachine_control_single para_tq;
     para_twinmachine_control_single para_s1;
     para_twinmachine_control_single para_s2;
+    para_twinmachine_control_single para_tq2;
 
 } para_twinmachine_control;
 

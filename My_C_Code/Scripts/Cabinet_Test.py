@@ -247,6 +247,12 @@ class cmd():
         if self.debug:
             return out 
     
+    def twin_sel_config(self, sel_config):
+        
+        out = self.amdc.cmd(f'twin sel_config {sel_config}')
+        if self.debug:
+            return out 
+
     def twin_set_vdc(self, vdc):
         
         out = self.amdc.cmd(f'twin set_vdc {vdc:.6f}')

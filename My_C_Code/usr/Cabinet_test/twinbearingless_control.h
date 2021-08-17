@@ -6,6 +6,12 @@
 //#include "usr/Cabinet_test/controllers.h"
 #include <stdbool.h>
 
+
+typedef enum {
+    InvFour = 0,
+    Inv_Series = 1,
+} config;
+
 typedef struct para_PI_discrete{
 
     //Controller Parameters Calculated from Bilinear Transform
@@ -62,17 +68,22 @@ typedef struct twin_control_data{
 
 typedef struct twinbearingless_control{
     bool is_init;
+    config sel_config;
 
     //inv1
     twin_threephase_data twin_inv1;
     //inv2
     twin_threephase_data twin_inv2;
-    //inv2
+    //inv3
     twin_threephase_data twin_inv3;
+    //inv4
+    twin_threephase_data twin_inv4;
 
     twin_control_data tq;
     twin_control_data s1;
     twin_control_data s2;
+    twin_control_data tq2;
+
     para_twinmachine_control *para_machine;
 
 
@@ -91,7 +102,8 @@ void reset_regulator(void);
 void current_regulation (twinbearingless_control *data);
 void get_inverter_current_abc(twin_threephase_data *twin);
 void get_all_inverter_current_abc(twinbearingless_control* data);
-void cal_invI_to_controlI(twinbearingless_control* data);
+void cal_invI_to_controlI_configseries(twinbearingless_control* data);
+void cal_invI_to_controlI_configInvFour(twinbearingless_control* data);
 void update_control_current(twin_control_data *data);
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m);
 void decouple(twinbearingless_control *data);

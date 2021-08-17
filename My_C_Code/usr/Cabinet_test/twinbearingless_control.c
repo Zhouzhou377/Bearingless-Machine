@@ -14,6 +14,7 @@
 #define INV1 (5)
 #define INV2 (2)
 #define INV3 (3)
+#define INV4 (6)
 #define TS (1.0/10000.0)
 #define WD_TQ (2.0*PI*100.0)
 #define WD_S1 (2.0*PI*100.0)
@@ -23,9 +24,11 @@
 para_PI_discrete PI_tq;
 para_PI_discrete PI_s1;
 para_PI_discrete PI_s2;
+para_PI_discrete PI_tq2;
 para_PR PR_tq;
 para_PR PR_s1;
 para_PR PR_s2;
+para_PR PR_tq2;
 
 twinbearingless_control twin_control;
 void init_PI_para(double Ts, para_PI_discrete *PI_inv1, para_twinmachine_control_single *para_machine, double wd){
@@ -68,32 +71,67 @@ void init_PR_para(double Ts, para_PR *PR_inv1, para_twinmachine_control_single *
 twinbearingless_control *init_twinbearingless(void){
 
     twin_control.is_init = 1;
-    twin_control.twin_inv1.Num_inv = INV1;
-    twin_control.twin_inv2.Num_inv = INV2;
-    twin_control.twin_inv3.Num_inv = INV3;
-    int idx_inv;
-    idx_inv = find_invIdex_invID (twin_control.twin_inv1.Num_inv);
-    twin_control.twin_inv1.inv = get_three_phase_inverter(idx_inv);
-    idx_inv = find_invIdex_invID (twin_control.twin_inv2.Num_inv);
-    twin_control.twin_inv2.inv = get_three_phase_inverter(idx_inv);
-    idx_inv = find_invIdex_invID (twin_control.twin_inv3.Num_inv);
-    twin_control.twin_inv3.inv = get_three_phase_inverter(idx_inv);
-    // init machine control parameters
+    if (twin_control.sel_config == InvFour){
+        twin_control.twin_inv1.Num_inv = INV1;
+        twin_control.twin_inv2.Num_inv = INV2;
+        twin_control.twin_inv3.Num_inv = INV3;
+        twin_control.twin_inv4.Num_inv = INV4;
 
-    twin_control.para_machine = init_para_twinmachine_control();
-    twin_control.tq.PR_regulator = &PR_tq;
-	twin_control.s1.PR_regulator = &PR_s1;
-	twin_control.s2.PR_regulator = &PR_s2;
-    twin_control.tq.PI_regulator = &PI_tq;
-    init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
-    init_PR_para(TS, twin_control.tq.PR_regulator, &twin_control.para_machine->para_tq, WD_TQ);
-    twin_control.s1.PI_regulator = &PI_s1;
-    init_PI_para(TS, twin_control.s1.PI_regulator, &twin_control.para_machine->para_s1, WD_S1);
-    init_PR_para(TS, twin_control.s1.PR_regulator, &twin_control.para_machine->para_s1, WD_S1);
-    twin_control.s2.PI_regulator = &PI_s2;
-    init_PI_para(TS, twin_control.s2.PI_regulator, &twin_control.para_machine->para_s2, WD_S2);
-    init_PR_para(TS, twin_control.s2.PR_regulator, &twin_control.para_machine->para_s2, WD_S2);
+        int idx_inv;
+        idx_inv = find_invIdex_invID (twin_control.twin_inv1.Num_inv);
+        twin_control.twin_inv1.inv = get_three_phase_inverter(idx_inv);
+        idx_inv = find_invIdex_invID (twin_control.twin_inv2.Num_inv);
+        twin_control.twin_inv2.inv = get_three_phase_inverter(idx_inv);
+        idx_inv = find_invIdex_invID (twin_control.twin_inv3.Num_inv);
+        twin_control.twin_inv3.inv = get_three_phase_inverter(idx_inv);
+        idx_inv = find_invIdex_invID (twin_control.twin_inv4.Num_inv);
+        twin_control.twin_inv4.inv = get_three_phase_inverter(idx_inv);
+        // init machine control parameters
 
+        twin_control.para_machine = init_para_twinmachine_control();
+
+        twin_control.tq.PI_regulator = &PI_tq;
+        init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
+        init_PR_para(TS, twin_control.tq.PR_regulator, &twin_control.para_machine->para_tq, WD_TQ);
+        twin_control.s1.PI_regulator = &PI_s1;
+        init_PI_para(TS, twin_control.s1.PI_regulator, &twin_control.para_machine->para_s1, WD_S1);
+        init_PR_para(TS, twin_control.s1.PR_regulator, &twin_control.para_machine->para_s1, WD_S1);
+        twin_control.s2.PI_regulator = &PI_s2;
+        init_PI_para(TS, twin_control.s2.PI_regulator, &twin_control.para_machine->para_s2, WD_S2);
+        init_PR_para(TS, twin_control.s2.PR_regulator, &twin_control.para_machine->para_s2, WD_S2);
+        twin_control.tq2.PI_regulator = &PI_tq2;
+        init_PI_para(TS, twin_control.tq2.PI_regulator, &twin_control.para_machine->para_tq2, WD_TQ);
+        init_PR_para(TS, twin_control.tq2.PR_regulator, &twin_control.para_machine->para_tq2, WD_TQ);
+    }
+    else {
+        twin_control.twin_inv1.Num_inv = INV1;
+        twin_control.twin_inv2.Num_inv = INV2;
+        twin_control.twin_inv3.Num_inv = INV3;
+    
+
+        int idx_inv;
+        idx_inv = find_invIdex_invID (twin_control.twin_inv1.Num_inv);
+        twin_control.twin_inv1.inv = get_three_phase_inverter(idx_inv);
+        idx_inv = find_invIdex_invID (twin_control.twin_inv2.Num_inv);
+        twin_control.twin_inv2.inv = get_three_phase_inverter(idx_inv);
+        idx_inv = find_invIdex_invID (twin_control.twin_inv3.Num_inv);
+        twin_control.twin_inv3.inv = get_three_phase_inverter(idx_inv);
+        // init machine control parameters
+
+        twin_control.para_machine = init_para_twinmachine_control();
+        twin_control.tq.PR_regulator = &PR_tq;
+        twin_control.s1.PR_regulator = &PR_s1;
+        twin_control.s2.PR_regulator = &PR_s2;
+        twin_control.tq.PI_regulator = &PI_tq;
+        init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
+        init_PR_para(TS, twin_control.tq.PR_regulator, &twin_control.para_machine->para_tq, WD_TQ);
+        twin_control.s1.PI_regulator = &PI_s1;
+        init_PI_para(TS, twin_control.s1.PI_regulator, &twin_control.para_machine->para_s1, WD_S1);
+        init_PR_para(TS, twin_control.s1.PR_regulator, &twin_control.para_machine->para_s1, WD_S1);
+        twin_control.s2.PI_regulator = &PI_s2;
+        init_PI_para(TS, twin_control.s2.PI_regulator, &twin_control.para_machine->para_s2, WD_S2);
+        init_PR_para(TS, twin_control.s2.PR_regulator, &twin_control.para_machine->para_s2, WD_S2);
+    }
     return &twin_control;
 }
 
@@ -122,16 +160,32 @@ void reset_regulator(void){
 	{
 		init_twinbearingless();
 	}
-	twin_control.tq.PI_regulator = &PI_tq;
-	twin_control.s1.PI_regulator = &PI_s1;
-	twin_control.s2.PI_regulator = &PI_s2;
-    twin_control.tq.PR_regulator = &PR_tq;
-	twin_control.s1.PR_regulator = &PR_s1;
-	twin_control.s2.PR_regulator = &PR_s2;
+    if (twin_control.sel_config == InvFour){
+        twin_control.tq.PI_regulator = &PI_tq;
+        twin_control.s1.PI_regulator = &PI_s1;
+        twin_control.s2.PI_regulator = &PI_s2;
+        twin_control.tq2.PI_regulator = &PI_tq2;
+        twin_control.tq.PR_regulator = &PR_tq;
+        twin_control.s1.PR_regulator = &PR_s1;
+        twin_control.s2.PR_regulator = &PR_s2;
+        twin_control.tq2.PR_regulator = &PR_tq2;
+        reset_regulator_single(&(twin_control.tq));
+        reset_regulator_single(&(twin_control.s1));
+        reset_regulator_single(&(twin_control.s2));
+        reset_regulator_single(&(twin_control.tq2));
+    }else{
+        twin_control.tq.PI_regulator = &PI_tq;
+        twin_control.s1.PI_regulator = &PI_s1;
+        twin_control.s2.PI_regulator = &PI_s2;
+        twin_control.tq.PR_regulator = &PR_tq;
+        twin_control.s1.PR_regulator = &PR_s1;
+        twin_control.s2.PR_regulator = &PR_s2;
+        reset_regulator_single(&(twin_control.tq));
+        reset_regulator_single(&(twin_control.s1));
+        reset_regulator_single(&(twin_control.s2));
+    }
 
-    reset_regulator_single(&(twin_control.tq));
-    reset_regulator_single(&(twin_control.s1));
-    reset_regulator_single(&(twin_control.s2));
+
 }
 
 twinbearingless_control *deinit_twinbearingless(void){
@@ -152,12 +206,20 @@ void get_inverter_current_abc(twin_threephase_data *twin){
 }
 
 void get_all_inverter_current_abc(twinbearingless_control* data){
-    get_inverter_current_abc(&(data->twin_inv1));
-    get_inverter_current_abc(&(data->twin_inv2));
-    get_inverter_current_abc(&(data->twin_inv3));
+    if (twin_control.sel_config == InvFour){
+        get_inverter_current_abc(&(data->twin_inv1));
+        get_inverter_current_abc(&(data->twin_inv2));
+        get_inverter_current_abc(&(data->twin_inv3));
+        get_inverter_current_abc(&(data->twin_inv4));
+    }else{
+        get_inverter_current_abc(&(data->twin_inv1));
+        get_inverter_current_abc(&(data->twin_inv2));
+        get_inverter_current_abc(&(data->twin_inv3));
+    }
+
 }
 
-void cal_invI_to_controlI(twinbearingless_control* data){
+void cal_invI_to_controlI_configseries(twinbearingless_control* data){
     
     //torque current calculation
     data->tq.Iabc[0] = 2.0*data->twin_inv1.Iabc[0] + data->twin_inv2.Iabc[0] + data->twin_inv3.Iabc[0]; 
@@ -175,7 +237,28 @@ void cal_invI_to_controlI(twinbearingless_control* data){
     data->s2.Iabc[2] = -0.5*data->twin_inv3.Iabc[2];
 }
 
+void cal_invI_to_controlI_configInvFour(twinbearingless_control* data){
+    
+    //torque current calculation
+    data->tq.Iabc[0] = data->twin_inv1.Iabc[0];
+    data->tq.Iabc[1] = data->twin_inv1.Iabc[1];
+    data->tq.Iabc[2] = data->twin_inv1.Iabc[2];
 
+    //torque 2 current calculation
+    data->tq2.Iabc[0] = data->twin_inv4.Iabc[0];
+    data->tq2.Iabc[1] = data->twin_inv4.Iabc[1];
+    data->tq2.Iabc[2] = data->twin_inv4.Iabc[2];
+
+    // suspension 1 
+    data->s1.Iabc[0] = 1.0*data->twin_inv2.Iabc[0] + 0.5*data->twin_inv1.Iabc[0];
+    data->s1.Iabc[1] = 1.0*data->twin_inv2.Iabc[1] + 0.5*data->twin_inv1.Iabc[1];
+    data->s1.Iabc[2] = 1.0*data->twin_inv2.Iabc[2] + 0.5*data->twin_inv1.Iabc[2];
+
+    // suspension 2 
+    data->s2.Iabc[0] = 1.0*data->twin_inv3.Iabc[0] + 0.5*data->twin_inv4.Iabc[0];
+    data->s2.Iabc[1] = 1.0*data->twin_inv3.Iabc[1] + 0.5*data->twin_inv4.Iabc[1];
+    data->s2.Iabc[2] = 1.0*data->twin_inv3.Iabc[2] + 0.5*data->twin_inv4.Iabc[2];
+}
 
 void update_control_current(twin_control_data *data){
     data->Idq0_m1[0] = data->Idq0[0];
@@ -247,27 +330,57 @@ void regulator_PR_current(twin_control_data *data_ctrl){
 }
 
 void decouple(twinbearingless_control *data){
-    data->tq.vdq0_decouple[0] = 0.0;
-    data->tq.vdq0_decouple[1] = 0.0;
-    data->tq.vdq0_decouple[2] = 0.0;
+    if(data->sel_config == InvFour){
+        data->s1.vdq0_decouple[0] = 0.0;
+        data->s1.vdq0_decouple[1] = 0.0;
+        data->s1.vdq0_decouple[2] = 0.0;
 
-    double vabc[3];
-    double vdecouple[3];
-    dq0_to2_abc(vabc, data->tq.vdq0_ref, data->tq.theta_rad);
-    abc_to_dq0(vabc, vdecouple, data->s1.theta_rad);
+        data->s2.vdq0_decouple[0] = 0.0;
+        data->s2.vdq0_decouple[1] = 0.0;
+        data->s2.vdq0_decouple[2] = 0.0;
 
-    data->s1.vdq0_decouple[0] = 0.5*vdecouple[0]; 
-    data->s1.vdq0_decouple[1] = 0.5*vdecouple[1]; 
-    data->s1.vdq0_decouple[2] = 0.5*vdecouple[2]; 
+        double vabc[3];
+        double vdecouple[3];
+        dq0_to2_abc(vabc, data->s1.vdq0_ref, data->s1.theta_rad);
+        abc_to_dq0(vabc, vdecouple, data->tq.theta_rad);
 
-    abc_to_dq0(vabc, vdecouple, data->s2.theta_rad);
-    data->s2.vdq0_decouple[0] = 0.5*vdecouple[0]; 
-    data->s2.vdq0_decouple[1] = 0.5*vdecouple[1]; 
-    data->s2.vdq0_decouple[2] = 0.5*vdecouple[2]; 
+        data->tq.vdq0_decouple[0] = +0.5*vdecouple[0]; 
+        data->tq.vdq0_decouple[1] = +0.5*vdecouple[1]; 
+        data->tq.vdq0_decouple[2] = +0.5*vdecouple[2]; 
+
+        dq0_to2_abc(vabc, data->s2.vdq0_ref, data->s2.theta_rad);
+        abc_to_dq0(vabc, vdecouple, data->tq2.theta_rad);
+     
+        data->tq2.vdq0_decouple[0] = +0.5*vdecouple[0]; 
+        data->tq2.vdq0_decouple[1] = +0.5*vdecouple[1]; 
+        data->tq2.vdq0_decouple[2] = +0.5*vdecouple[2]; 
+    }else{
+        data->tq.vdq0_decouple[0] = 0.0;
+        data->tq.vdq0_decouple[1] = 0.0;
+        data->tq.vdq0_decouple[2] = 0.0;
+
+        double vabc[3];
+        double vdecouple[3];
+        dq0_to2_abc(vabc, data->tq.vdq0_ref, data->tq.theta_rad);
+        abc_to_dq0(vabc, vdecouple, data->s1.theta_rad);
+
+        data->s1.vdq0_decouple[0] = 0.5*vdecouple[0]; 
+        data->s1.vdq0_decouple[1] = 0.5*vdecouple[1]; 
+        data->s1.vdq0_decouple[2] = 0.5*vdecouple[2]; 
+
+        abc_to_dq0(vabc, vdecouple, data->s2.theta_rad);
+        data->s2.vdq0_decouple[0] = 0.5*vdecouple[0]; 
+        data->s2.vdq0_decouple[1] = 0.5*vdecouple[1]; 
+        data->s2.vdq0_decouple[2] = 0.5*vdecouple[2]; 
+    }
 }
 
 
 void get_theta_we(twinbearingless_control *data){
+    if(data->sel_config == InvFour){
+        data->tq2.theta_rad += data->tq2.we*data->tq2.PI_regulator->Ts;
+        data->tq2.theta_rad = fmod(data->tq2.theta_rad, 2.0 * PI); // Wrap to 2*pi
+    }
     data->tq.theta_rad += data->tq.we*data->tq.PI_regulator->Ts;
     data->tq.theta_rad = fmod(data->tq.theta_rad, 2.0 * PI); // Wrap to 2*pi
 
@@ -290,43 +403,88 @@ void current_regulation (twinbearingless_control *data)
     get_all_inverter_current_abc(data);
     //update theta and we
     get_theta_we(data);
-    //calculate torque and suspension currents
-    cal_invI_to_controlI(data);
 
-    update_control_current(&data->tq);
-    update_control_current(&data->s1);
-    update_control_current(&data->s2);
 
-    regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
-    regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
-    regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
 
-    regulator_PR_current(&(data->tq));
-    regulator_PR_current(&(data->s1));
-    regulator_PR_current(&(data->s2));
+    if(data->sel_config == InvFour){
+    	cal_invI_to_controlI_configInvFour(data);
+    	update_control_current(&data->tq);
+    	update_control_current(&data->s1);
+    	update_control_current(&data->s2);
+    	update_control_current(&data->tq2);
 
-    data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] +  data->tq.PR_regulator->v_PR[0]*1.0;
-    data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] +  data->tq.PR_regulator->v_PR[1]*1.0;
-    data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] +  data->tq.PR_regulator->v_PR[2]*1.0;
+    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
+    	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
+    	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
+    	regulator_PI_current_dq(&data->tq2, data->para_machine->para_tq2);
 
-    decouple(data);
-    //
-    double vdq0[3];
-    vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0];
-    vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1];
-    vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2];
 
-    dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);
+        decouple(data);
+        //
+        double vdq0[3];
+        vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0];
+        vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1];
+        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2];
 
-    vdq0[0] = -data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0];
-    vdq0[1] = -data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1];
-    vdq0[2] = -data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2];
+        dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);
 
-    dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, data->s1.theta_rad);
+        vdq0[0] = data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0];
+        vdq0[1] = data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1];
+        vdq0[2] = data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2];
 
-    vdq0[0] = -data->s2.vdq0_ref[0] + data->s2.vdq0_decouple[0];
-    vdq0[1] = -data->s2.vdq0_ref[1] + data->s2.vdq0_decouple[1];
-    vdq0[2] = -data->s2.vdq0_ref[2] + data->s2.vdq0_decouple[2];
+        dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, data->s1.theta_rad);
 
-    dq0_to2_abc(data->twin_inv3.vabc_ref, vdq0, data->s2.theta_rad);
+        vdq0[0] = data->s2.vdq0_ref[0] + data->s2.vdq0_decouple[0];
+        vdq0[1] = data->s2.vdq0_ref[1] + data->s2.vdq0_decouple[1];
+        vdq0[2] = data->s2.vdq0_ref[2] + data->s2.vdq0_decouple[2];
+
+        dq0_to2_abc(data->twin_inv3.vabc_ref, vdq0, data->s2.theta_rad);
+
+        vdq0[0] = data->tq2.vdq0_ref[0] + data->tq2.vdq0_decouple[0];
+        vdq0[1] = data->tq2.vdq0_ref[1] + data->tq2.vdq0_decouple[1];
+        vdq0[2] = data->tq2.vdq0_ref[2] + data->tq2.vdq0_decouple[2];
+
+        dq0_to2_abc(data->twin_inv4.vabc_ref, vdq0, data->tq2.theta_rad);
+
+    }else{
+    	//calculate torque and suspension currents
+    	cal_invI_to_controlI_configseries(data);
+    	update_control_current(&data->tq);
+    	update_control_current(&data->s1);
+    	update_control_current(&data->s2);
+
+    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
+    	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
+    	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
+
+    	regulator_PR_current(&(data->tq));
+    	regulator_PR_current(&(data->s1));
+    	regulator_PR_current(&(data->s2));
+
+        data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] +  data->tq.PR_regulator->v_PR[0]*1.0;
+        data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] +  data->tq.PR_regulator->v_PR[1]*1.0;
+        data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] +  data->tq.PR_regulator->v_PR[2]*1.0;
+
+        decouple(data);
+        //
+        double vdq0[3];
+        vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0];
+        vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1];
+        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2];
+
+        dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);
+
+        vdq0[0] = -data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0];
+        vdq0[1] = -data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1];
+        vdq0[2] = -data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2];
+
+        dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, data->s1.theta_rad);
+
+        vdq0[0] = -data->s2.vdq0_ref[0] + data->s2.vdq0_decouple[0];
+        vdq0[1] = -data->s2.vdq0_ref[1] + data->s2.vdq0_decouple[1];
+        vdq0[2] = -data->s2.vdq0_ref[2] + data->s2.vdq0_decouple[2];
+
+        dq0_to2_abc(data->twin_inv3.vabc_ref, vdq0, data->s2.theta_rad);
+    }
+    
 }

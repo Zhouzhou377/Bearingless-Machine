@@ -59,6 +59,9 @@ double LOG_vabc3_c = 0.0;
 double LOG_Itq_d_ref = 0.0;
 double LOG_Itq_q_ref = 0.0;
 
+double LOG_Itq2_d_ref = 0.0;
+double LOG_Itq2_q_ref = 0.0;
+
 double LOG_Is1_d_ref = 0.0;
 double LOG_Is1_q_ref = 0.0;
 
@@ -73,6 +76,9 @@ double LOG_Is1_q = 0.0;
 
 double LOG_Is2_d = 0.0;
 double LOG_Is2_q = 0.0;
+
+double LOG_Itq2_d = 0.0;
+double LOG_Itq2_q = 0.0;
 
 double LOG_err_tq_d = 0.0;
 double LOG_err_tq_q = 0.0;
@@ -180,10 +186,18 @@ void task_cabinet_callback(void *arg)
 	{
 		twin_data = &twin_control;
 		current_regulation (twin_data);
+		 if(twin_data->sel_config == InvFour){
+			set_line_volts_three_phase(twin_data->twin_inv1.vabc_ref[0], twin_data->twin_inv1.vabc_ref[1], twin_data->twin_inv1.vabc_ref[2], twin_data->twin_inv1.inv);
+			set_line_volts_three_phase(twin_data->twin_inv2.vabc_ref[0], twin_data->twin_inv2.vabc_ref[1], twin_data->twin_inv2.vabc_ref[2], twin_data->twin_inv2.inv);
+			set_line_volts_three_phase(twin_data->twin_inv3.vabc_ref[0], twin_data->twin_inv3.vabc_ref[1], twin_data->twin_inv3.vabc_ref[2], twin_data->twin_inv3.inv);
+			set_line_volts_three_phase(twin_data->twin_inv4.vabc_ref[0], twin_data->twin_inv4.vabc_ref[1], twin_data->twin_inv4.vabc_ref[2], twin_data->twin_inv4.inv);
 
-		set_line_volts_three_phase(twin_data->twin_inv1.vabc_ref[0], twin_data->twin_inv1.vabc_ref[1], twin_data->twin_inv1.vabc_ref[2], twin_data->twin_inv1.inv);
-		set_line_volts_three_phase(twin_data->twin_inv2.vabc_ref[0], twin_data->twin_inv2.vabc_ref[1], twin_data->twin_inv2.vabc_ref[2], twin_data->twin_inv2.inv);
-		set_line_volts_three_phase(twin_data->twin_inv3.vabc_ref[0], twin_data->twin_inv3.vabc_ref[1], twin_data->twin_inv3.vabc_ref[2], twin_data->twin_inv3.inv);
+		 }else{
+			set_line_volts_three_phase(twin_data->twin_inv1.vabc_ref[0], twin_data->twin_inv1.vabc_ref[1], twin_data->twin_inv1.vabc_ref[2], twin_data->twin_inv1.inv);
+			set_line_volts_three_phase(twin_data->twin_inv2.vabc_ref[0], twin_data->twin_inv2.vabc_ref[1], twin_data->twin_inv2.vabc_ref[2], twin_data->twin_inv2.inv);
+			set_line_volts_three_phase(twin_data->twin_inv3.vabc_ref[0], twin_data->twin_inv3.vabc_ref[1], twin_data->twin_inv3.vabc_ref[2], twin_data->twin_inv3.inv);
+		}
+
 	}
 
 	if (cmd_enable.enable_log){
@@ -230,6 +244,14 @@ void task_cabinet_callback(void *arg)
 
 		LOG_Is2_d = twin_data->s2.Idq0[0];
 		LOG_Is2_q = twin_data->s2.Idq0[2];
+
+		if(twin_data->sel_config == InvFour){
+			LOG_Itq2_d_ref = twin_data->tq2.Idq0_ref[0];
+			LOG_Itq2_q_ref = twin_data->tq2.Idq0_ref[1];
+
+			LOG_Itq2_d = twin_data->tq2.Idq0[0];
+			LOG_Itq2_q = twin_data->tq2.Idq0[1];
+		}
 
 		LOG_vabc1_a = twin_data->twin_inv1.vabc_ref[0];
 		LOG_vabc1_b = twin_data->twin_inv1.vabc_ref[1];

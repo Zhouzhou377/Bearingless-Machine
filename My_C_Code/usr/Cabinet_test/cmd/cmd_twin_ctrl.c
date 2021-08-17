@@ -24,7 +24,7 @@ cmd_signal cmd_enable;
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(10)
+#define NUM_HELP_ENTRIES	(11)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -36,7 +36,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_s2", "Set suspension 2 current references dq0"},
 		{"set_freq", "Set rotating frequency Hz"},
 		{"disable_ctrl", "Enable current regulation"},
-
+		{"sel_config", "Set rotating frequency Hz"},
 };
 
 void cmd_twin_register(void)
@@ -101,6 +101,9 @@ int cmd_twin(int argc, char **argv)
 		twin_control.twin_inv1.inv->Vdc = Vdc;
 		twin_control.twin_inv2.inv->Vdc = Vdc;
 		twin_control.twin_inv3.inv->Vdc = Vdc;
+		if(twin_control.sel_config == InvFour){
+			twin_control.twin_inv4.inv->Vdc = Vdc;
+		}
 		return CMD_SUCCESS;
 	}
 
@@ -124,6 +127,16 @@ int cmd_twin(int argc, char **argv)
 		return CMD_SUCCESS;
 	}
 
+	if (strcmp("sel_config", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+		double sel_config = strtod(argv[2], NULL);
+		twin_control.sel_config = sel_config;
+		
+		return CMD_SUCCESS;
+	}
+
 	if (strcmp("set_trq", argv[1]) == 0) {
 		// Check correct number of arguments
 		if (argc != 4) return CMD_INVALID_ARGUMENTS;
@@ -132,9 +145,18 @@ int cmd_twin(int argc, char **argv)
 		double trq_d = strtod(argv[2], NULL);
 		double trq_q = strtod(argv[3], NULL);
 
-		twin_control.tq.Idq0_ref[0] = trq_d;
-		twin_control.tq.Idq0_ref[1] = trq_q;
-		twin_control.tq.Idq0_ref[2] = 0.0;
+		if(twin_control.sel_config == InvFour){
+			twin_control.tq.Idq0_ref[0] = trq_d/2.0;
+			twin_control.tq.Idq0_ref[1] = trq_q/2.0;
+			twin_control.tq.Idq0_ref[2] = 0.0;
+			twin_control.tq2.Idq0_ref[0] = trq_d/2.0;
+			twin_control.tq2.Idq0_ref[1] = trq_q/2.0;
+			twin_control.tq2.Idq0_ref[2] = 0.0;
+		}else{
+			twin_control.tq.Idq0_ref[0] = trq_d;
+			twin_control.tq.Idq0_ref[1] = trq_q;
+			twin_control.tq.Idq0_ref[2] = 0.0;
+		}
 		return CMD_SUCCESS;
 	}
 

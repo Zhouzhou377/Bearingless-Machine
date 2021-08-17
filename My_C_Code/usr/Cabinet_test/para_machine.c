@@ -37,6 +37,12 @@ para_twinmachine_control *init_para_twinmachine_control(void){
     L_m = (para_machine_data.L_m - para_machine_data.L_m12)*3/2;
     para_machine_control.para_s2.L = L_l + L_m;
 
+    // torque equivalent parameters
+    para_machine_control.para_tq2.R = para_machine_data.R/2;
+    L_l = (para_machine_data.L_lk + para_machine_data.L_lm)*0.5;
+    L_m = (para_machine_data.L_m + para_machine_data.L_m12)*3/4;
+    para_machine_control.para_tq2.L = L_l + L_m;
+
     return &para_machine_control;
 }
 
