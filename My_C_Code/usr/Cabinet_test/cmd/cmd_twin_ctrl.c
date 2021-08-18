@@ -195,7 +195,9 @@ int cmd_twin(int argc, char **argv)
 		//read in arguments
 		double freq = strtod(argv[2], NULL);
 
-
+		if(twin_control.sel_config == InvFour){
+			twin_control.tq2.we = 2*PI*freq;
+		}
 		twin_control.tq.we = 2*PI*freq;
 		twin_control.s1.we = -2*PI*freq;
 		twin_control.s2.we = -2*PI*freq;
