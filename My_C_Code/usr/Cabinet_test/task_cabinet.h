@@ -13,6 +13,7 @@ typedef struct cmd_signal {
     bool enable_openloop;
     bool enable_currentcontrol;
     bool enable_log;
+    bool enable_testloop;
 
 } cmd_signal;
 
@@ -24,5 +25,6 @@ void task_cabinet_callback(void *arg);
 bool task_cabinet_is_inited(void);
 void task_cabinet_stats_print(void);
 void task_cabinet_stats_reset(void);
+void task_loop_test(void);
 
 #endif // TASK_CABINET_H

@@ -9,6 +9,7 @@
 
 #include "sys/scheduler.h"
 #include "sys/debug.h"
+#include "drv/cpu_timer.h"
 
 
 //LOGGING VARIABLES
@@ -175,7 +176,9 @@ bool task_cabinet_is_inited(void)
 void task_cabinet_callback(void *arg)
 {
 	InverterThreePhase_t *inv;
-
+	if(cmd_enable.enable_testloop){
+			task_loop_test();
+		}
 	if (cmd_enable.enable_openloop){
 		OpenLoop = &VSI_Openloop_command;
 		OpenLoop_VSI(OpenLoop);
@@ -200,10 +203,12 @@ void task_cabinet_callback(void *arg)
 
 	}
 
+
+
 	if (cmd_enable.enable_log){
 		twin_data = &twin_control;
 		//log three phase inv current
-		LOG_Iabc1_a = twin_data->twin_inv1.Iabc[0];
+		/*LOG_Iabc1_a = twin_data->twin_inv1.Iabc[0];
 		LOG_Iabc1_b = twin_data->twin_inv1.Iabc[1];
 		LOG_Iabc1_c = twin_data->twin_inv1.Iabc[2];
 		LOG_Iabc2_a = twin_data->twin_inv2.Iabc[0];
@@ -224,7 +229,7 @@ void task_cabinet_callback(void *arg)
 		LOG_Ia2_c = twin_data->twin_inv1.Iabc[2]*0.5 + twin_data->twin_inv3.Iabc[2];
 		LOG_Ib2_a = twin_data->twin_inv1.Iabc[0]*0.5;
 		LOG_Ib2_b = twin_data->twin_inv1.Iabc[1]*0.5;
-		LOG_Ib2_c = twin_data->twin_inv1.Iabc[2]*0.5;
+		LOG_Ib2_c = twin_data->twin_inv1.Iabc[2]*0.5;*/
 		//log torque current
 
 		LOG_Itq_d_ref = twin_data->tq.Idq0_ref[0];
@@ -240,10 +245,10 @@ void task_cabinet_callback(void *arg)
 		LOG_Is1_q = twin_data->s1.Idq0[1];
 
 		LOG_Is2_d_ref = twin_data->s2.Idq0_ref[0];
-		LOG_Is2_q_ref = twin_data->s2.Idq0_ref[2];
+		LOG_Is2_q_ref = twin_data->s2.Idq0_ref[1];
 
 		LOG_Is2_d = twin_data->s2.Idq0[0];
-		LOG_Is2_q = twin_data->s2.Idq0[2];
+		LOG_Is2_q = twin_data->s2.Idq0[1];
 
 		if(twin_data->sel_config == InvFour){
 			LOG_Itq2_d_ref = twin_data->tq2.Idq0_ref[0];
@@ -253,7 +258,7 @@ void task_cabinet_callback(void *arg)
 			LOG_Itq2_q = twin_data->tq2.Idq0[1];
 		}
 
-		LOG_vabc1_a = twin_data->twin_inv1.vabc_ref[0];
+		/*LOG_vabc1_a = twin_data->twin_inv1.vabc_ref[0];
 		LOG_vabc1_b = twin_data->twin_inv1.vabc_ref[1];
 		LOG_vabc1_c = twin_data->twin_inv1.vabc_ref[2];
 		LOG_vabc2_a = twin_data->twin_inv2.vabc_ref[0];
@@ -281,13 +286,98 @@ void task_cabinet_callback(void *arg)
 
 		LOG_v_tq_d = twin_data->tq.vdq0_ref[0];
 		LOG_v_tq_q = twin_data->tq.vdq0_ref[1];
-		LOG_we_tq = twin_data->tq.we;
+		LOG_we_tq = twin_data->tq.we;*/
 
 	}
 
 
 }
-
+uint32_t time_testloop;
+void task_loop_test(void){
+	twin_data = &twin_control;
+	uint32_t time_now = cpu_timer_now();
+		double time_test = cpu_timer_ticks_to_sec(time_now - time_testloop);
+		if (time_test<0.05){
+			if(twin_data->sel_config == InvFour){
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 0.0;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			twin_data->tq2.Idq0_ref[0] = 0.0;
+			twin_data->tq2.Idq0_ref[1] = 0.0;
+			twin_data->tq2.Idq0_ref[2] = 0.0;
+			}else{
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 0.0;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			}
+			twin_data->s1.Idq0_ref[0] = 0.0;
+			twin_data->s1.Idq0_ref[1] = 0.0;
+			twin_data->s1.Idq0_ref[2] = 0.0;
+			twin_data->s2.Idq0_ref[0] = 0.0;
+			twin_data->s2.Idq0_ref[1] = 0.0;
+			twin_data->s2.Idq0_ref[2] = 0.0;
+		}else if(0.05<=time_test && time_test<0.1){
+			if(twin_data->sel_config == InvFour){
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 1.5;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			twin_data->tq2.Idq0_ref[0] = 0.0;
+			twin_data->tq2.Idq0_ref[1] = 1.5;
+			twin_data->tq2.Idq0_ref[2] = 0.0;
+			}else{
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 3.0;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			}
+			twin_data->s1.Idq0_ref[0] = 0.0;
+			twin_data->s1.Idq0_ref[1] = 0.0;
+			twin_data->s1.Idq0_ref[2] = 0.0;
+			twin_data->s2.Idq0_ref[0] = 0.0;
+			twin_data->s2.Idq0_ref[1] = 0.0;
+			twin_data->s2.Idq0_ref[2] = 0.0;
+		}else if(0.1<=time_test && time_test<0.15){
+			if(twin_data->sel_config == InvFour){
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 1.5;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			twin_data->tq2.Idq0_ref[0] = 0.0;
+			twin_data->tq2.Idq0_ref[1] = 1.5;
+			twin_data->tq2.Idq0_ref[2] = 0.0;
+			}else{
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 3.0;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			}
+			twin_data->s1.Idq0_ref[0] = 1.0;
+			twin_data->s1.Idq0_ref[1] = 0.0;
+			twin_data->s1.Idq0_ref[2] = 0.0;
+			twin_data->s2.Idq0_ref[0] = 0.0;
+			twin_data->s2.Idq0_ref[1] = 0.0;
+			twin_data->s2.Idq0_ref[2] = 0.0;
+		}else if(0.15<=time_test && time_test<0.2){
+			if(twin_data->sel_config == InvFour){
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 1.5;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			twin_data->tq2.Idq0_ref[0] = 0.0;
+			twin_data->tq2.Idq0_ref[1] = 1.5;
+			twin_data->tq2.Idq0_ref[2] = 0.0;
+			}else{
+			twin_data->tq.Idq0_ref[0] = 0.0;
+			twin_data->tq.Idq0_ref[1] = 3.0;
+			twin_data->tq.Idq0_ref[2] = 0.0;
+			}
+			twin_data->s1.Idq0_ref[0] = 1.0;
+			twin_data->s1.Idq0_ref[1] = 0.0;
+			twin_data->s1.Idq0_ref[2] = 0.0;
+			twin_data->s2.Idq0_ref[0] = 0.0;
+			twin_data->s2.Idq0_ref[1] = 0.5;
+			twin_data->s2.Idq0_ref[2] = 0.0;
+	
+		}else{
+			time_testloop = time_now;
+		}
+}
 
 void task_cabinet_stats_print(void)
 {

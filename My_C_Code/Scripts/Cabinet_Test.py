@@ -301,6 +301,10 @@ class cmd():
         if self.debug:
             return out 
     
+    def twin_enable_testloop(self):
+        out = self.amdc.cmd('twin enable_testloop')
+        if self.debug:
+            return out 
     
 
 

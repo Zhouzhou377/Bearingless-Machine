@@ -4,7 +4,7 @@
 #include "usr/Cabinet_test/twinbearingless_control.h"
 #include "usr/Cabinet_test/cmd/cmd_twin_ctrl.h"
 #include "usr/Cabinet_test/task_cabinet.h"
-
+#include "drv/cpu_timer.h"
 #include "usr/Cabinet_test/cabinet.h"
 #include "usr/Cabinet_test/analog_sensor.h"
 #include "usr/Cabinet_test/mb_sensor.h"
@@ -24,7 +24,7 @@ cmd_signal cmd_enable;
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(11)
+#define NUM_HELP_ENTRIES	(12)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -36,7 +36,8 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_s2", "Set suspension 2 current references dq0"},
 		{"set_freq", "Set rotating frequency Hz"},
 		{"disable_ctrl", "Enable current regulation"},
-		{"sel_config", "Set rotating frequency Hz"},
+		{"sel_config", "Set rotating frequency Hz"}, 
+		{"enable_testloop", "Enable loop testing"},
 };
 
 void cmd_twin_register(void)
@@ -76,7 +77,9 @@ int cmd_twin(int argc, char **argv)
 
 		// Make sure cabinet task was not already inited
 		twinbearingless_control *twin = deinit_twinbearingless();
-		
+		cmd_enable.enable_currentcontrol = 1;
+		cmd_enable.enable_openloop = 0;
+		cmd_enable.enable_testloop = 0;
 		return CMD_SUCCESS;
 	}
 
@@ -115,6 +118,12 @@ int cmd_twin(int argc, char **argv)
 		cmd_enable.enable_currentcontrol = 1;
 		cmd_enable.enable_openloop = 0;
 		reset_regulator();
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("enable_testloop", argv[1]) == 0){
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+		cmd_enable.enable_testloop = 1;
 		return CMD_SUCCESS;
 	}
 
