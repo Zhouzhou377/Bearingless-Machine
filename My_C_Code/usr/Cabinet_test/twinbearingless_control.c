@@ -11,11 +11,11 @@
 #include <stdbool.h>
 
 
-#define INV1 (5)
-#define INV2 (2)
-#define INV3 (3)
+#define INV1 (2)
+#define INV2 (3)
+#define INV3 (5)
 #define INV4 (6)
-#define TS (1.0/10000.0)
+
 #define WD_TQ (2.0*PI*100.0)
 #define WD_S1 (2.0*PI*100.0)
 #define WD_S2 (2.0*PI*100.0)
@@ -88,7 +88,10 @@ twinbearingless_control *init_twinbearingless(void){
         twin_control.twin_inv4.inv = get_three_phase_inverter(idx_inv);
         // init machine control parameters
 
+        
         twin_control.para_machine = init_para_twinmachine_control();
+        
+        
 
         twin_control.tq.PI_regulator = &PI_tq;
         init_PI_para(TS, twin_control.tq.PI_regulator, &twin_control.para_machine->para_tq, WD_TQ);
@@ -399,10 +402,13 @@ void current_regulation (twinbearingless_control *data)
         data = init_twinbearingless();
     }
 
-    //update sensed currents
-    get_all_inverter_current_abc(data);
-    //update theta and we
-    get_theta_we(data);
+    if(!BM_ENABLE){
+            //update sensed currents
+        get_all_inverter_current_abc(data);
+        //update theta and we
+        get_theta_we(data);
+    }
+    
 
 
 

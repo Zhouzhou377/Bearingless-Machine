@@ -36,7 +36,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_s2", "Set suspension 2 current references dq0"},
 		{"set_freq", "Set rotating frequency Hz"},
 		{"disable_ctrl", "Enable current regulation"},
-		{"sel_config", "Set rotating frequency Hz"}, 
+		{"sel_config", "Select configuration"}, 
 		{"enable_testloop", "Enable loop testing"},
 };
 

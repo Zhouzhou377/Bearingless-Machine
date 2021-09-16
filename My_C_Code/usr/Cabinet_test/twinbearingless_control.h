@@ -3,13 +3,14 @@
 
 #include "usr/Cabinet_test/cabinet.h"
 #include "usr/Cabinet_test/para_machine.h"
+#include "usr/Cabinet_test/hardware_machine.h"
 //#include "usr/Cabinet_test/controllers.h"
 #include <stdbool.h>
 
 
 typedef enum {
-    InvFour = 0,
-    Inv_Series = 1,
+    InvFour = 1,
+    Inv_Series = 0,
 } config;
 
 typedef struct para_PI_discrete{

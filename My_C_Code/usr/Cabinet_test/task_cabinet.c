@@ -6,6 +6,8 @@
 #include "usr/Cabinet_test/task_cabinet.h"
 #include "usr/Cabinet_test/cabinet.h"
 #include "usr/Cabinet_test/twinbearingless_control.h"
+#include "usr/Cabinet_test/outloop_control.h"
+#include "usr/Cabinet_test/hardware_machine.h"
 
 #include "sys/scheduler.h"
 #include "sys/debug.h"
@@ -121,13 +123,15 @@ double LOG_Ixf = 0.0;
 double LOG_Iyf = 0.0;
 double LOG_Izf = 0.0;
 
-para_PI_discrete PI_tq;
-para_PI_discrete PI_s1;
-para_PI_discrete PI_s2;
-twinbearingless_control twin_control;
-para_twinmachine_control para_machine_control;
-para_machine_h para_machine_data;
+//para_PI_discrete PI_tq;
+//para_PI_discrete PI_s1;
+//para_PI_discrete PI_s2;
+//twinbearingless_control twin_control;
+//para_twinmachine_control para_machine_control;
+//para_machine_h para_machine_data;
 twinbearingless_control *twin_data;
+//bim_control bim_control_data;
+bim_control *bim_control_pt;
 
 OpenLoop_Command VSI_Openloop_command;
 OpenLoop_Command *OpenLoop;
@@ -150,9 +154,15 @@ void task_cabinet_init(void)
 
 	default_inverter_setup(0);
 	OpenLoop = init_OpenLoop_Command();
-	twin_data = init_twinbearingless();
+	if(!BM_ENABLE){
+		twin_data = init_twinbearingless();
+	}else{
+		bim_control_pt = init_bim();
+	}
+	
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
+	cmd_enable.enable_BIMcontrol = 0;
 	cmd_enable.enable_log = 0;
 }
 
@@ -161,6 +171,7 @@ void task_cabinet_deinit(void)
 {
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
+	cmd_enable.enable_BIMcontrol = 0;
 	cmd_enable.enable_log = 0;
 	scheduler_tcb_unregister(&tcb);
 	twin_data = deinit_twinbearingless();
@@ -200,6 +211,15 @@ void task_cabinet_callback(void *arg)
 			set_line_volts_three_phase(twin_data->twin_inv2.vabc_ref[0], twin_data->twin_inv2.vabc_ref[1], twin_data->twin_inv2.vabc_ref[2], twin_data->twin_inv2.inv);
 			set_line_volts_three_phase(twin_data->twin_inv3.vabc_ref[0], twin_data->twin_inv3.vabc_ref[1], twin_data->twin_inv3.vabc_ref[2], twin_data->twin_inv3.inv);
 		}
+
+	}
+	else if(cmd_enable.enable_BIMcontrol){
+		bim_control_pt = &bim_control_data;
+		bim_controlloop(bim_control_pt);
+		
+		set_line_volts_three_phase(bim_control_pt->current_control->twin_inv1.vabc_ref[0], bim_control_pt->current_control->twin_inv1.vabc_ref[1], bim_control_pt->current_control->twin_inv1.vabc_ref[2], bim_control_pt->current_control->twin_inv1.inv);
+		set_line_volts_three_phase(bim_control_pt->current_control->twin_inv2.vabc_ref[0], bim_control_pt->current_control->twin_inv2.vabc_ref[1], bim_control_pt->current_control->twin_inv2.vabc_ref[2], bim_control_pt->current_control->twin_inv2.inv);
+
 
 	}
 

@@ -14,6 +14,7 @@ typedef struct cmd_signal {
     bool enable_currentcontrol;
     bool enable_log;
     bool enable_testloop;
+    bool enable_BIMcontrol;
 
 } cmd_signal;
 
