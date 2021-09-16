@@ -3,6 +3,7 @@
 #include "usr/Cabinet_test/hardware_machine.h"
 #include "usr/Cabinet_test/twinbearingless_control.h"
 #include "drv/pwm.h"
+#include "drv/encoder.h"
 #include "drv/eddy_current_sensor.h"
 #include "usr/Cabinet_test/definitions.h"
 #include "usr/Cabinet_test/analog_sensor.h"
