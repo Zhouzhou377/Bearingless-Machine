@@ -38,30 +38,43 @@ void get_deltaxy_mes(bim_control* data){
 }
 
 void get_pos_w_mes(bim_control* data){
-    uint32_t now = cpu_timer_now();
-    uint32_t dt_int = now - bim_control_data.bim_v_control.time_pre;
-    double dt = cpu_timer_ticks_to_usec(dt_int);
-    bim_control_data.bim_v_control.time_pre = now;
+	uint32_t position = 0;
+    uint32_t now;
 
-    uint32_t position = 0;
+
 
 	// Get delta position and speed
 	
 	encoder_get_position(&position);
+	now = cpu_timer_now();
+
 		// Add d axis offset
 	//position += mo.d_offset;
 
-    while (position >= ENCODER_BP3_PPR) {
+	uint32_t dt_int = now - data->bim_v_control.time_pre;
+	double dt = cpu_timer_ticks_to_sec(dt_int);
+	data->bim_v_control.time_pre = now;
+    uint32_t dpos;
+    dpos = position - data->bim_v_control.pos_pre;
+    data->bim_v_control.pos_pre = position;
+    /*while (position >= ENCODER_BP3_PPR) {
         position -= ENCODER_BP3_PPR;
-    }
+    }*/
 
 	// Convert to radians
     double theta_now;
      
     theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));
+    double dtheta;
+    dtheta = PI2 * ( (double) dpos / (double) (ENCODER_BP3_PPR));
+    dtheta = fmod(dtheta, PI2);
+    //dtheta = theta_now - data->bim_v_control.theta_rm_mes;
+
+    data->bim_v_control.wrm_mes = dtheta/TS;
+
     theta_now = fmod(theta_now, PI2);
-    bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt*(1000000.0);
-    bim_control_data.bim_v_control.theta_rm_mes = theta_now;
+    //bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt;
+    data->bim_v_control.theta_rm_mes = theta_now;
 
 }
 
@@ -92,8 +105,8 @@ bim_control *init_bim(void){
     bim_control_data.bim_v_control.para_velocity_control.para_PI.Ki = BIM_PARA->para_control.v_pi_Ki;
     bim_control_data.bim_v_control.para_velocity_control.para_PI.Kp = BIM_PARA->para_control.v_pi_Kp;
 
-    bim_control_data.bim_lev_control.para_velocity_control.para_lpf.Ts = TS;
-    bim_control_data.bim_lev_control.para_velocity_control.para_lpf.fs = BIM_PARA->para_control.v_lpf_f;
+    bim_control_data.bim_v_control.para_velocity_control.para_lpf.Ts = TS;
+    bim_control_data.bim_v_control.para_velocity_control.para_lpf.fs = BIM_PARA->para_control.v_lpf_f;
 
     bim_control_data.bim_v_control.Idq0_ref[0] = BIM_PARA->para_machine.id_ref;
     bim_control_data.bim_v_control.Ts = TS;
@@ -101,8 +114,8 @@ bim_control *init_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.state_1));
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1));
-    reset_states_3phase(&(bim_control_data.bim_lev_control.para_velocity_control.para_PI.state_1));
-    reset_states_3phase(&(bim_control_data.bim_lev_control.para_velocity_control.para_lpf.state_1));
+    reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_PI.state_1));
+    reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_lpf.state_1));
     bim_control_data.bim_lev_control.diff_state[0] = 0.0;
     bim_control_data.bim_lev_control.diff_state[1] = 0.0;
     
@@ -110,6 +123,7 @@ bim_control *init_bim(void){
     bim_control_data.bim_v_control.theta_rm_mes =  0.0;
 
     bim_control_data.current_control = init_twinbearingless();
+    bim_control_data.current_control->sel_config = InvFour;
     reset_regulator();
     bim_control_data.is_init = 1;
 
@@ -127,18 +141,18 @@ bim_control *reset_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.state_1));
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1));
-    reset_states_3phase(&(bim_control_data.bim_lev_control.para_velocity_control.para_PI.state_1));
-    reset_states_3phase(&(bim_control_data.bim_lev_control.para_velocity_control.para_lpf.state_1));
+    reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_PI.state_1));
+    reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_lpf.state_1));
     bim_control_data.bim_lev_control.diff_state[0] = 0.0;
     bim_control_data.bim_lev_control.diff_state[1] = 0.0;
     reset_regulator();
-    &(bim_control_data);
+    return &(bim_control_data);
 }
 
 
 bim_control *deinit_bim(void){
 
-    bim_control.is_init = 0;
+    bim_control_data.is_init = 0;
     reset_bim();
     bim_control_data.current_control= deinit_twinbearingless();
     // init machine control parameters
@@ -146,16 +160,16 @@ bim_control *deinit_bim(void){
 }
 
 // need to get eddy current sensor and encoder signals
-void func_lpf(double *in, double *out, int Num_variable, para_lpf *para_lpf){
+void func_lpf(double *in, double *out, para_lpf *para_lpf, double *state){
     double t = 1/(PI2*para_lpf->fs);
     double a = 1/(t+para_lpf->Ts);
     double k1 = para_lpf->Ts*a;
     double k2 = t*a; 
 
-    for (int i = 0, i<Num_variable, i++){
-        *(out+i) = (*(in+i))*k1 + para_lpf->state_1[i]*k2;
-        para_lpf->state_1[i] = out[i];
-    }
+
+    *out= *in*k1 + (*state)*k2;
+    *state = *out;
+
 }
 
 void func_PI_normal(double *in, double *out, int Num_variable, para_PI_discrete_normal *para_PI, double *out_antiwp){
@@ -163,7 +177,7 @@ void func_PI_normal(double *in, double *out, int Num_variable, para_PI_discrete_
     double state_p;
     double state_i;
 
-    for (int i = 0, i<Num_variable, i++){
+    for (int i = 0; i<Num_variable; i++){
         state_p = para_PI->Kp*(*(in+i));
         double state;
         state = *(in+i) + *(out_antiwp+i);
@@ -192,7 +206,10 @@ void func_anti_windup(para_anti_windup *para_antiwp, double in, double *in_antiw
 
 void velocity_regulation(bim_control* data){
     double antiwp = 0.0;
-    func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), 1, &(data->bim_v_control.para_velocity_control.para_lpf));
+
+    //func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), 1, &(data->bim_v_control.para_velocity_control.para_lpf));
+    func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), &(data->bim_v_control.para_velocity_control.para_lpf), &(data->bim_v_control.para_velocity_control.para_lpf.state_1[0]));
+
     data->bim_v_control.err_wrm = data->bim_v_control.wrm_ref_lpf - data->bim_v_control.wrm_mes;
     func_PI_normal(&(data->bim_v_control.err_wrm), &(data->bim_v_control.Te_ref), 1, &(data->bim_v_control.para_velocity_control.para_PI), &antiwp);
 
@@ -240,7 +257,8 @@ void levitation_regulation(bim_control* data){
 
     func_PI_normal(&(data->bim_lev_control.err_delta), &(pi_out), 2, &(data->bim_lev_control.para_levi_control.para_PI), &data->bim_lev_control.out_antiwp);
 
-    func_lpf(&(data->bim_lev_control.delta_mes), &(data->bim_lev_control.delta_mes_lpf), 2, &(data->bim_lev_control.para_levi_control.para_lpf));
+    func_lpf(&(data->bim_lev_control.delta_mes[0]), &(data->bim_lev_control.delta_mes_lpf[0]), &(data->bim_lev_control.para_levi_control.para_lpf), &(data->bim_lev_control.para_levi_control.para_lpf.state_1[0]));
+    func_lpf(&(data->bim_lev_control.delta_mes[1]), &(data->bim_lev_control.delta_mes_lpf[1]), &(data->bim_lev_control.para_levi_control.para_lpf), &(data->bim_lev_control.para_levi_control.para_lpf.state_1[1]));
     double fs = 1/data->bim_lev_control.para_levi_control.Ts;
     double kf_inv = 1/data->BIM_PARA->para_machine.kf;
     double state_ka[2];
@@ -311,8 +329,8 @@ void bim_controlloop (bim_control* data)
         return;
     }
 
-    int flag_t;
-    int flag_s;
+    int flag_t = 0;
+    int flag_s = 0;
     flag_t = protection_overcurrent(data->current_control->twin_inv1.Iabc, data->BIM_PARA->para_machine.iabc_max);
     flag_s = protection_overcurrent(data->current_control->twin_inv2.Iabc, data->BIM_PARA->para_machine.iabc_max);
     if(flag_t || flag_s){

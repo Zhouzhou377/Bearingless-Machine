@@ -3,7 +3,7 @@
 #ifdef APP_CABINET
 #include "usr/Cabinet_test/twinbearingless_control.h"
 #include "usr/Cabinet_test/outloop_control.h"
-#include "usr/Cabinet_test/cmd/cmd_twin_ctrl.h"
+#include "usr/Cabinet_test/cmd/cmd_BIM_ctrl.h"
 #include "usr/Cabinet_test/task_cabinet.h"
 #include "drv/cpu_timer.h"
 #include "usr/Cabinet_test/cabinet.h"
@@ -35,7 +35,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"enable_levctrl", "Enable BIM levitation control"},
 		{"set_w", "Set rotor mechanical rotational speed rad/s"},
 		{"set_deltaxy", "Set rotor position xy0"},
-		{"disable_ctrl", "Enable BIM regulation"},
+		{"disable_ctrl", "Enable BIM regulation"}
 
 };
 
@@ -101,8 +101,8 @@ int cmd_BIM(int argc, char **argv)
 		//read in arguments
 		double Vdc = strtod(argv[2], NULL);
 
-		bim_control_data->current_control.twin_inv1.inv->Vdc = Vdc;
-		bim_control_data->current_control.twin_inv2.inv->Vdc = Vdc;
+		bim_control_data.current_control->twin_inv1.inv->Vdc = Vdc;
+		bim_control_data.current_control->twin_inv2.inv->Vdc = Vdc;
 
 		return CMD_SUCCESS;
 	}

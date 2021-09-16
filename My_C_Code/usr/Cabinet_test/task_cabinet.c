@@ -106,22 +106,10 @@ double LOG_theta_s2 = 0.0;
 double LOG_we_tq = 0.0;
 
 //sensed values
-double LOG_x = 0.0;
-double LOG_y = 0.0;
-double LOG_z = 0.0;
+double LOG_wrm_mes = 0.0;
+double LOG_theta_rm_mes = 0.0;
 
-double LOG_Ix = 0.0;
-double LOG_Iy = 0.0;
-double LOG_Iz = 0.0;
-
-//filtered values
-double LOG_xf = 0.0;
-double LOG_yf = 0.0;
-double LOG_zf = 0.0;
-
-double LOG_Ixf = 0.0;
-double LOG_Iyf = 0.0;
-double LOG_Izf = 0.0;
+// 
 
 //para_PI_discrete PI_tq;
 //para_PI_discrete PI_s1;
@@ -138,7 +126,7 @@ OpenLoop_Command *OpenLoop;
 
 cmd_signal cmd_enable;
 
-#define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
+//#define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
 static task_control_block_t tcb;
 
@@ -226,6 +214,7 @@ void task_cabinet_callback(void *arg)
 
 
 	if (cmd_enable.enable_log){
+		if(!BM_ENABLE){
 		twin_data = &twin_control;
 		//log three phase inv current
 		/*LOG_Iabc1_a = twin_data->twin_inv1.Iabc[0];
@@ -307,6 +296,11 @@ void task_cabinet_callback(void *arg)
 		LOG_v_tq_d = twin_data->tq.vdq0_ref[0];
 		LOG_v_tq_q = twin_data->tq.vdq0_ref[1];
 		LOG_we_tq = twin_data->tq.we;*/
+		}else{
+			bim_control_pt = &bim_control_data;
+			LOG_wrm_mes = bim_control_pt->bim_v_control.wrm_mes;
+			LOG_theta_rm_mes = bim_control_pt->bim_v_control.theta_rm_mes;
+		}
 
 	}
 

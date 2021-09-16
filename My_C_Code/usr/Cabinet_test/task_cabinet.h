@@ -16,7 +16,7 @@ typedef struct cmd_signal {
     bool enable_testloop;
     bool enable_BIMcontrol;
 
-} cmd_signal;
+}cmd_signal;
 
 extern cmd_signal cmd_enable;
 

@@ -305,8 +305,56 @@ class cmd():
         out = self.amdc.cmd('twin enable_testloop')
         if self.debug:
             return out 
-    
 
+    def BIM_init(self):
+        out = self.amdc.cmd('BIM init')
+        if self.debug:
+            return out
+    
+    def BIM_deinit(self):
+        out = self.amdc.cmd('BIM deinit')
+        if self.debug:
+            return out
+
+    def BIM_reset(self):
+        out = self.amdc.cmd('BIM reset')
+        if self.debug:
+            return out
+    
+    def BIM_set_Vdc(self, vdc):
+        out = self.amdc.cmd(f'BIM set_vdc {vdc:.6f}')
+        if self.debug:
+            return out
+
+    def BIM_enable_ctrl(self):
+        out = self.amdc.cmd('BIM enable_ctrl')
+        if self.debug:
+            return out
+
+    def BIM_enable_vctrl(self):
+        out = self.amdc.cmd('BIM enable_vctrl')
+        if self.debug:
+            return out       
+
+    def BIM_enable_levctrl(self):
+        out = self.amdc.cmd('BIM enable_levctrl')
+        if self.debug:
+            return out 
+    
+    def BIM_set_w(self, w):
+        out = self.amdc.cmd(f'BIM set_w {w:.6f}')
+        if self.debug:
+            return out 
+
+    def BIM_set_deltaxy(self, deltax, deltay):
+        out = self.amdc.cmd(f'BIM set_deltaxy {deltax:.6f} {deltay:.6f}')
+        if self.debug:
+            return out 
+
+    def BIM_disable(self):
+        out = self.amdc.cmd('BIM disable_ctrl')
+        if self.debug:
+            return out 
 
 if __name__ == "__main__":
         

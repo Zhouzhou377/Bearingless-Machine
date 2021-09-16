@@ -71,7 +71,8 @@ typedef struct bim_velocity_control{
     double CFO_state;
 
     double theta_rm_mes;
-    uint32_t  time_pre;
+    uint32_t time_pre;
+    uint32_t pos_pre;
     double wrm_mes;
     para_velocity_control para_velocity_control;
 
@@ -104,7 +105,7 @@ typedef struct bim_control {
 extern bim_control bim_control_data;
 
 bim_control *init_bim(void);
-bim_control *deinit_bim(void)
+bim_control *deinit_bim(void);
 bim_control *reset_bim(void);
 
 void bim_controlloop(bim_control *data);
