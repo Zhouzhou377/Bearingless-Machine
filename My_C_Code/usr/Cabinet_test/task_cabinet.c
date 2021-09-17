@@ -300,6 +300,20 @@ void task_cabinet_callback(void *arg)
 			bim_control_pt = &bim_control_data;
 			LOG_wrm_mes = bim_control_pt->bim_v_control.wrm_mes;
 			LOG_theta_rm_mes = bim_control_pt->bim_v_control.theta_rm_mes;
+
+			LOG_Itq_d_ref = bim_control_pt->current_control->tq.Idq0_ref[0];
+			LOG_Itq_q_ref = bim_control_pt->current_control->tq.Idq0_ref[1];
+
+			LOG_Itq_d = bim_control_pt->current_control->tq.Idq0[0];
+			LOG_Itq_q = bim_control_pt->current_control->tq.Idq0[1];
+
+			LOG_Iabc1_a = bim_control_pt->current_control->twin_inv1.Iabc[0];
+			LOG_Iabc1_b = bim_control_pt->current_control->twin_inv1.Iabc[1];
+			LOG_Iabc1_c = bim_control_pt->current_control->twin_inv1.Iabc[2];
+			LOG_Iabc2_a = bim_control_pt->current_control->twin_inv2.Iabc[0];
+			LOG_Iabc2_b = bim_control_pt->current_control->twin_inv2.Iabc[1];
+			LOG_Iabc2_c = bim_control_pt->current_control->twin_inv2.Iabc[2];
+
 		}
 
 	}

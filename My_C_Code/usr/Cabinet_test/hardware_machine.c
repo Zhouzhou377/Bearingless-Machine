@@ -20,9 +20,9 @@ static const para_bim BIM_PARA = {
 	.para_machine.ki = 0.0,
 	.para_machine.delta_limit = 0.00265,
 	.para_machine.m_rotor = 1.488,
-	.para_machine.iabc_max = 15.0,
-	.para_machine.wrm_max = 30.0,
-	.para_machine.id_ref = 6.0,
+	.para_machine.iabc_max = 40.0,
+	.para_machine.wrm_max = 1000.0,
+	.para_machine.id_ref = 0.0,
 
 	.para_control.v_pi_Kp = 31.4159,
 	.para_control.v_pi_Ki= 36.9388,

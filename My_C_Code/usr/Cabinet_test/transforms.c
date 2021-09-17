@@ -33,7 +33,7 @@ void func_Park_inverse(double *afbe0, double *dq0, double theta_rad){
 	double sin_theta = sin(theta_rad);
 	afbe0[0] = cos_theta*dq0[0] - sin_theta*dq0[1];
 	afbe0[1] = sin_theta*dq0[0] + cos_theta*dq0[1];
-	afbe0[2] = afbe0[2];
+	afbe0[2] = dq0[2];
 
 }
 

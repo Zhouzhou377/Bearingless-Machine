@@ -9,15 +9,15 @@
 #include "usr/Cabinet_test/definitions.h"
 #include <math.h>
 #include <stdbool.h>
-
+#define SUSP_ENABLE (0)
 
 #define INV1 (2)
 #define INV2 (3)
 #define INV3 (5)
 #define INV4 (6)
 
-#define WD_TQ (2.0*PI*100.0)
-#define WD_S1 (2.0*PI*100.0)
+#define WD_TQ (2.0*PI*500.0)
+#define WD_S1 (2.0*PI*500.0)
 #define WD_S2 (2.0*PI*100.0)
 
 
@@ -420,9 +420,10 @@ void current_regulation (twinbearingless_control *data)
     	update_control_current(&data->tq2);
 
     	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
+    	if(SUSP_ENABLE){
     	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
     	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
-    	regulator_PI_current_dq(&data->tq2, data->para_machine->para_tq2);
+    	regulator_PI_current_dq(&data->tq2, data->para_machine->para_tq2);}
 
 
         decouple(data);

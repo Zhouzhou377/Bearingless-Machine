@@ -345,6 +345,11 @@ class cmd():
         out = self.amdc.cmd(f'BIM set_w {w:.6f}')
         if self.debug:
             return out 
+    
+    def BIM_set_id(self, id):
+        out = self.amdc.cmd(f'BIM set_id {id:.6f}')
+        if self.debug:
+            return out 
 
     def BIM_set_deltaxy(self, deltax, deltay):
         out = self.amdc.cmd(f'BIM set_deltaxy {deltax:.6f} {deltay:.6f}')

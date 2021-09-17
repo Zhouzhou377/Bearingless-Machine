@@ -4,6 +4,7 @@
 #include "usr/Cabinet_test/twinbearingless_control.h"
 #include "drv/pwm.h"
 #include "drv/encoder.h"
+#include "drv/fpga_timer.h"
 #include "drv/eddy_current_sensor.h"
 #include "usr/Cabinet_test/definitions.h"
 #include "usr/Cabinet_test/analog_sensor.h"
@@ -11,6 +12,7 @@
 #include "usr/Cabinet_test/controllers.h"
 #include "usr/Cabinet_test/transforms.h"
 #include "usr/Cabinet_test/definitions.h"
+#include "sys/scheduler.h"
 #include <math.h>
 #include <stdbool.h>
 #include "drv/cpu_timer.h"
@@ -41,18 +43,22 @@ void get_pos_w_mes(bim_control* data){
 	uint32_t position = 0;
     uint32_t now;
 
-
+    uint32_t time_test_int = fpga_timer_now();
+    double time_test = fpga_timer_ticks_to_sec(time_test_int);
 
 	// Get delta position and speed
 	
 	encoder_get_position(&position);
-	now = cpu_timer_now();
+	//now = cpu_timer_now();
+	now = fpga_timer_now();
 
 		// Add d axis offset
 	//position += mo.d_offset;
 
 	uint32_t dt_int = now - data->bim_v_control.time_pre;
-	double dt = cpu_timer_ticks_to_sec(dt_int);
+	double dt;
+	dt = fpga_timer_ticks_to_sec(dt_int);
+	// dt = cpu_timer_ticks_to_sec(dt_int);
 	data->bim_v_control.time_pre = now;
     uint32_t dpos;
     dpos = position - data->bim_v_control.pos_pre;
@@ -66,14 +72,34 @@ void get_pos_w_mes(bim_control* data){
      
     theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));
     double dtheta;
-    dtheta = PI2 * ( (double) dpos / (double) (ENCODER_BP3_PPR));
-    dtheta = fmod(dtheta, PI2);
+    //dtheta = fmod(dtheta, PI2);
     //dtheta = theta_now - data->bim_v_control.theta_rm_mes;
+    double w;
 
-    data->bim_v_control.wrm_mes = dtheta/TS;
 
     theta_now = fmod(theta_now, PI2);
+
+    /*if(data->bim_v_control.wrm_mes>=0 && theta_now<data->bim_v_control.theta_rm_mes){
+    	dtheta = theta_now + PI - data->bim_v_control.theta_rm_mes_pre;
+    }else if(data->bim_v_control.wrm_mes<0 && theta_now>data->bim_v_control.theta_rm_mes){
+    	dtheta = theta_now - PI - data->bim_v_control.theta_rm_mes_pre;
+    }else{
+    	dtheta = theta_now - data->bim_v_control.theta_rm_mes_pre;
+    }*/
+
+    dtheta = theta_now - data->bim_v_control.theta_rm_mes_pre;
+    if(abs(dtheta)>=PI){
+    	w = data->bim_v_control.wrm_mes;
+    }else{
+    	w = dtheta/dt;
+    }
+
+        /*if(data->bim_v_control.wrm_mes!=0 && w!=0 && abs((w - data->bim_v_control.wrm_mes)/data->bim_v_control.wrm_mes)>=0.2){
+        	w = data->bim_v_control.wrm_mes;
+        }*/
+     data->bim_v_control.wrm_mes = w;
     //bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt;
+    data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
     data->bim_v_control.theta_rm_mes = theta_now;
 
 }
@@ -225,7 +251,7 @@ void UFO(bim_control* data){
         data->bim_v_control.wsl_ref = 0.0;
     }else{
         double x = 1/data->bim_v_control.lamda_m_ref;
-        Te = 0.66666666666666667/data->BIM_PARA->para_machine.p;
+        Te = data->bim_v_control.Te_ref*0.66666666666666667/data->BIM_PARA->para_machine.p;
         Te = Te*data->BIM_PARA->para_machine.Lr/data->BIM_PARA->para_machine.Lm;
         data->bim_v_control.Idq0_ref[1] = Te*x;
         data->bim_v_control.wsl_ref = data->BIM_PARA->para_machine.Lm*data->bim_v_control.Idq0_ref[1];
@@ -323,11 +349,11 @@ void bim_controlloop (bim_control* data)
    get_all_inverter_current_abc(data->current_control);
    //protection
    // w
-    if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
+    /*if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
         data = reset_bim();
         pwm_disable();
         return;
-    }
+    }*/
 
     int flag_t = 0;
     int flag_s = 0;
@@ -366,4 +392,5 @@ void bim_controlloop (bim_control* data)
    data->current_control->s1.Idq0_ref[2] = data->bim_lev_control.Ixy0_ref[2];
 
    current_regulation (data->current_control);
+
 }

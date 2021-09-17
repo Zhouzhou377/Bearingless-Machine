@@ -71,6 +71,7 @@ typedef struct bim_velocity_control{
     double CFO_state;
 
     double theta_rm_mes;
+    double theta_rm_mes_pre;
     uint32_t time_pre;
     uint32_t pos_pre;
     double wrm_mes;
