@@ -24,17 +24,17 @@ static const para_bim BIM_PARA = {
 	.para_machine.wrm_max = 30.0,
 	.para_machine.id_ref = 6.0,
 
-	.para_control.v_pi_Kp = 0.0,
-	.para_control.v_pi_Ki= 0.0,
-	.para_control.v_lpf_f= 0.0,
-	.para_control.lev_pi_Kp= 0.0,
-	.para_control.lev_pi_Ki= 0.0,
-	.para_control.lev_lpf_f= 0.0,
-	.para_control.lev_ka= 0.0,
-	.para_control.lev_ba= 0.0,
-	.para_control.lev_sat_low= 0.0,
-	.para_control.lev_sat_high= 0.0,
-	.para_control.lev_antiwp_k= 0.0
+	.para_control.v_pi_Kp = 31.4159,
+	.para_control.v_pi_Ki= 36.9388,
+	.para_control.v_lpf_f= 1.0,
+	.para_control.lev_pi_Kp= 100000.0,
+	.para_control.lev_pi_Ki= 1000000.0,
+	.para_control.lev_lpf_f= 1000.0,
+	.para_control.lev_ka= 2.1804e+05,
+	.para_control.lev_ba= 942.4778,
+	.para_control.lev_sat_low= -20.0,
+	.para_control.lev_sat_high= 20.0,
+	.para_control.lev_antiwp_k= 1.4286e-04
 
 };
 
