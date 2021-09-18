@@ -298,7 +298,8 @@ void task_cabinet_callback(void *arg)
 		LOG_we_tq = twin_data->tq.we;*/
 		}else{
 			bim_control_pt = &bim_control_data;
-			LOG_wrm_mes = bim_control_pt->bim_v_control.wrm_mes;
+			BIM_log (bim_control_pt);
+			/*LOG_wrm_mes = bim_control_pt->bim_v_control.wrm_mes;
 			LOG_theta_rm_mes = bim_control_pt->bim_v_control.theta_rm_mes;
 
 			LOG_Itq_d_ref = bim_control_pt->current_control->tq.Idq0_ref[0];
@@ -312,7 +313,7 @@ void task_cabinet_callback(void *arg)
 			LOG_Iabc1_c = bim_control_pt->current_control->twin_inv1.Iabc[2];
 			LOG_Iabc2_a = bim_control_pt->current_control->twin_inv2.Iabc[0];
 			LOG_Iabc2_b = bim_control_pt->current_control->twin_inv2.Iabc[1];
-			LOG_Iabc2_c = bim_control_pt->current_control->twin_inv2.Iabc[2];
+			LOG_Iabc2_c = bim_control_pt->current_control->twin_inv2.Iabc[2];*/
 
 		}
 

@@ -15,7 +15,7 @@
 #include "sys/scheduler.h"
 #include <math.h>
 #include <stdbool.h>
-#include "drv/cpu_timer.h"
+//#include "drv/cpu_timer.h"
 #include <stdint.h>
 
 #define ENCODER_BP3_PPR_BITS (10)
@@ -24,6 +24,8 @@
 #define POSITION_RATIO (1.0)
 #define GEO_CENTER_X (0.0)
 #define GEO_CENTER_y (0.0)
+
+#define DEBUG_DFLUX (1)
 
 bim_control bim_control_data;
 
@@ -43,26 +45,32 @@ void get_pos_w_mes(bim_control* data){
 	uint32_t position = 0;
     uint32_t now;
 
-    uint32_t time_test_int = fpga_timer_now();
-    double time_test = fpga_timer_ticks_to_sec(time_test_int);
+    /*uint32_t time_test_int = fpga_timer_now();
+    double time_test = fpga_timer_ticks_to_sec(time_test_int);*/
 
 	// Get delta position and speed
-	
+	now = fpga_timer_now();
 	encoder_get_position(&position);
 	//now = cpu_timer_now();
-	now = fpga_timer_now();
+
 
 		// Add d axis offset
 	//position += mo.d_offset;
-
-	uint32_t dt_int = now - data->bim_v_control.time_pre;
+	uint32_t dt_int;
+     
+    if(now<data->bim_v_control.time_pre){
+        dt_int = 0xFFFFFFFF-data->bim_v_control.time_pre;
+        dt_int = dt_int + now;
+    }else{
+        dt_int = now - data->bim_v_control.time_pre;
+    }
 	double dt;
 	dt = fpga_timer_ticks_to_sec(dt_int);
 	// dt = cpu_timer_ticks_to_sec(dt_int);
-	data->bim_v_control.time_pre = now;
-    uint32_t dpos;
-    dpos = position - data->bim_v_control.pos_pre;
-    data->bim_v_control.pos_pre = position;
+	
+    /*uint32_t dpos;
+    dpos = position - data->bim_v_control.pos_pre;*/
+    //data->bim_v_control.pos_pre = position;
     /*while (position >= ENCODER_BP3_PPR) {
         position -= ENCODER_BP3_PPR;
     }*/
@@ -87,21 +95,35 @@ void get_pos_w_mes(bim_control* data){
     	dtheta = theta_now - data->bim_v_control.theta_rm_mes_pre;
     }*/
 
-    dtheta = theta_now - data->bim_v_control.theta_rm_mes_pre;
+    dtheta = theta_now - data->bim_v_control.theta_rm_mes;
     if(abs(dtheta)>=PI){
-    	w = data->bim_v_control.wrm_mes;
-    }else{
-    	w = dtheta/dt;
+        if(theta_now>PI && data->bim_v_control.theta_rm_mes<=PI){
+            dtheta = dtheta - PI;
+        }else{
+            dtheta = dtheta + PI;
+        }
+    	
     }
 
+    w = dtheta/dt;
+ 
+    
         /*if(data->bim_v_control.wrm_mes!=0 && w!=0 && abs((w - data->bim_v_control.wrm_mes)/data->bim_v_control.wrm_mes)>=0.2){
         	w = data->bim_v_control.wrm_mes;
         }*/
-     data->bim_v_control.wrm_mes = w;
-    //bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt;
-    data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
-    data->bim_v_control.theta_rm_mes = theta_now;
 
+    if(data->bim_v_control.theta_rm_mes == 0 && data->bim_v_control.time_pre){
+        data->bim_v_control.wrm_mes = 0.0;
+    }else if(dt==0){
+        ;
+    }else{
+        data->bim_v_control.wrm_mes = w;
+    }
+     
+    //bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt;
+    //data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
+    data->bim_v_control.theta_rm_mes = theta_now;
+    data->bim_v_control.time_pre = now;
 }
 
 bim_control *init_bim(void){
@@ -142,9 +164,12 @@ bim_control *init_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_lpf.state_1));
+    bim_control_data.bim_lev_control.delta_mes_lpf[0] = 0.0;
+    bim_control_data.bim_lev_control.delta_mes_lpf[1] = 0.0;
     bim_control_data.bim_lev_control.diff_state[0] = 0.0;
     bim_control_data.bim_lev_control.diff_state[1] = 0.0;
     
+    bim_control_data.bim_v_control.CFO_state =  0.0;
     bim_control_data.bim_v_control.time_pre =  0;
     bim_control_data.bim_v_control.theta_rm_mes =  0.0;
 
@@ -169,8 +194,14 @@ bim_control *reset_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_lpf.state_1));
+    bim_control_data.bim_lev_control.delta_mes_lpf[0] = 0.0;
+    bim_control_data.bim_lev_control.delta_mes_lpf[1] = 0.0;
     bim_control_data.bim_lev_control.diff_state[0] = 0.0;
     bim_control_data.bim_lev_control.diff_state[1] = 0.0;
+    
+    bim_control_data.bim_v_control.CFO_state =  0.0;
+    bim_control_data.bim_v_control.time_pre =  0;
+    bim_control_data.bim_v_control.theta_rm_mes =  0.0;
     reset_regulator();
     return &(bim_control_data);
 }
@@ -347,13 +378,14 @@ void bim_controlloop (bim_control* data)
     get_pos_w_mes(data);
    //
    get_all_inverter_current_abc(data->current_control);
+
    //protection
    // w
-    /*if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
+    if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
         data = reset_bim();
         pwm_disable();
         return;
-    }*/
+    }
 
     int flag_t = 0;
     int flag_s = 0;
@@ -368,7 +400,12 @@ void bim_controlloop (bim_control* data)
 
    // velocity control
    if(data->bim_v_control.enable){
-       velocity_regulation(data);
+       if(DEBUG_DFLUX){
+           data->bim_v_control.Te_ref = 0.0;
+       }else{
+           velocity_regulation(data);
+       }
+       
         UFO(data);
         CFO(data);
    }
