@@ -73,7 +73,7 @@ typedef struct bim_velocity_control{
     double theta_rm_mes;
     //double theta_rm_mes_pre;
     uint32_t time_pre;
-    //uint32_t pos_pre;
+    int32_t step_pre;
     double wrm_mes;
     para_velocity_control para_velocity_control;
 

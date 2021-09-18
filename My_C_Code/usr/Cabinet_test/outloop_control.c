@@ -52,8 +52,24 @@ void get_pos_w_mes(bim_control* data){
 	now = fpga_timer_now();
 	encoder_get_position(&position);
 	//now = cpu_timer_now();
+	int32_t steps;
+    int32_t dsteps;
+	encoder_get_steps(&steps);
+    dsteps = steps - data->bim_v_control.step_pre;
+    int32_t dstep_abs;
 
+    if(dsteps <=0){
+        dstep_abs = -1*dsteps;
+    }else{
+        dstep_abs = dsteps;
+    }
 
+    double dsteps_rad = PI2 * ( (double) dsteps / (double) (ENCODER_BP3_PPR));
+    
+
+    
+
+	//double steps_rad = PI2 * ( (double) steps / (double) (ENCODER_BP3_PPR));
 		// Add d axis offset
 	//position += mo.d_offset;
 	uint32_t dt_int;
@@ -96,7 +112,13 @@ void get_pos_w_mes(bim_control* data){
     }*/
 
     dtheta = theta_now - data->bim_v_control.theta_rm_mes;
-    if(abs(dtheta)>=PI){
+    double dtheta_abs;
+    if(dtheta<0){
+    	dtheta_abs = -1.0*dtheta;
+    }else{
+    	dtheta_abs = 1.0*dtheta;
+    }
+    if(dtheta_abs>=PI){
         if(theta_now>PI && data->bim_v_control.theta_rm_mes<=PI){
             dtheta = dtheta - PI;
         }else{
@@ -107,23 +129,27 @@ void get_pos_w_mes(bim_control* data){
 
     w = dtheta/dt;
  
-    
+    double w_steps = dsteps_rad/dt;
         /*if(data->bim_v_control.wrm_mes!=0 && w!=0 && abs((w - data->bim_v_control.wrm_mes)/data->bim_v_control.wrm_mes)>=0.2){
         	w = data->bim_v_control.wrm_mes;
         }*/
 
-    if(data->bim_v_control.theta_rm_mes == 0 && data->bim_v_control.time_pre){
+    if(data->bim_v_control.theta_rm_mes == 0 && data->bim_v_control.time_pre == 0){
         data->bim_v_control.wrm_mes = 0.0;
     }else if(dt==0){
         ;
-    }else{
-        data->bim_v_control.wrm_mes = w;
+    }else if(dstep_abs>=0x8FFF0000){
+    	;
+    }
+    else{
+        data->bim_v_control.wrm_mes = w_steps;
     }
      
     //bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt;
     //data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
     data->bim_v_control.theta_rm_mes = theta_now;
     data->bim_v_control.time_pre = now;
+    data->bim_v_control.step_pre = steps;
 }
 
 bim_control *init_bim(void){
@@ -172,6 +198,7 @@ bim_control *init_bim(void){
     bim_control_data.bim_v_control.CFO_state =  0.0;
     bim_control_data.bim_v_control.time_pre =  0;
     bim_control_data.bim_v_control.theta_rm_mes =  0.0;
+    bim_control_data.bim_v_control.step_pre = 0;
 
     bim_control_data.current_control = init_twinbearingless();
     bim_control_data.current_control->sel_config = InvFour;
@@ -202,6 +229,7 @@ bim_control *reset_bim(void){
     bim_control_data.bim_v_control.CFO_state =  0.0;
     bim_control_data.bim_v_control.time_pre =  0;
     bim_control_data.bim_v_control.theta_rm_mes =  0.0;
+    bim_control_data.bim_v_control.step_pre = 0;
     reset_regulator();
     return &(bim_control_data);
 }
@@ -381,11 +409,11 @@ void bim_controlloop (bim_control* data)
 
    //protection
    // w
-    if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
+   /* if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
         data = reset_bim();
         pwm_disable();
         return;
-    }
+    }*/
 
     int flag_t = 0;
     int flag_s = 0;

@@ -28,6 +28,8 @@ double LOG_wsl = 0.0;
 double LOG_theta_e = 0.0;
 double LOG_we = 0.0;
 
+double LOG_Te = 0.0;
+
 void BIM_log (bim_control *data){
     LOG_wrm = data->bim_v_control.wrm_mes;
 	LOG_theta_rm = data->bim_v_control.theta_rm_mes;
@@ -48,5 +50,7 @@ void BIM_log (bim_control *data){
 	LOG_Iabc2_a = data->current_control->twin_inv2.Iabc[0];
 	LOG_Iabc2_b = data->current_control->twin_inv2.Iabc[1];
 	LOG_Iabc2_c = data->current_control->twin_inv2.Iabc[2];
+
+	LOG_Te = data->bim_v_control.Te_ref;
 
 }

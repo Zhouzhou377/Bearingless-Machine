@@ -26,7 +26,7 @@ static const para_bim BIM_PARA = {
 
 	.para_control.v_pi_Kp = 31.4159,
 	.para_control.v_pi_Ki= 36.9388,
-	.para_control.v_lpf_f= 1.0,
+	.para_control.v_lpf_f= 0.1,
 	.para_control.lev_pi_Kp= 100000.0,
 	.para_control.lev_pi_Ki= 1000000.0,
 	.para_control.lev_lpf_f= 1000.0,

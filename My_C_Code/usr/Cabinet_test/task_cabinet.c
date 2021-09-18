@@ -15,7 +15,7 @@
 
 
 //LOGGING VARIABLES
-
+/*
 double LOG_vdc = 0.0;
 double LOG_mb_I1 = 0.0;
 double LOG_mb_I2 = 0.0;
@@ -107,7 +107,7 @@ double LOG_we_tq = 0.0;
 
 //sensed values
 double LOG_wrm_mes = 0.0;
-double LOG_theta_rm_mes = 0.0;
+double LOG_theta_rm_mes = 0.0;*/
 
 // 
 
@@ -241,7 +241,7 @@ void task_cabinet_callback(void *arg)
 		LOG_Ib2_c = twin_data->twin_inv1.Iabc[2]*0.5;*/
 		//log torque current
 
-		LOG_Itq_d_ref = twin_data->tq.Idq0_ref[0];
+		/*LOG_Itq_d_ref = twin_data->tq.Idq0_ref[0];
 		LOG_Itq_q_ref = twin_data->tq.Idq0_ref[1];
 
 		LOG_Itq_d = twin_data->tq.Idq0[0];
