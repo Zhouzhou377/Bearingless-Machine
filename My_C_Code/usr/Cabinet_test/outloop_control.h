@@ -69,9 +69,11 @@ typedef struct bim_velocity_control{
     double theta_re_ref;
     double wre_ref;
     double CFO_state;
+    double w_test;
 
     double theta_rm_mes;
-    //double theta_rm_mes_pre;
+    double theta_rm_mes_pre;
+    
     uint32_t time_pre;
     int32_t step_pre;
     double wrm_mes;
@@ -97,13 +99,16 @@ typedef struct bim_levitation_control{
 
 typedef struct bim_control {
     int is_init;
+    double theta_rm_mes_pre[2];
     bim_velocity_control bim_v_control;
     bim_levitation_control bim_lev_control;
     twinbearingless_control *current_control;
     para_bim *BIM_PARA;
 }bim_control;
 
+
 extern bim_control bim_control_data;
+extern volatile double theta_pre;
 
 bim_control *init_bim(void);
 bim_control *deinit_bim(void);

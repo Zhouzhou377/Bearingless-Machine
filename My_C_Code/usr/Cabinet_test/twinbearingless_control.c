@@ -280,6 +280,29 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m){
+    double Ki = PI2*100.0*para_m.R;
+    double Kp = PI2*100.0*para_m.L;
+    double u1[2];
+    double u2[2];
+    data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
+    data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
+
+    
+    double  state_p;
+    state_p = Kp;
+    double state;
+ 
+    double  state_i;
+    state_i = Ki*data_ctrl->PI_regulator->Ts*data_ctrl->error[0]+ data_ctrl->PI_regulator->state_1[0];
+    data_ctrl->PI_regulator->state_1[0] = state_i;
+    data_ctrl->vdq0_ref[0] = state_i + state_p;
+
+    state_i = Ki*data_ctrl->PI_regulator->Ts*data_ctrl->error[1]+ data_ctrl->PI_regulator->state_1[1];
+    data_ctrl->PI_regulator->state_1[1] = state_i;
+    data_ctrl->vdq0_ref[1] = state_i + state_p;
+    data_ctrl->vdq0_ref[2] = 0.0;
+
+    /*
     double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
     double u1[2];
     double u2[2];
@@ -307,7 +330,7 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
 
     //update state 3
     data_ctrl->PI_regulator->state_3[0] = u2[0]*data_ctrl->PI_regulator->Bd;
-    data_ctrl->PI_regulator->state_3[1] = u2[1]*data_ctrl->PI_regulator->Bd;
+    data_ctrl->PI_regulator->state_3[1] = u2[1]*data_ctrl->PI_regulator->Bd;*/
 }
 
 
@@ -432,14 +455,17 @@ void current_regulation (twinbearingless_control *data)
         vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0];
         vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1];
         vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2];
+        double theta = 0.0;
 
         dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);
+        //dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, theta);
 
         vdq0[0] = data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0];
         vdq0[1] = data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1];
         vdq0[2] = data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2];
 
         dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, data->s1.theta_rad);
+        //dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, theta);
 
         vdq0[0] = data->s2.vdq0_ref[0] + data->s2.vdq0_decouple[0];
         vdq0[1] = data->s2.vdq0_ref[1] + data->s2.vdq0_decouple[1];

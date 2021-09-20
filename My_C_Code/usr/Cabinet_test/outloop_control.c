@@ -24,10 +24,12 @@
 #define POSITION_RATIO (1.0)
 #define GEO_CENTER_X (0.0)
 #define GEO_CENTER_y (0.0)
+#define TS_v  (0.0001)
 
-#define DEBUG_DFLUX (1)
+#define DEBUG_DFLUX (0)
 
 bim_control bim_control_data;
+volatile double theta_pre = 0.0;
 
 
 void reset_states_3phase (double *state){
@@ -41,23 +43,34 @@ void get_deltaxy_mes(bim_control* data){
     data->bim_lev_control.delta_mes[1] = POSITION_RATIO*(eddy_current_sensor_read_y_voltage() * M_PER_VOLT) + GEO_CENTER_y;
 }
 
+double get_encoder_pos(void){
+    uint32_t position;
+    encoder_get_position(&position);
+
+    double theta_now;
+
+    position =  position&0x0000003FF;
+    theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));
+
+}
+
 void get_pos_w_mes(bim_control* data){
-	uint32_t position = 0;
-    uint32_t now;
+	//uint32_t position = 0;
+    //uint32_t now;
 
     /*uint32_t time_test_int = fpga_timer_now();
     double time_test = fpga_timer_ticks_to_sec(time_test_int);*/
 
 	// Get delta position and speed
-	now = fpga_timer_now();
-	encoder_get_position(&position);
+	//now = fpga_timer_now();
+	//encoder_get_position(&position);
 	//now = cpu_timer_now();
-	int32_t steps;
-    int32_t dsteps;
-	encoder_get_steps(&steps);
-    dsteps = steps - data->bim_v_control.step_pre;
-    int32_t dstep_abs;
-
+	//int32_t steps;
+    //int32_t dsteps;
+	//encoder_get_steps(&steps);
+    //dsteps = steps - data->bim_v_control.step_pre;
+    //int32_t dstep_abs;
+/*
     if(dsteps <=0){
         dstep_abs = -1*dsteps;
     }else{
@@ -90,18 +103,19 @@ void get_pos_w_mes(bim_control* data){
     /*while (position >= ENCODER_BP3_PPR) {
         position -= ENCODER_BP3_PPR;
     }*/
-
+    
 	// Convert to radians
-    double theta_now;
-     
-    theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));
+    /*double theta_now;
+
+    position =  position&0x0000003FF;
+    theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));*/
     double dtheta;
     //dtheta = fmod(dtheta, PI2);
     //dtheta = theta_now - data->bim_v_control.theta_rm_mes;
     double w;
 
 
-    theta_now = fmod(theta_now, PI2);
+   // theta_now = fmod(theta_now, PI2);
 
     /*if(data->bim_v_control.wrm_mes>=0 && theta_now<data->bim_v_control.theta_rm_mes){
     	dtheta = theta_now + PI - data->bim_v_control.theta_rm_mes_pre;
@@ -110,8 +124,8 @@ void get_pos_w_mes(bim_control* data){
     }else{
     	dtheta = theta_now - data->bim_v_control.theta_rm_mes_pre;
     }*/
-
-    dtheta = theta_now - data->bim_v_control.theta_rm_mes;
+    double theta_now = data->bim_v_control.theta_rm_mes;
+    dtheta = data->bim_v_control.theta_rm_mes - data->bim_v_control.theta_rm_mes_pre;
     double dtheta_abs;
     if(dtheta<0){
     	dtheta_abs = -1.0*dtheta;
@@ -127,14 +141,14 @@ void get_pos_w_mes(bim_control* data){
     	
     }
 
-    w = dtheta/dt;
+    w = dtheta/TS_v;
  
-    double w_steps = dsteps_rad/dt;
+    /*double w_steps = dsteps_rad/TS_v;
         /*if(data->bim_v_control.wrm_mes!=0 && w!=0 && abs((w - data->bim_v_control.wrm_mes)/data->bim_v_control.wrm_mes)>=0.2){
         	w = data->bim_v_control.wrm_mes;
         }*/
 
-    if(data->bim_v_control.theta_rm_mes == 0 && data->bim_v_control.time_pre == 0){
+    /*if(data->bim_v_control.theta_rm_mes == 0 && data->bim_v_control.time_pre == 0){
         data->bim_v_control.wrm_mes = 0.0;
     }else if(dt==0){
         ;
@@ -143,13 +157,15 @@ void get_pos_w_mes(bim_control* data){
     }
     else{
         data->bim_v_control.wrm_mes = w_steps;
-    }
-     
-    //bim_control_data.bim_v_control.wrm_mes = (theta_now - bim_control_data.bim_v_control.theta_rm_mes)/dt;
+    }*/
+     //data->bim_v_control.w_test = theta_now - data->bim_v_control.theta_rm_mes;
+    bim_control_data.bim_v_control.wrm_mes = w;
     //data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
-    data->bim_v_control.theta_rm_mes = theta_now;
-    data->bim_v_control.time_pre = now;
-    data->bim_v_control.step_pre = steps;
+    //data->bim_v_control.theta_rm_mes = theta_now;
+    //data->theta_rm_mes_pre[1] = theta_now;
+    //data->bim_v_control.time_pre = now;
+    //data->bim_v_control.step_pre = steps;
+    
 }
 
 bim_control *init_bim(void){
@@ -291,12 +307,28 @@ void func_anti_windup(para_anti_windup *para_antiwp, double in, double *in_antiw
 
 void velocity_regulation(bim_control* data){
     double antiwp = 0.0;
-
+    get_pos_w_mes(data);
+    data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
     //func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), 1, &(data->bim_v_control.para_velocity_control.para_lpf));
     func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), &(data->bim_v_control.para_velocity_control.para_lpf), &(data->bim_v_control.para_velocity_control.para_lpf.state_1[0]));
 
     data->bim_v_control.err_wrm = data->bim_v_control.wrm_ref_lpf - data->bim_v_control.wrm_mes;
-    func_PI_normal(&(data->bim_v_control.err_wrm), &(data->bim_v_control.Te_ref), 1, &(data->bim_v_control.para_velocity_control.para_PI), &antiwp);
+
+    double Ts = data->bim_v_control.Ts;
+    double state_p;
+    double state_i;
+
+    
+        state_p = data->bim_v_control.para_velocity_control.para_PI.Kp*data->bim_v_control.err_wrm;
+        double state;
+        state = data->bim_v_control.err_wrm;
+        state_i = data->bim_v_control.para_velocity_control.para_PI.Ki*Ts*state+ data->bim_v_control.para_velocity_control.para_PI.state_1[0];
+        data->bim_v_control.para_velocity_control.para_PI.state_1[0] = state_i;
+        data->bim_v_control.Te_ref = state_i + state_p;
+    
+
+
+   //func_PI_normal(&(data->bim_v_control.err_wrm), &(data->bim_v_control.Te_ref), 1, &(data->bim_v_control.para_velocity_control.para_PI), &antiwp);
 
 }
 
@@ -399,11 +431,16 @@ void bim_controlloop (bim_control* data)
     if(!data->is_init || data == 0x00000000){
         data = init_bim();
     }
-
+    //theta_pre = data->bim_v_control.theta_rm_mes;
     //update eddy current position
     get_deltaxy_mes(data);
     //update theta and we
-    get_pos_w_mes(data);
+    //data->theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
+    ////data->bim_v_control.w_test = data->bim_v_control.theta_rm_mes_pre;
+    double theta = get_encoder_pos();
+    data->bim_v_control.theta_rm_mes = theta;
+    
+    //data->bim_v_control.w_test = data->theta_rm_mes_pre;
    //
    get_all_inverter_current_abc(data->current_control);
 
@@ -429,7 +466,7 @@ void bim_controlloop (bim_control* data)
    // velocity control
    if(data->bim_v_control.enable){
        if(DEBUG_DFLUX){
-           data->bim_v_control.Te_ref = 0.0;
+           //data->bim_v_control.Te_ref = 0.0;
        }else{
            velocity_regulation(data);
        }
@@ -457,5 +494,5 @@ void bim_controlloop (bim_control* data)
    data->current_control->s1.Idq0_ref[2] = data->bim_lev_control.Ixy0_ref[2];
 
    current_regulation (data->current_control);
-
+    //theta_pre =data->bim_v_control.theta_rm_mes;
 }

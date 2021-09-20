@@ -24,7 +24,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(11)
+#define NUM_HELP_ENTRIES	(12)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -35,6 +35,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"enable_levctrl", "Enable BIM levitation control"},
 		{"set_w", "Set rotor mechanical rotational speed rad/s"},
 		{"set_id", "Set id"},
+		{"set_Te", "Set Te"},
 		{"set_deltaxy", "Set rotor position xy0"},
 		{"disable_ctrl", "Disable BIM regulation"}
 
@@ -185,6 +186,19 @@ int cmd_BIM(int argc, char **argv)
 		bim_control_data.bim_v_control.Idq0_ref[0] = id;
 		return CMD_SUCCESS;
 	}
+
+	if (strcmp("set_Te", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+		//read in arguments
+		double Te = strtod(argv[2], NULL);
+	
+
+		bim_control_data.bim_v_control.Te_ref = Te;
+		return CMD_SUCCESS;
+	}
+
 
 	
 	if (strcmp("disable_ctrl", argv[1]) == 0) {

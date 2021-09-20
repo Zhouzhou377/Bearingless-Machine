@@ -345,6 +345,11 @@ class cmd():
         out = self.amdc.cmd(f'BIM set_w {w:.6f}')
         if self.debug:
             return out 
+
+    def BIM_set_Te(self, Te):
+        out = self.amdc.cmd(f'BIM set_Te {Te:.6f}')
+        if self.debug:
+            return out 
     
     def BIM_set_id(self, id):
         out = self.amdc.cmd(f'BIM set_id {id:.6f}')
