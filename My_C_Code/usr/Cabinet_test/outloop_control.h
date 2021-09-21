@@ -26,6 +26,17 @@ typedef struct para_lpf{
 
 } para_lpf;
 
+typedef struct para_observer{
+    double enable;
+    double Ts;
+    double Kd;
+    double Kj;
+    double state1;
+    double state2;
+    para_PI_discrete_normal para_PI;
+
+} para_observer;
+
 typedef struct para_anti_windup{
     
     double sat_low;
@@ -72,12 +83,17 @@ typedef struct bim_velocity_control{
     double w_test;
 
     double theta_rm_mes;
-    double theta_rm_mes_pre;
+    double theta_rm_mes_pre[2];
     
     uint32_t time_pre;
     int32_t step_pre;
     double wrm_mes;
+
+    double wrm_est;
+    double wrm_est_hf;
+    double theta_rm_est;
     para_velocity_control para_velocity_control;
+    para_observer para_ob;
 
 }bim_velocity_control;
 
@@ -108,7 +124,7 @@ typedef struct bim_control {
 
 
 extern bim_control bim_control_data;
-extern volatile double theta_pre;
+//extern static double theta_pre;
 
 bim_control *init_bim(void);
 bim_control *deinit_bim(void);

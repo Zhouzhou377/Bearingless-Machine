@@ -21,6 +21,8 @@ double LOG_Itq_q = 0.0;
 double LOG_Is1_d = 0.0;
 double LOG_Is1_q = 0.0;
 
+double LOG_Te_ref = 0.0;
+
 double LOG_wrm = 0.0;
 double LOG_theta_rm = 0.0;
 double LOG_theta_rm_pre = 0.0;
@@ -43,8 +45,9 @@ void BIM_log (bim_control *data){
     LOG_wrm = data->bim_v_control.wrm_mes;
 	LOG_theta_rm = data->bim_v_control.theta_rm_mes;
     LOG_wsl = data->bim_v_control.wsl_ref;
-	LOG_theta_e = data->theta_rm_mes_pre[1];
-    LOG_theta_rm_pre = data->bim_v_control.theta_rm_mes_pre;
+	LOG_theta_e = data->bim_v_control.theta_re_ref;
+    //LOG_theta_rm_pre = data->bim_v_control.theta_rm_mes_pre[0];
+	//LOG_Te_ref
 	
 
 	LOG_Itq_d_ref = data->current_control->tq.Idq0_ref[0];

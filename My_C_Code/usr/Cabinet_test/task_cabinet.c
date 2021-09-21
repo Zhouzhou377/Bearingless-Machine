@@ -203,7 +203,7 @@ void task_cabinet_callback(void *arg)
 	}
 	else if(cmd_enable.enable_BIMcontrol){
 		bim_control_pt = &bim_control_data;
-		theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
+		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
 		bim_controlloop(bim_control_pt);
 		//bim_control_pt = &bim_control_data;
 		BIM_log (bim_control_pt);

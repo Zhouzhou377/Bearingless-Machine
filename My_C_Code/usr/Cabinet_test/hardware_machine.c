@@ -1,4 +1,5 @@
 #include "usr/Cabinet_test/hardware_machine.h"
+#include "usr/Cabinet_test/definitions.h"
 
 
 
@@ -20,13 +21,15 @@ static const para_bim BIM_PARA = {
 	.para_machine.ki = 0.0,
 	.para_machine.delta_limit = 0.00265,
 	.para_machine.m_rotor = 1.488,
+	.para_machine.J = 0.01,
+	
 	.para_machine.iabc_max = 40.0,
 	.para_machine.wrm_max = 1000.0,
 	.para_machine.id_ref = 1.0,
 
-	.para_control.v_pi_Kp = 0.6,
-	.para_control.v_pi_Ki= 0.00,
-	.para_control.v_lpf_f= 0.1,
+	.para_control.v_pi_Kp = 0.001,
+	.para_control.v_pi_Ki= 0.0001,
+	.para_control.v_lpf_f= 0.05,
 	.para_control.lev_pi_Kp= 100000.0,
 	.para_control.lev_pi_Ki= 1000000.0,
 	.para_control.lev_lpf_f= 1000.0,
@@ -34,7 +37,10 @@ static const para_bim BIM_PARA = {
 	.para_control.lev_ba= 942.4778,
 	.para_control.lev_sat_low= -20.0,
 	.para_control.lev_sat_high= 20.0,
-	.para_control.lev_antiwp_k= 1.4286e-04
+	.para_control.lev_antiwp_k= 1.4286e-04,
+	.para_control.ob_theta_fd = 50.0,
+	.para_control.ob_theta_fp = 10.0,
+	.para_control.ob_theta_fi = 2.0
 
 };
 

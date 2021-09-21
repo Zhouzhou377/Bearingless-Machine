@@ -23,6 +23,7 @@ typedef struct para_bim_machine{
 	double ki;
 	double delta_limit;
 	double m_rotor;
+	double J;
 
 	double iabc_max;
 	double wrm_max;
@@ -47,6 +48,9 @@ typedef struct para_bim_control{
 	double lev_sat_low;
 	double lev_sat_high;
 	double lev_antiwp_k;
+	double ob_theta_fi;
+	double ob_theta_fp;
+	double ob_theta_fd;
 }para_bim_control;
 
 typedef struct para_bim{

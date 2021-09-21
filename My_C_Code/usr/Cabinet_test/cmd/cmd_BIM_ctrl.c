@@ -24,18 +24,20 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(12)
+#define NUM_HELP_ENTRIES	(13)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
 		{"reset", "Reset regulator"},
 		{"set_vdc", "Set DC Bus for a Specific Inverter"},
 		{"enable_ctrl", "Enable BIM control"},
+		{"enable_ob", "Enable speed observer"},
 		{"enable_vctrl", "Enable BIM velocity control"},
 		{"enable_levctrl", "Enable BIM levitation control"},
 		{"set_w", "Set rotor mechanical rotational speed rad/s"},
 		{"set_id", "Set id"},
 		{"set_Te", "Set Te"},
+		
 		{"set_deltaxy", "Set rotor position xy0"},
 		{"disable_ctrl", "Disable BIM regulation"}
 
@@ -124,6 +126,14 @@ int cmd_BIM(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bim_control_data.bim_v_control.enable = 1;
+		//reset_bim();
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("enable_ob", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+		bim_control_data.bim_v_control.para_ob.enable = 1;
 		//reset_bim();
 		return CMD_SUCCESS;
 	}

@@ -340,6 +340,10 @@ class cmd():
         out = self.amdc.cmd('BIM enable_levctrl')
         if self.debug:
             return out 
+    def BIM_enable_ob(self):
+        out = self.amdc.cmd('BIM enable_ob')
+        if self.debug:
+            return out 
     
     def BIM_set_w(self, w):
         out = self.amdc.cmd(f'BIM set_w {w:.6f}')
