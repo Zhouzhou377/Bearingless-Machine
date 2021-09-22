@@ -280,8 +280,8 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m){
-    double Ki = PI2*100.0*para_m.R;
-    double Kp = PI2*100.0*para_m.L;
+    double Ki = PI2*300.0*para_m.R;
+    double Kp = PI2*300.0*para_m.L;
     double u1[2];
     double u2[2];
     data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
