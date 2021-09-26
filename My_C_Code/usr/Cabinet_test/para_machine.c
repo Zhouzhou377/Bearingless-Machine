@@ -47,6 +47,15 @@ para_twinmachine_control *init_para_twinmachine_control(void){
         para_bim * para_bim;
         para_bim = get_para_BIM();
         // torque equivalent parameters
+        
+        para_machine_control.para_tq.R = 0.52;
+        para_machine_control.para_tq.L = 0.0058;
+
+        // suspension 1 equivalent parameters
+        para_machine_control.para_s1.R = 1.007;
+       
+        para_machine_control.para_s1.L = 0.0041;
+        /*
         para_machine_control.para_tq.R = para_bim->para_machine.rs/2.0;
         para_machine_control.para_tq.L = para_bim->para_machine.Ls;
 
@@ -54,7 +63,7 @@ para_twinmachine_control *init_para_twinmachine_control(void){
         para_machine_control.para_s1.R = para_bim->para_machine.rs*2.0;
         L_l = para_bim->para_machine.Lls*2.0;
         L_m = para_bim->para_machine.Lss*4.0;
-        para_machine_control.para_s1.L = L_l + L_m;
+        para_machine_control.para_s1.L = L_l + L_m;*/
 
     }
 

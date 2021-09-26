@@ -40,7 +40,7 @@
 
 // Enable injection functionality
 // set to 1 for enabled, 0 for disabled
-#define USER_CONFIG_ENABLE_INJECTION (0)
+#define USER_CONFIG_ENABLE_INJECTION (1)
 
 // Enable SensorCard platform motherboard support
 // set to 1 for enabled, 0 for disabled

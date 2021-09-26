@@ -365,10 +365,17 @@ class cmd():
         if self.debug:
             return out 
 
+    def BIM_set_ixy(self, ix_ref, iy_ref):
+        out = self.amdc.cmd(f'BIM set_ixy_ref {ix_ref:.6f} {iy_ref:.6f}')
+        if self.debug:
+            return out
+
     def BIM_disable(self):
         out = self.amdc.cmd('BIM disable_ctrl')
         if self.debug:
             return out 
+
+  
 
 if __name__ == "__main__":
         

@@ -1,5 +1,7 @@
 
 #include "usr/Cabinet_test/outloop_control.h"
+
+#include "usr/Cabinet_test/BIM_id.h"
 #include "usr/Cabinet_test/hardware_machine.h"
 #include "usr/Cabinet_test/twinbearingless_control.h"
 #include "drv/pwm.h"
@@ -25,6 +27,8 @@
 #define GEO_CENTER_X (0.0)
 #define GEO_CENTER_y (0.0)
 #define TS_v  (0.0001)
+
+#define ID_CCTRL (1)
 
 #define DEBUG_DFLUX (0)
 
@@ -241,7 +245,7 @@ bim_control *init_bim(void){
 
     bim_control_data.BIM_PARA = BIM_PARA;
 
-
+    injection_ctx_clear(&inj_ctx_ctrl);
     return &(bim_control_data);
 }
 
@@ -271,6 +275,7 @@ bim_control *reset_bim(void){
     reset_states_3phase(&(bim_control_data.bim_v_control.para_ob.para_PI.state_1));
 
     reset_regulator();
+    injection_ctx_clear(&inj_ctx_ctrl);
     return &(bim_control_data);
 }
 
@@ -547,7 +552,8 @@ void bim_controlloop (bim_control* data)
    data->current_control->s1.Idq0_ref[0] = data->bim_lev_control.Ixy0_ref[0];
    data->current_control->s1.Idq0_ref[1] = data->bim_lev_control.Ixy0_ref[1];
    data->current_control->s1.Idq0_ref[2] = data->bim_lev_control.Ixy0_ref[2];
-
+   if(ID_CCTRL){
+    	BIM_injection_callback(data);}
    current_regulation (data->current_control);
     //theta_pre =data->bim_v_control.theta_rm_mes;
 }

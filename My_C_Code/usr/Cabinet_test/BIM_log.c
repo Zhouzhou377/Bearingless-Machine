@@ -12,14 +12,14 @@ double LOG_Iabc2_c = 0.0;
 double LOG_Itq_d_ref = 0.0;
 double LOG_Itq_q_ref = 0.0;
 
-double LOG_Is1_d_ref = 0.0;
-double LOG_Is1_q_ref = 0.0;
+double LOG_Is1_x_ref = 0.0;
+double LOG_Is1_y_ref = 0.0;
 
 double LOG_Itq_d = 0.0;
 double LOG_Itq_q = 0.0;
 
-double LOG_Is1_d = 0.0;
-double LOG_Is1_q = 0.0;
+double LOG_Is1_x = 0.0;
+double LOG_Is1_y = 0.0;
 
 double LOG_Te_ref = 0.0;
 
@@ -40,6 +40,10 @@ double LOG_vc_ref = 0.0;
 double LOG_vd_ref = 0.0;
 double LOG_vq_ref = 0.0;
 double LOG_v0_ref = 0.0;
+
+double LOG_vx_ref = 0.0;
+double LOG_vy_ref = 0.0;
+
 
 void BIM_log (bim_control *data){
     LOG_wrm = data->bim_v_control.wrm_mes;
@@ -72,5 +76,13 @@ void BIM_log (bim_control *data){
 	LOG_vd_ref = data->current_control->tq.vdq0_ref[0];
 	LOG_vq_ref = data->current_control->tq.vdq0_ref[1];
 	LOG_v0_ref = data->current_control->tq.vdq0_ref[2];
+
+	LOG_vx_ref = data->current_control->s1.vdq0_ref[0];
+	LOG_vy_ref = data->current_control->s1.vdq0_ref[1];
+
+	LOG_Is1_x = data->current_control->s1.Idq0[0];
+	LOG_Is1_y = data->current_control->s1.Idq0[1];
+	LOG_Is1_x_ref = data->current_control->s1.Idq0_ref[0];
+	LOG_Is1_y_ref = data->current_control->s1.Idq0_ref[1];
 
 }

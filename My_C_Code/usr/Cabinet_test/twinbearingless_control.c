@@ -1,5 +1,7 @@
 
 #include "usr/Cabinet_test/twinbearingless_control.h"
+#include "usr/Cabinet_test/outloop_control.h"
+#include "usr/Cabinet_test/BIM_id.h"
 #include "usr/Cabinet_test/para_machine.h"
 #include "usr/Cabinet_test/cabinet.h"
 #include "usr/Cabinet_test/analog_sensor.h"
@@ -9,7 +11,7 @@
 #include "usr/Cabinet_test/definitions.h"
 #include <math.h>
 #include <stdbool.h>
-#define SUSP_ENABLE (0)
+#define ID_SYS (0)
 
 #define INV1 (2)
 #define INV2 (3)
@@ -280,7 +282,7 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m){
-    double Ki = PI2*300.0*para_m.R;
+    /*double Ki = PI2*300.0*para_m.R;
     double Kp = PI2*300.0*para_m.L;
     double u1[2];
     double u2[2];
@@ -300,9 +302,9 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
     state_i = Ki*data_ctrl->PI_regulator->Ts*data_ctrl->error[1]+ data_ctrl->PI_regulator->state_1[1];
     data_ctrl->PI_regulator->state_1[1] = state_i;
     data_ctrl->vdq0_ref[1] = state_i + state_p;
-    data_ctrl->vdq0_ref[2] = 0.0;
+    data_ctrl->vdq0_ref[2] = 0.0;*/
 
-    /*
+    
     double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
     double u1[2];
     double u2[2];
@@ -330,7 +332,7 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
 
     //update state 3
     data_ctrl->PI_regulator->state_3[0] = u2[0]*data_ctrl->PI_regulator->Bd;
-    data_ctrl->PI_regulator->state_3[1] = u2[1]*data_ctrl->PI_regulator->Bd;*/
+    data_ctrl->PI_regulator->state_3[1] = u2[1]*data_ctrl->PI_regulator->Bd;
 }
 
 
@@ -443,26 +445,31 @@ void current_regulation (twinbearingless_control *data)
     	update_control_current(&data->tq2);
 
     	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
-    	if(SUSP_ENABLE){
+    	
     	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
     	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
-    	regulator_PI_current_dq(&data->tq2, data->para_machine->para_tq2);}
+    	regulator_PI_current_dq(&data->tq2, data->para_machine->para_tq2);
 
-
+    	bim_control *bim_data = &bim_control_data;
+        if(ID_SYS){
+    	BIM_injection_callback(bim_data);}
         decouple(data);
         //
         double vdq0[3];
-        vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0];
-        vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1];
-        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2];
-        double theta = 0.0;
-
+        vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0]*1.0;
+        vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1]*1.0;
+        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2]*1.0;
+       
+        
         dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);
         //dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, theta);
 
-        vdq0[0] = data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0];
-        vdq0[1] = data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1];
-        vdq0[2] = data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2];
+        vdq0[0] = data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0]*1.0;
+        vdq0[1] = data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1]*1.0;
+        vdq0[2] = data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2]*1.0;
+
+
+
 
         dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, data->s1.theta_rad);
         //dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, theta);

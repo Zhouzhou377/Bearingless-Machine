@@ -5,6 +5,7 @@
 #include "usr/Cabinet_test/app_cabinet_test.h"
 #include "usr/Cabinet_test/cmd/cmd_twin_ctrl.h"
 #include "usr/Cabinet_test/cmd/cmd_cabinet_test.h"
+#include "sys/injection.h"
 
 #include "drv/gpio_mux.h"
 
@@ -25,6 +26,8 @@ void app_cabinet_test_init(void)
 
 	// AMDS
 	gpio_mux_set_device(0, GPIO_MUX_DEVICE2);
+
+
 }
 
 #endif //APP_CABINET

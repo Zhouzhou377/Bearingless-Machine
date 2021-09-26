@@ -2,6 +2,7 @@
 
 #ifdef APP_CABINET
 #include "usr/Cabinet_test/OpenloopVSI.h"
+#include "usr/Cabinet_test/BIM_id.h"
 #include "usr/Cabinet_test/inverter.h"
 #include "usr/Cabinet_test/task_cabinet.h"
 #include "usr/Cabinet_test/cabinet.h"
@@ -125,7 +126,7 @@ OpenLoop_Command VSI_Openloop_command;
 OpenLoop_Command *OpenLoop;
 
 cmd_signal cmd_enable;
-
+inj_ctx_t *ctx = &inj_ctx_ctrl[0];
 //#define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
 static task_control_block_t tcb;
@@ -147,7 +148,7 @@ void task_cabinet_init(void)
 	}else{
 		bim_control_pt = init_bim();
 	}
-	
+	BIM_injection_init();
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
 	cmd_enable.enable_BIMcontrol = 0;
@@ -163,6 +164,7 @@ void task_cabinet_deinit(void)
 	cmd_enable.enable_log = 0;
 	scheduler_tcb_unregister(&tcb);
 	twin_data = deinit_twinbearingless();
+	injection_ctx_unregister(ctx);
 }
 
 //function to determine if task has been started
