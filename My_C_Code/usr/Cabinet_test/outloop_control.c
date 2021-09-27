@@ -30,7 +30,7 @@
 
 #define ID_CCTRL (0)
 
-#define DEBUG_DFLUX (0)
+#define DEBUG_DFLUX (1)
 
 bim_control bim_control_data;
 static double theta_pre = 0.0;

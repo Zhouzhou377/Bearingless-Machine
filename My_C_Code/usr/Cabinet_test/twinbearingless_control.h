@@ -91,9 +91,10 @@ typedef struct twinbearingless_control{
 } twinbearingless_control;
 
 
-extern para_PI_discrete PI_tq;
-extern para_PI_discrete PI_s1;
-extern para_PI_discrete PI_s2;
+static para_PI_discrete PI_tq;
+static para_PI_discrete PI_s1;
+static para_PI_discrete PI_s2;
+static para_PI_discrete PI_tq2;
 extern twinbearingless_control twin_control;
 
 twinbearingless_control *init_twinbearingless(void);

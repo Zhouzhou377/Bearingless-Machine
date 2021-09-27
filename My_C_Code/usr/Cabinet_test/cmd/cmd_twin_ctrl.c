@@ -17,8 +17,8 @@
 
 #include "drv/analog.h"
 
-twinbearingless_control twin_control;
-cmd_signal cmd_enable;
+//twinbearingless_control twin_control;
+//cmd_signal cmd_enable;
 
 //#define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 

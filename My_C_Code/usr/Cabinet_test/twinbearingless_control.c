@@ -23,10 +23,10 @@
 #define WD_S2 (2.0*PI*100.0)
 
 
-para_PI_discrete PI_tq;
-para_PI_discrete PI_s1;
-para_PI_discrete PI_s2;
-para_PI_discrete PI_tq2;
+static para_PI_discrete PI_tq;
+static para_PI_discrete PI_s1;
+static para_PI_discrete PI_s2;
+static para_PI_discrete PI_tq2;
 para_PR PR_tq;
 para_PR PR_s1;
 para_PR PR_s2;
@@ -270,7 +270,15 @@ void update_control_current(twin_control_data *data){
     data->Idq0_m1[1] = data->Idq0[1];
     data->Idq0_m1[2] = data->Idq0[2];
 
-    abc_to_dq0((data->Iabc), (data->Idq0), data->theta_rad);
+    abc_to_dq0(&(data->Iabc[0]), &(data->Idq0[0]), data->theta_rad);
+
+}
+
+
+void update_states(double *states, double state_in[3]){
+    states[0] = state_in[0];
+    states[1] = state_in[1];
+    states[2] = state_in[2];
 
 }
 
@@ -282,7 +290,7 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m){
-   /* double Ki = PI2*500.0*para_m.R;
+    double Ki = PI2*500.0*para_m.R;
     double Kp = PI2*500.0*para_m.L;
     double u1[2];
     double u2[2];
@@ -302,39 +310,44 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
     state_i = Ki*data_ctrl->PI_regulator->Ts*data_ctrl->error[1]+ data_ctrl->PI_regulator->state_1[1];
     data_ctrl->PI_regulator->state_1[1] = state_i;
     data_ctrl->vdq0_ref[1] = state_i + state_p;
-    data_ctrl->vdq0_ref[2] = 0.0;*/
+    data_ctrl->vdq0_ref[2] = 0.0;
 
     
-    double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
+   /* double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
     double u1[2];
     double u2[2];
     data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
     data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
     u1[0] = data_ctrl->error[0] * K1;
     u1[1] = data_ctrl->error[1] * K1;
-    u2[0] = u1[0] - data_ctrl->PI_regulator->state_1[0] + data_ctrl->PI_regulator->state_2[0] + data_ctrl->PI_regulator->state_3[0];
-    u2[1] = u1[1] - data_ctrl->PI_regulator->state_1[1] + data_ctrl->PI_regulator->state_2[1] + data_ctrl->PI_regulator->state_3[1];
+    u2[0] = u1[0] - data_ctrl->PI_regulator->state_1[0] + data_ctrl->PI_regulator->state_2[0]*data_ctrl->PI_regulator->Ad + data_ctrl->PI_regulator->state_3[0]*data_ctrl->PI_regulator->Bd;
+    u2[1] = u1[1] - data_ctrl->PI_regulator->state_1[1] + data_ctrl->PI_regulator->state_2[1]*data_ctrl->PI_regulator->Ad + data_ctrl->PI_regulator->state_3[1]*data_ctrl->PI_regulator->Bd;
 
     double theta;
     theta = data_ctrl->we*2.0*data_ctrl->PI_regulator->Ts;
-    exp_jtheta(theta, u2, data_ctrl->vdq0_ref);
+    exp_jtheta(theta, u2, &(data_ctrl->vdq0_ref[0]));
     data_ctrl->vdq0_ref[2] = 0.0;
 
     // delay states
     // update state 1
     theta = data_ctrl->we*-1.0*data_ctrl->PI_regulator->Ts;
-    exp_jtheta(theta, u1, data_ctrl->PI_regulator->state_1);
+    exp_jtheta(theta, u1, &(data_ctrl->PI_regulator->state_1[0]));
+    double state_in[3];
     data_ctrl->PI_regulator->state_1[2] = 0.0;
-    data_ctrl->PI_regulator->state_1[0] = data_ctrl->PI_regulator->state_1[0]*data_ctrl->PI_regulator->Ap;
+    data_ctrl->PI_regulator->state_1[0]= data_ctrl->PI_regulator->state_1[0]*data_ctrl->PI_regulator->Ap;
     data_ctrl->PI_regulator->state_1[1] = data_ctrl->PI_regulator->state_1[1]*data_ctrl->PI_regulator->Ap;
 
-    //update state 2
-    data_ctrl->PI_regulator->state_2[0] = u2[0]*data_ctrl->PI_regulator->Ad;
-    data_ctrl->PI_regulator->state_2[1] = u2[1]*data_ctrl->PI_regulator->Ad;
+    //update_states(&(data_ctrl->PI_regulator->state_1[0]), state_in);
 
     //update state 3
-    data_ctrl->PI_regulator->state_3[0] = u2[0]*data_ctrl->PI_regulator->Bd;
-    data_ctrl->PI_regulator->state_3[1] = u2[1]*data_ctrl->PI_regulator->Bd;
+    data_ctrl->PI_regulator->state_3[0] = data_ctrl->PI_regulator->state_2[0];
+    data_ctrl->PI_regulator->state_3[1] = data_ctrl->PI_regulator->state_2[1];
+
+    //update state 2
+    data_ctrl->PI_regulator->state_2[0] = u2[0];
+    data_ctrl->PI_regulator->state_2[1] = u2[1];*/
+
+    
 }
 
 
@@ -463,7 +476,7 @@ void current_regulation (twinbearingless_control *data)
         vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2]*0.0;
        
         
-        dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);
+        dq0_to2_abc(&(data->twin_inv1.vabc_ref[0]), &vdq0[0], data->tq.theta_rad);
         //dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, theta);
 
         vdq0[0] = data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0]*1.0;
@@ -473,20 +486,20 @@ void current_regulation (twinbearingless_control *data)
 
 
 
-        dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, data->s1.theta_rad);
+        dq0_to2_abc(&(data->twin_inv2.vabc_ref[0]), vdq0, data->s1.theta_rad);
         //dq0_to2_abc(data->twin_inv2.vabc_ref, vdq0, theta);
 
         vdq0[0] = data->s2.vdq0_ref[0] + data->s2.vdq0_decouple[0];
         vdq0[1] = data->s2.vdq0_ref[1] + data->s2.vdq0_decouple[1];
         vdq0[2] = data->s2.vdq0_ref[2] + data->s2.vdq0_decouple[2];
 
-        dq0_to2_abc(data->twin_inv3.vabc_ref, vdq0, data->s2.theta_rad);
+        dq0_to2_abc(&(data->twin_inv3.vabc_ref[0]), &vdq0[0], data->s2.theta_rad);
 
         vdq0[0] = data->tq2.vdq0_ref[0] + data->tq2.vdq0_decouple[0];
         vdq0[1] = data->tq2.vdq0_ref[1] + data->tq2.vdq0_decouple[1];
         vdq0[2] = data->tq2.vdq0_ref[2] + data->tq2.vdq0_decouple[2];
 
-        dq0_to2_abc(data->twin_inv4.vabc_ref, vdq0, data->tq2.theta_rad);
+        dq0_to2_abc(&(data->twin_inv4.vabc_ref[0]), &vdq0[0], data->tq2.theta_rad);
 
     }else{
     	//calculate torque and suspension currents
