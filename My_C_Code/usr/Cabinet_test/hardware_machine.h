@@ -20,6 +20,9 @@ typedef struct para_bim_machine{
 
 	double kf;
 	double k_delta;
+	double k_delta_a2;
+	double k_delta_a1;
+	double k_delta_a0;
 	double ki;
 	double delta_limit;
 	double m_rotor;
@@ -60,5 +63,5 @@ typedef struct para_bim{
 
 
 para_bim *get_para_BIM(void);
-
+void update_para_activedamping(para_bim *data, double id);
 #endif // HARDWARE_H

@@ -282,8 +282,8 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m){
-    /*double Ki = PI2*300.0*para_m.R;
-    double Kp = PI2*300.0*para_m.L;
+   /* double Ki = PI2*500.0*para_m.R;
+    double Kp = PI2*500.0*para_m.L;
     double u1[2];
     double u2[2];
     data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
@@ -318,11 +318,13 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
     double theta;
     theta = data_ctrl->we*2.0*data_ctrl->PI_regulator->Ts;
     exp_jtheta(theta, u2, data_ctrl->vdq0_ref);
+    data_ctrl->vdq0_ref[2] = 0.0;
 
     // delay states
     // update state 1
     theta = data_ctrl->we*-1.0*data_ctrl->PI_regulator->Ts;
     exp_jtheta(theta, u1, data_ctrl->PI_regulator->state_1);
+    data_ctrl->PI_regulator->state_1[2] = 0.0;
     data_ctrl->PI_regulator->state_1[0] = data_ctrl->PI_regulator->state_1[0]*data_ctrl->PI_regulator->Ap;
     data_ctrl->PI_regulator->state_1[1] = data_ctrl->PI_regulator->state_1[1]*data_ctrl->PI_regulator->Ap;
 
@@ -431,7 +433,7 @@ void current_regulation (twinbearingless_control *data)
             //update sensed currents
         get_all_inverter_current_abc(data);
         //update theta and we
-        get_theta_we(data);
+        //get_theta_we(data);
     }
     
 
@@ -458,7 +460,7 @@ void current_regulation (twinbearingless_control *data)
         double vdq0[3];
         vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0]*1.0;
         vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1]*1.0;
-        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2]*1.0;
+        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2]*0.0;
        
         
         dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, data->tq.theta_rad);

@@ -28,7 +28,7 @@
 #define GEO_CENTER_y (0.0)
 #define TS_v  (0.0001)
 
-#define ID_CCTRL (1)
+#define ID_CCTRL (0)
 
 #define DEBUG_DFLUX (0)
 
@@ -365,8 +365,8 @@ void velocity_regulation(bim_control* data){
     //func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), 1, &(data->bim_v_control.para_velocity_control.para_lpf));
     func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), &(data->bim_v_control.para_velocity_control.para_lpf), &(data->bim_v_control.para_velocity_control.para_lpf.state_1[0]));
 
-    data->bim_v_control.Te_ref = data->bim_v_control.wrm_ref_lpf - data->bim_v_control.wrm_mes;
-    func_PI_normal(&(data->bim_v_control.Te_ref), &(data->bim_v_control.Te_ref), 1, &(data->bim_v_control.para_velocity_control.para_PI), &(antiwp));
+    data->bim_v_control.err_wrm = data->bim_v_control.wrm_ref_lpf - data->bim_v_control.wrm_mes;
+    func_PI_normal(&(data->bim_v_control.err_wrm), &(data->bim_v_control.Te_ref), 1, &(data->bim_v_control.para_velocity_control.para_PI), &(antiwp));
     /*
     double Ts = data->bim_v_control.Ts;
     double state_p;
@@ -421,6 +421,8 @@ void CFO(bim_control* data){
 }
 
 void levitation_regulation(bim_control* data){
+    double id = data->bim_v_control.Idq0_ref[0];
+    update_para_activedamping(data->BIM_PARA, id);
     data->bim_lev_control.err_delta[0] = data->bim_lev_control.delta_ref[0] - data->bim_lev_control.delta_mes[0];
     data->bim_lev_control.err_delta[1] = data->bim_lev_control.delta_ref[1] - data->bim_lev_control.delta_mes[1];
 
@@ -552,6 +554,8 @@ void bim_controlloop (bim_control* data)
    data->current_control->s1.Idq0_ref[0] = data->bim_lev_control.Ixy0_ref[0];
    data->current_control->s1.Idq0_ref[1] = data->bim_lev_control.Ixy0_ref[1];
    data->current_control->s1.Idq0_ref[2] = data->bim_lev_control.Ixy0_ref[2];
+
+
    if(ID_CCTRL){
     	BIM_injection_callback(data);}
    current_regulation (data->current_control);
