@@ -456,15 +456,17 @@ void levitation_regulation(bim_control* data){
     double out_antiwp_xy[3];
 
     theta_rad = data->bim_v_control.theta_re_ref*(-1.0);
-    func_Park(&out, &out_xy, theta_rad);
+    //func_Park(&out, &out_xy, theta_rad);
 
-    func_anti_windup(&(data->bim_lev_control.para_levi_control.para_anti_wp), out_xy[0], &(data->bim_lev_control.Ixy0_ref[0]), &(out_antiwp_xy[0]));
-    func_anti_windup(&(data->bim_lev_control.para_levi_control.para_anti_wp), out_xy[1], &(data->bim_lev_control.Ixy0_ref[1]), &(out_antiwp_xy[1]));
+    func_anti_windup(&(data->bim_lev_control.para_levi_control.para_anti_wp), out[0], &(out_xy[0]), &(out_antiwp_xy[0]));
+    func_anti_windup(&(data->bim_lev_control.para_levi_control.para_anti_wp), out[1], &(out_xy[1]), &(out_antiwp_xy[1]));
 
-    data->bim_lev_control.Ixy0_ref[2] = 0.0;
+    
     out_antiwp_xy[2] = 0.0;
+    out_xy[2] = 0.0;
 
-    func_Park_inverse(&(data->bim_lev_control.out_antiwp), &out_antiwp_xy, theta_rad);
+    func_Park(&(out_xy[0]), &(data->bim_lev_control.Ixy0_ref[0]), theta_rad);
+    data->bim_lev_control.Ixy0_ref[2] = 0.0;
 }
 
 

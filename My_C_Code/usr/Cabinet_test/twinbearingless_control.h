@@ -107,7 +107,7 @@ void get_all_inverter_current_abc(twinbearingless_control* data);
 void cal_invI_to_controlI_configseries(twinbearingless_control* data);
 void cal_invI_to_controlI_configInvFour(twinbearingless_control* data);
 void update_control_current(twin_control_data *data);
-void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m);
+void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m, int tq);
 void decouple(twinbearingless_control *data);
 void get_theta_we(twinbearingless_control *data);
 void regulator_PR_current(twin_control_data *data_ctrl);
