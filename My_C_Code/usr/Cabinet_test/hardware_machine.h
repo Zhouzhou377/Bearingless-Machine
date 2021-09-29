@@ -19,6 +19,10 @@ typedef struct para_bim_machine{
 
 
 	double kf;
+	double kf_a2;
+	double kf_a1;
+	double kf_a0;
+	double kf_theta_rad;
 	double k_delta;
 	double k_delta_a2;
 	double k_delta_a1;

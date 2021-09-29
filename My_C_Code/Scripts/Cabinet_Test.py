@@ -265,7 +265,7 @@ class cmd():
         if self.debug:
             return out 
 
-    def twin_enable_log(self):
+    def enable_log(self):
         
         out = self.amdc.cmd('twin enable_log')
         if self.debug:
@@ -344,7 +344,20 @@ class cmd():
         out = self.amdc.cmd('BIM enable_ob')
         if self.debug:
             return out 
-    
+    def BIM_disable_vctrl(self):
+        out = self.amdc.cmd('BIM disable_vctrl')
+        if self.debug:
+            return out       
+
+    def BIM_disable_levctrl(self):
+        out = self.amdc.cmd('BIM disable_levctrl')
+        if self.debug:
+            return out 
+    def BIM_disable_ob(self):
+        out = self.amdc.cmd('BIM disable_ob')
+        if self.debug:
+            return out 
+            
     def BIM_set_w(self, w):
         out = self.amdc.cmd(f'BIM set_w {w:.6f}')
         if self.debug:

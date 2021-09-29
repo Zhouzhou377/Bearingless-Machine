@@ -24,7 +24,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(14)
+#define NUM_HELP_ENTRIES	(17)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -34,6 +34,9 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"enable_ob", "Enable speed observer"},
 		{"enable_vctrl", "Enable BIM velocity control"},
 		{"enable_levctrl", "Enable BIM levitation control"},
+		{"disable_ob", "Disable speed observer"},
+		{"disable_vctrl", "Disable BIM velocity control"},
+		{"disable_levctrl", "Disable BIM levitation control"},
 		{"set_w", "Set rotor mechanical rotational speed rad/s"},
 		{"set_id", "Set id"},
 		{"set_Te", "Set Te"},
@@ -146,6 +149,30 @@ int cmd_BIM(int argc, char **argv)
 		return CMD_SUCCESS;
 	}
 
+	if (strcmp("disable_vctrl", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+		bim_control_data.bim_v_control.enable = 0;
+		//reset_bim();
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("disable_ob", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+		bim_control_data.bim_v_control.para_ob.enable = 0;
+		//reset_bim();
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("disable_levctrl", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+		bim_control_data.bim_lev_control.enable = 0;
+		//reset_bim();
+		return CMD_SUCCESS;
+	}
+
 
 
 	if (strcmp("enable_log", argv[1]) == 0) {
@@ -233,6 +260,8 @@ int cmd_BIM(int argc, char **argv)
 		cmd_enable.enable_BIMcontrol = 0;
 		cmd_enable.enable_currentcontrol = 0;
 		cmd_enable.enable_openloop = 0;
+		bim_control_data.bim_lev_control.enable = 0;
+		bim_control_data.bim_v_control.enable = 0;
 		reset_bim();
 		
 		return CMD_SUCCESS;

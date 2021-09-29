@@ -101,6 +101,7 @@ typedef struct bim_velocity_control{
 typedef struct bim_levitation_control{
     int enable;
     double delta_ref[2];
+    double delta_ref_lpf[2];
     double Ixy0_ref[3];
  
     double delta_mes[2];

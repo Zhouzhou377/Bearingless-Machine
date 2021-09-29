@@ -18,8 +18,8 @@
 #define INV3 (5)
 #define INV4 (6)
 
-#define WD_TQ (2.0*PI*500.0)
-#define WD_S1 (2.0*PI*500.0)
+#define WD_TQ (2.0*PI*10.0)
+#define WD_S1 (2.0*PI*10.0)
 #define WD_S2 (2.0*PI*100.0)
 
 
@@ -274,6 +274,15 @@ void update_control_current(twin_control_data *data){
 
 }
 
+void update_control_current_susp(twin_control_data *data){
+    data->Idq0_m1[0] = data->Idq0[0];
+    data->Idq0_m1[1] = data->Idq0[1];
+    data->Idq0_m1[2] = data->Idq0[2];
+
+    func_Clarke(&(data->Idq0[0]), &(data->Iabc[0]));
+
+}
+
 
 void update_states(double *states, double state_in[3]){
     states[0] = state_in[0];
@@ -290,8 +299,15 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_control_single para_m, int tq){
-    /*double Ki = PI2*300.0*para_m.R;
-    double Kp = PI2*300.0*para_m.L;
+	/*double Kp;
+	double Ki;
+	if(tq){
+    	Ki = PI2*300.0*para_m.R*1.0;
+    	Kp = PI2*300.0*para_m.L*0.5;
+	}else{
+		Kp = PI2*300.0*para_m.L;
+		Ki = PI2*300.0*para_m.R*1.0;
+	}
   
     data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
     data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
@@ -311,9 +327,11 @@ void regulator_PI_current_dq(twin_control_data *data_ctrl, para_twinmachine_cont
     data_ctrl->PI_regulator->state_1[1] = state_i[1];
     data_ctrl->vdq0_ref[1] = state_i[1] + state_p[1];
     data_ctrl->vdq0_ref[2] = 0.0;*/
-    double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
+
+
+	double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
     if(tq == 1){
-        K1 = K1*0.5;
+        K1 = K1*0.7;
     }
     
     double u1[2];
@@ -394,8 +412,8 @@ void decouple(twinbearingless_control *data){
         data->tq.vdq0_decouple[1] = +0.5*vdecouple[1]; 
         data->tq.vdq0_decouple[2] = +0.5*vdecouple[2]; 
 
-        dq0_to2_abc(vabc, data->s2.vdq0_ref, data->s2.theta_rad);
-        abc_to_dq0(vabc, vdecouple, data->tq2.theta_rad);
+        dq0_to2_abc(&(vabc[0]), &(data->s2.vdq0_ref[0]), data->s2.theta_rad);
+        abc_to_dq0(&(vabc[0]), &(vdecouple[0]), data->tq2.theta_rad);
      
         data->tq2.vdq0_decouple[0] = +0.5*vdecouple[0]; 
         data->tq2.vdq0_decouple[1] = +0.5*vdecouple[1]; 
@@ -407,14 +425,14 @@ void decouple(twinbearingless_control *data){
 
         double vabc[3];
         double vdecouple[3];
-        dq0_to2_abc(vabc, data->tq.vdq0_ref, data->tq.theta_rad);
-        abc_to_dq0(vabc, vdecouple, data->s1.theta_rad);
+        dq0_to2_abc(&(vabc[0]), &(data->tq.vdq0_ref), data->tq.theta_rad);
+        abc_to_dq0(&(vabc[0]), &(vdecouple[0]), data->s1.theta_rad);
 
         data->s1.vdq0_decouple[0] = 0.5*vdecouple[0]; 
         data->s1.vdq0_decouple[1] = 0.5*vdecouple[1]; 
         data->s1.vdq0_decouple[2] = 0.5*vdecouple[2]; 
 
-        abc_to_dq0(vabc, vdecouple, data->s2.theta_rad);
+        abc_to_dq0(&(vabc[0]), &(vdecouple[0]), data->s2.theta_rad);
         data->s2.vdq0_decouple[0] = 0.5*vdecouple[0]; 
         data->s2.vdq0_decouple[1] = 0.5*vdecouple[1]; 
         data->s2.vdq0_decouple[2] = 0.5*vdecouple[2]; 
@@ -476,17 +494,13 @@ void current_regulation (twinbearingless_control *data)
         double vdq0[3];
         vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0]*1.0;
         vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1]*1.0;
-        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2]*0.0;
+        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2]*1.0;
        
-        
-        dq0_to2_abc(&(data->twin_inv1.vabc_ref[0]), &(vdq0[0]), data->tq.theta_rad);
-        //dq0_to2_abc(data->twin_inv1.vabc_ref, vdq0, theta);
+        dq0_to2_abc( &(data->twin_inv1.vabc_ref[0]), &(vdq0[0]), data->tq.theta_rad);
 
         vdq0[0] = data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0]*1.0;
         vdq0[1] = data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1]*1.0;
         vdq0[2] = data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2]*1.0;
-
-
 
 
         dq0_to2_abc(&(data->twin_inv2.vabc_ref[0]), &(vdq0[0]), data->s1.theta_rad);
@@ -511,9 +525,9 @@ void current_regulation (twinbearingless_control *data)
     	update_control_current(&data->s1);
     	update_control_current(&data->s2);
 
-    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq);
-    	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1);
-    	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2);
+    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq, 0);
+    	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1, 0);
+    	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2, 0);
 
     	regulator_PR_current(&(data->tq));
     	regulator_PR_current(&(data->s1));

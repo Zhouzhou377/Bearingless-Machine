@@ -33,9 +33,13 @@ double LOG_we = 0.0;
 
 double LOG_Te = 0.0;
 
-double LOG_va_ref = 0.0;
-double LOG_vb_ref = 0.0;
-double LOG_vc_ref = 0.0;
+double LOG_va1_ref = 0.0;
+double LOG_vb1_ref = 0.0;
+double LOG_vc1_ref = 0.0;
+
+double LOG_va2_ref = 0.0;
+double LOG_vb2_ref = 0.0;
+double LOG_vc2_ref = 0.0;
 
 double LOG_vd_ref = 0.0;
 double LOG_vq_ref = 0.0;
@@ -72,9 +76,13 @@ void BIM_log (bim_control *data){
 
 	LOG_Te = data->bim_v_control.Te_ref;
 
-	LOG_va_ref = data->current_control->twin_inv1.vabc_ref[0];
-	LOG_vb_ref = data->current_control->twin_inv1.vabc_ref[1];
-	LOG_vc_ref = data->current_control->twin_inv1.vabc_ref[2];
+	LOG_va1_ref = data->current_control->twin_inv1.vabc_ref[0];
+	LOG_vb1_ref = data->current_control->twin_inv1.vabc_ref[1];
+	LOG_vc1_ref = data->current_control->twin_inv1.vabc_ref[2];
+
+	LOG_va2_ref = data->current_control->twin_inv2.vabc_ref[0];
+	LOG_vb2_ref = data->current_control->twin_inv2.vabc_ref[1];
+	LOG_vc2_ref = data->current_control->twin_inv2.vabc_ref[2];
 
 	LOG_vd_ref = data->current_control->tq.vdq0_ref[0];
 	LOG_vq_ref = data->current_control->tq.vdq0_ref[1];

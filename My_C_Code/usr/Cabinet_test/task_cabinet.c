@@ -208,7 +208,7 @@ void task_cabinet_callback(void *arg)
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
 		bim_controlloop(bim_control_pt);
 		//bim_control_pt = &bim_control_data;
-		BIM_log (bim_control_pt);
+		
 		set_line_volts_three_phase(bim_control_pt->current_control->twin_inv1.vabc_ref[0], bim_control_pt->current_control->twin_inv1.vabc_ref[1], bim_control_pt->current_control->twin_inv1.vabc_ref[2], bim_control_pt->current_control->twin_inv1.inv);
 		set_line_volts_three_phase(bim_control_pt->current_control->twin_inv2.vabc_ref[0], bim_control_pt->current_control->twin_inv2.vabc_ref[1], bim_control_pt->current_control->twin_inv2.vabc_ref[2], bim_control_pt->current_control->twin_inv2.inv);
 
@@ -301,6 +301,8 @@ void task_cabinet_callback(void *arg)
 		LOG_v_tq_q = twin_data->tq.vdq0_ref[1];
 		LOG_we_tq = twin_data->tq.we;*/
 		}else{
+
+			BIM_log (bim_control_pt);
 			//bim_control_pt = &bim_control_data;
 			//BIM_log (bim_control_pt);
 			/*LOG_wrm_mes = bim_control_pt->bim_v_control.wrm_mes;
