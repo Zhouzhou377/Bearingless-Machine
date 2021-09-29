@@ -51,6 +51,12 @@ double LOG_vy_ref = 0.0;
 double LOG_delta_x = 0.0;
 double LOG_delta_y = 0.0;
 
+double LOG_delta_x_ref = 0.0;
+double LOG_delta_y_ref = 0.0;
+
+double LOG_delta_x_ref_lpf = 0.0;
+double LOG_delta_y_ref_lpf = 0.0;
+
 
 void BIM_log (bim_control *data){
     LOG_wrm = data->bim_v_control.wrm_mes;
@@ -98,5 +104,11 @@ void BIM_log (bim_control *data){
 
 	LOG_delta_x = data->bim_lev_control.delta_mes[0];
 	LOG_delta_y = data->bim_lev_control.delta_mes[1];
+
+	LOG_delta_x_ref = data->bim_lev_control.delta_ref[0];
+	LOG_delta_y_ref = data->bim_lev_control.delta_ref[1];
+
+	LOG_delta_x_ref_lpf = data->bim_lev_control.delta_ref_lpf[0];
+	LOG_delta_y_ref_lpf = data->bim_lev_control.delta_ref_lpf[1];
 
 }

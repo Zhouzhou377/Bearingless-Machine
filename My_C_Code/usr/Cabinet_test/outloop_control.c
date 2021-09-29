@@ -23,9 +23,10 @@
 #define ENCODER_BP3_PPR_BITS (10)
 #define ENCODER_BP3_PPR      (1 << ENCODER_BP3_PPR_BITS)
 #define M_PER_VOLT (4e-4)
-#define POSITION_RATIO (1.0)
-#define GEO_CENTER_X (0.0)
-#define GEO_CENTER_y (0.0)
+#define POSITION_RATIO_X (1.0)
+#define POSITION_RATIO_y (1.2252)
+#define GEO_CENTER_X (+8.0566e-6)
+#define GEO_CENTER_y (-1.7557e-4)
 #define TS_v  (0.0001)
 
 #define ID_CCTRL (0)
@@ -43,8 +44,8 @@ void reset_states_3phase (double *state){
 }
 
 void get_deltaxy_mes(bim_control* data){
-    data->bim_lev_control.delta_mes[0] = POSITION_RATIO*(eddy_current_sensor_read_x_voltage() * M_PER_VOLT) + GEO_CENTER_X;
-    data->bim_lev_control.delta_mes[1] = POSITION_RATIO*(eddy_current_sensor_read_y_voltage() * M_PER_VOLT) + GEO_CENTER_y;
+    data->bim_lev_control.delta_mes[0] = POSITION_RATIO_X*(eddy_current_sensor_read_x_voltage() * M_PER_VOLT + GEO_CENTER_X);
+    data->bim_lev_control.delta_mes[1] = POSITION_RATIO_y*(eddy_current_sensor_read_y_voltage() * M_PER_VOLT + GEO_CENTER_y);
 }
 
 double get_encoder_pos(void){
@@ -191,6 +192,9 @@ bim_control *init_bim(void){
     bim_control_data.bim_lev_control.para_levi_control.para_lpf.Ts = TS;
     bim_control_data.bim_lev_control.para_levi_control.para_lpf.fs = BIM_PARA->para_control.lev_lpf_f;
 
+    bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.Ts = TS;
+    bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.fs = BIM_PARA->para_control.lev_delta_lpf_f;
+
     bim_control_data.bim_lev_control.para_levi_control.para_anti_wp.k = BIM_PARA->para_control.lev_antiwp_k;
     bim_control_data.bim_lev_control.para_levi_control.para_anti_wp.sat_high = BIM_PARA->para_control.lev_sat_high;
     bim_control_data.bim_lev_control.para_levi_control.para_anti_wp.sat_low = BIM_PARA->para_control.lev_sat_low;
@@ -218,6 +222,7 @@ bim_control *init_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.state_1));
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1));
+    reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_lpf.state_1));
     bim_control_data.bim_lev_control.delta_mes_lpf[0] = 0.0;
@@ -254,6 +259,17 @@ bim_control *init_bim(void){
 
     bim_control_data.bim_v_control.wrm_ref = 0.0;
     reset_states_3phase(&(bim_control_data.bim_v_control.Idq0_ref[0]));
+
+    get_deltaxy_mes(&bim_control_data);
+    bim_control_data.bim_lev_control.delta_ref[0] = bim_control_data.bim_lev_control.delta_mes[0];
+    bim_control_data.bim_lev_control.delta_ref[1] = bim_control_data.bim_lev_control.delta_mes[1];
+
+    bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1[0] = bim_control_data.bim_lev_control.delta_mes[0];
+    bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1[1] = bim_control_data.bim_lev_control.delta_mes[1];
+    bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1[0] = bim_control_data.bim_lev_control.delta_ref[0];
+    bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1[1] = bim_control_data.bim_lev_control.delta_ref[1];
+
+
     return &(bim_control_data);
 }
 
@@ -292,6 +308,15 @@ bim_control *reset_bim(void){
 
     bim_control_data.bim_v_control.wrm_ref = 0.0;
     reset_states_3phase(&(bim_control_data.bim_v_control.Idq0_ref[0]));
+    reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1));
+    get_deltaxy_mes(&bim_control_data);
+    bim_control_data.bim_lev_control.delta_ref[0] = bim_control_data.bim_lev_control.delta_mes[0];
+    bim_control_data.bim_lev_control.delta_ref[1] = bim_control_data.bim_lev_control.delta_mes[1];
+
+    bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1[0] = bim_control_data.bim_lev_control.delta_mes[0];
+    bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1[1] = bim_control_data.bim_lev_control.delta_mes[1];
+    bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1[0] = bim_control_data.bim_lev_control.delta_ref[0];
+    bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1[1] = bim_control_data.bim_lev_control.delta_ref[1];
 
     return &(bim_control_data);
 }
@@ -440,10 +465,14 @@ void CFO(bim_control* data){
 void levitation_regulation(bim_control* data){
     double id = data->bim_v_control.Idq0_ref[0];
     update_para_activedamping(data->BIM_PARA, id);
+    data->bim_lev_control.para_levi_control.ba = data->BIM_PARA->para_control.lev_ba;
+    data->bim_lev_control.para_levi_control.ka = data->BIM_PARA->para_control.lev_ka;
 
-    
-    data->bim_lev_control.err_delta[0] = data->bim_lev_control.delta_ref[0] + data->bim_lev_control.delta_mes[0];
-    data->bim_lev_control.err_delta[1] = data->bim_lev_control.delta_ref[1] - data->bim_lev_control.delta_mes[1];
+    func_lpf(&(data->bim_lev_control.delta_ref[0]), &(data->bim_lev_control.delta_ref_lpf[0]), &(data->bim_lev_control.para_levi_control.para_delta_lpf), &(data->bim_lev_control.para_levi_control.para_delta_lpf.state_1[0]));
+    func_lpf(&(data->bim_lev_control.delta_ref[1]), &(data->bim_lev_control.delta_ref_lpf[1]), &(data->bim_lev_control.para_levi_control.para_delta_lpf), &(data->bim_lev_control.para_levi_control.para_delta_lpf.state_1[1]));
+
+    data->bim_lev_control.err_delta[0] = data->bim_lev_control.delta_ref_lpf[0] + data->bim_lev_control.delta_mes[0];
+    data->bim_lev_control.err_delta[1] = data->bim_lev_control.delta_ref_lpf[1] - data->bim_lev_control.delta_mes[1];
 
     double pi_out[2];
 
@@ -463,8 +492,12 @@ void levitation_regulation(bim_control* data){
         state_buf[i] = data->bim_lev_control.delta_mes_lpf[i]*data->bim_lev_control.para_levi_control.ba;
         state_diff[i] = (state_buf[i] - data->bim_lev_control.diff_state[i])*fs;
 
-
-        out[i] = (pi_out[i] - state_ka[i] - state_diff[i])*kf_inv;
+        if(data->BIM_PARA->para_machine.kf != 0){
+            out[i] = (pi_out[i] - state_ka[i] - state_diff[i])*kf_inv;
+        }else{
+            out[i] = 0.0;
+        }
+        
         data->bim_lev_control.diff_state[i] = state_buf[i];
     }
     out[2] = 0.0;
@@ -563,12 +596,13 @@ void bim_controlloop (bim_control* data)
     if(data->bim_lev_control.enable){
         levitation_regulation(data);
     }else{
-      double theta_rad = data->bim_v_control.theta_re_ref*(-1.0) + data->BIM_PARA->para_machine.kf_theta_rad;
+
+        /*double theta_rad = data->bim_v_control.theta_re_ref*(-1.0) + data->BIM_PARA->para_machine.kf_theta_rad;
         double Ixy_ref[3];
         func_Park(&(data->bim_lev_control.Ixy0_ref[0]), &(Ixy_ref[0]), theta_rad);
         data->bim_lev_control.Ixy0_ref[0] = Ixy_ref[0];
         data->bim_lev_control.Ixy0_ref[1] = Ixy_ref[1];
-        data->bim_lev_control.Ixy0_ref[2] = Ixy_ref[2];
+        data->bim_lev_control.Ixy0_ref[2] = Ixy_ref[2];*/
     }
    // transfer commands to current loop
    data->current_control->tq.we = data->bim_v_control.wre_ref;

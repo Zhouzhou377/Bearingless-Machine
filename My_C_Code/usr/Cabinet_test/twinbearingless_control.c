@@ -13,14 +13,15 @@
 #include <stdbool.h>
 #define ID_SYS (0)
 
+
 #define INV1 (2)
 #define INV2 (3)
 #define INV3 (5)
 #define INV4 (6)
 
-#define WD_TQ (2.0*PI*10.0)
-#define WD_S1 (2.0*PI*10.0)
-#define WD_S2 (2.0*PI*100.0)
+#define WD_TQ (2.0*PI*500.0)
+#define WD_S1 (2.0*PI*500.0)
+#define WD_S2 (2.0*PI*500.0)
 
 
 static para_PI_discrete PI_tq;

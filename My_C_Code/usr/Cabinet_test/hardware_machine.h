@@ -50,6 +50,7 @@ typedef struct para_bim_control{
 	double lev_pi_Kp;
 	double lev_pi_Ki;
 	double lev_lpf_f;
+	double lev_delta_lpf_f;
 	double lev_ka;
 	double lev_ba;
 	double lev_sat_low;

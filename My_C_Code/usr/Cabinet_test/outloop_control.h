@@ -54,6 +54,7 @@ typedef struct para_levitation_control{
     double state_1[3];
     para_anti_windup para_anti_wp;
     para_lpf para_lpf;
+    para_lpf para_delta_lpf;
 
 } para_levitation_control;
 
@@ -103,7 +104,7 @@ typedef struct bim_levitation_control{
     double delta_ref[2];
     double delta_ref_lpf[2];
     double Ixy0_ref[3];
- 
+    double F_xy[2];
     double delta_mes[2];
     double delta_mes_lpf[2];
     double err_delta[2];
