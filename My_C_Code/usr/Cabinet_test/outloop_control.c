@@ -23,7 +23,7 @@
 #define ENCODER_BP3_PPR_BITS (10)
 #define ENCODER_BP3_PPR      (1 << ENCODER_BP3_PPR_BITS)
 #define M_PER_VOLT (4e-4)
-#define POSITION_RATIO_X (-1.0)
+#define POSITION_RATIO_X (1.0)
 #define POSITION_RATIO_y (1.2252)
 #define GEO_CENTER_X (+8.0566e-6)
 #define GEO_CENTER_y (-1.7557e-4)
@@ -31,7 +31,7 @@
 
 #define ID_CCTRL (0)
 
-#define DEBUG_DFLUX (1)
+#define DEBUG_DFLUX (0)
 
 
 static double theta_test;
@@ -481,7 +481,7 @@ void levitation_regulation(bim_control* data){
     func_lpf(&(data->bim_lev_control.delta_ref[0]), &(data->bim_lev_control.delta_ref_lpf[0]), &(data->bim_lev_control.para_levi_control.para_delta_lpf), &(data->bim_lev_control.para_levi_control.para_delta_lpf.state_1[0]));
     func_lpf(&(data->bim_lev_control.delta_ref[1]), &(data->bim_lev_control.delta_ref_lpf[1]), &(data->bim_lev_control.para_levi_control.para_delta_lpf), &(data->bim_lev_control.para_levi_control.para_delta_lpf.state_1[1]));
 
-    data->bim_lev_control.err_delta[0] = data->bim_lev_control.delta_ref_lpf[0] + data->bim_lev_control.delta_mes[0];
+    data->bim_lev_control.err_delta[0] = data->bim_lev_control.delta_ref_lpf[0] - data->bim_lev_control.delta_mes[0];
     data->bim_lev_control.err_delta[1] = data->bim_lev_control.delta_ref_lpf[1] - data->bim_lev_control.delta_mes[1];
 
     double pi_out[2];
@@ -501,12 +501,7 @@ void levitation_regulation(bim_control* data){
     
         state_buf[i] = data->bim_lev_control.delta_mes_lpf[i]*data->bim_lev_control.para_levi_control.ba;
         state_diff[i] = (state_buf[i] - data->bim_lev_control.diff_state[i])*fs;
-
-        if(data->BIM_PARA->para_machine.kf != 0){
-            out[i] = (pi_out[i] - state_ka[i] - state_diff[i])*kf_inv;
-        }else{
-            out[i] = 0.0;
-        }
+        out[i] = (pi_out[i] - state_ka[i] - state_diff[i]);
         
         data->bim_lev_control.diff_state[i] = state_buf[i];
     }
@@ -516,11 +511,10 @@ void levitation_regulation(bim_control* data){
 
     //data->bim_lev_control.F_xy[0] = out[0];
     //data->bim_lev_control.F_xy[1] = out[1];
-    out[0] = out[0] + data->bim_lev_control.F_xy[0];
-    out[1] = out[1] + data->bim_lev_control.F_xy[1];
+    //out[0] = out[0] + data->bim_lev_control.F_xy[0];
+    //out[1] = out[1] + data->bim_lev_control.F_xy[1];
 
-    data->bim_lev_control.F_xy_out[0] = out[0];
-    data->bim_lev_control.F_xy_out[1] = out[1];
+
 /*
     double F_mag;
     double theta_F;
@@ -538,11 +532,31 @@ void levitation_regulation(bim_control* data){
     out[0] = F_mag*cos(2*theta_F);
     out[1] = F_mag*sin(2*theta_F);*/
 
+
+    out[0] =  out[0]+ data->bim_lev_control.F_xy[0];
+    out[1] =  out[1] +data->bim_lev_control.F_xy[1];
+
+    data->bim_lev_control.F_xy_out[0] = out[0];
+    data->bim_lev_control.F_xy_out[1] = out[1];
+
+    for(int i = 0; i<2; i++){
+    	if(data->BIM_PARA->para_machine.kf != 0){
+    	            out[i] = out[i]*kf_inv;
+    	        }else{
+    	            out[i] = 0.0;
+    	        }
+    }
+
     double theta_rad;
-    double out_xy[3];
+       double out_xy[3];
+       theta_rad = data->BIM_PARA->para_machine.kf_theta_rad;
+       exp_jtheta(theta_rad, &(out[0]), &(out_xy[0]));
+
+       out[0] = out_xy[0];
+       out[1] = out_xy[1];
     double out_antiwp_xy[3];
 
-    theta_rad = data->bim_v_control.theta_re_ref*(1.0)+data->BIM_PARA->para_machine.theta_offset_xy+ data->BIM_PARA->para_machine.kf_theta_rad;
+    theta_rad = data->bim_v_control.theta_re_ref*(0.0)+data->BIM_PARA->para_machine.theta_offset_xy;
     //func_Park(&out, &out_xy, theta_rad);
 
     func_anti_windup(&(data->bim_lev_control.para_levi_control.para_anti_wp), out[0], &(out_xy[0]), &(out_antiwp_xy[0]));
@@ -552,7 +566,8 @@ void levitation_regulation(bim_control* data){
     out_antiwp_xy[2] = 0.0;
     out_xy[2] = 0.0;
 
-    func_Park(&(out_xy[0]), &(data->bim_lev_control.Ixy0_ref[0]), theta_rad);
+    //func_Park_inverse(&(out_xy[0]), &(data->bim_lev_control.Ixy0_ref[0]), theta_rad);
+    exp_jtheta(theta_rad,&(out_xy[0]), &(data->bim_lev_control.Ixy0_ref[0]));
     data->bim_lev_control.Ixy0_ref[2] = 0.0;
 }
 
@@ -637,12 +652,12 @@ void bim_controlloop (bim_control* data)
         levitation_regulation(data);
     }else{
 
-        /*double theta_rad = data->bim_v_control.theta_re_ref*(-1.0) + data->BIM_PARA->para_machine.kf_theta_rad;
+        double theta_rad = data->bim_v_control.theta_re_ref*(-0.50) + data->BIM_PARA->para_machine.kf_theta_rad;
         double Ixy_ref[3];
         func_Park(&(data->bim_lev_control.Ixy0_ref[0]), &(Ixy_ref[0]), theta_rad);
-        data->bim_lev_control.Ixy0_ref[0] = Ixy_ref[0];
-        data->bim_lev_control.Ixy0_ref[1] = Ixy_ref[1];
-        data->bim_lev_control.Ixy0_ref[2] = Ixy_ref[2];*/
+        data->current_control->s1.Idq0_ref[0] = Ixy_ref[0];
+        data->current_control->s1.Idq0_ref[1] = Ixy_ref[1];
+        data->current_control->s1.Idq0_ref[2] = Ixy_ref[2];
     }
    // transfer commands to current loop
    data->current_control->tq.we = data->bim_v_control.wre_ref;
@@ -651,8 +666,8 @@ void bim_controlloop (bim_control* data)
    data->current_control->tq.Idq0_ref[1] = data->bim_v_control.Idq0_ref[1];
    data->current_control->tq.Idq0_ref[2] = data->bim_v_control.Idq0_ref[2];
 
-   data->current_control->s1.we = data->bim_v_control.wre_ref*(1.0);
-   data->current_control->s1.theta_rad = data->bim_v_control.theta_re_ref*(1.0);
+   data->current_control->s1.we = data->bim_v_control.wre_ref*(-1.0);
+   data->current_control->s1.theta_rad = data->bim_v_control.theta_re_ref*(-1.0); //data->BIM_PARA->para_machine.kf_theta_rad;
    data->current_control->s1.Idq0_ref[0] = data->bim_lev_control.Ixy0_ref[0];
    data->current_control->s1.Idq0_ref[1] = data->bim_lev_control.Ixy0_ref[1];
    data->current_control->s1.Idq0_ref[2] = data->bim_lev_control.Ixy0_ref[2];
