@@ -521,7 +521,7 @@ void levitation_regulation(bim_control* data){
 
     data->bim_lev_control.F_xy_out[0] = out[0];
     data->bim_lev_control.F_xy_out[1] = out[1];
-
+/*
     double F_mag;
     double theta_F;
     F_mag = sqrt(out[0]*out[0]+out[1]*out[1]);
@@ -536,13 +536,13 @@ void levitation_regulation(bim_control* data){
     	theta_F = atan(out[1]/out[0])+PI;
     }
     out[0] = F_mag*cos(2*theta_F);
-    out[1] = F_mag*sin(2*theta_F);
+    out[1] = F_mag*sin(2*theta_F);*/
 
     double theta_rad;
     double out_xy[3];
     double out_antiwp_xy[3];
 
-    theta_rad = data->bim_v_control.theta_re_ref*(-1.0)+data->BIM_PARA->para_machine.theta_offset_xy;
+    theta_rad = data->bim_v_control.theta_re_ref*(1.0)+data->BIM_PARA->para_machine.theta_offset_xy+ data->BIM_PARA->para_machine.kf_theta_rad;
     //func_Park(&out, &out_xy, theta_rad);
 
     func_anti_windup(&(data->bim_lev_control.para_levi_control.para_anti_wp), out[0], &(out_xy[0]), &(out_antiwp_xy[0]));
@@ -651,8 +651,8 @@ void bim_controlloop (bim_control* data)
    data->current_control->tq.Idq0_ref[1] = data->bim_v_control.Idq0_ref[1];
    data->current_control->tq.Idq0_ref[2] = data->bim_v_control.Idq0_ref[2];
 
-   data->current_control->s1.we = data->bim_v_control.wre_ref*(-1.0);
-   data->current_control->s1.theta_rad = data->bim_v_control.theta_re_ref*(-1.0) + data->BIM_PARA->para_machine.kf_theta_rad + data->BIM_PARA->para_machine.theta_offset_xy;
+   data->current_control->s1.we = data->bim_v_control.wre_ref*(1.0);
+   data->current_control->s1.theta_rad = data->bim_v_control.theta_re_ref*(1.0);
    data->current_control->s1.Idq0_ref[0] = data->bim_lev_control.Ixy0_ref[0];
    data->current_control->s1.Idq0_ref[1] = data->bim_lev_control.Ixy0_ref[1];
    data->current_control->s1.Idq0_ref[2] = data->bim_lev_control.Ixy0_ref[2];
