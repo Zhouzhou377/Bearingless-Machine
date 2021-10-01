@@ -24,7 +24,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(17)
+#define NUM_HELP_ENTRIES	(19)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -38,9 +38,11 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"disable_vctrl", "Disable BIM velocity control"},
 		{"disable_levctrl", "Disable BIM levitation control"},
 		{"set_w", "Set rotor mechanical rotational speed rad/s"},
+		{"set_theta_offset", "Set theta_offset"},
 		{"set_id", "Set id"},
 		{"set_Te", "Set Te"},
 		{"set_ixy_ref", "Set ixy reference"},
+		{"set_Fxy_ref", "Set ixy reference"},
 		{"set_deltaxy", "Set rotor position xy0"},
 		{"disable_ctrl", "Disable BIM regulation"}
 
@@ -210,6 +212,34 @@ int cmd_BIM(int argc, char **argv)
 
 		bim_control_data.bim_lev_control.Ixy0_ref[0] = ix_ref;
 		bim_control_data.bim_lev_control.Ixy0_ref[1] = iy_ref;
+		
+		return CMD_SUCCESS;
+	}
+
+	
+	if (strcmp("set_Fxy_ref", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 4) return CMD_INVALID_ARGUMENTS;
+
+		//read in arguments
+		double Fx_ref = strtod(argv[2], NULL);
+		double Fy_ref = strtod(argv[3], NULL);
+
+		bim_control_data.bim_lev_control.F_xy[0] = Fx_ref;
+		bim_control_data.bim_lev_control.F_xy[1] = Fy_ref;
+		
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("set_theta_offset", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+		//read in arguments
+		double theta_offset = strtod(argv[2], NULL);
+
+
+		bim_control_data.BIM_PARA->para_machine.theta_offset_xy = theta_offset;
 		
 		return CMD_SUCCESS;
 	}

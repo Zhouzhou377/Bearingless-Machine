@@ -105,6 +105,7 @@ typedef struct bim_levitation_control{
     double delta_ref_lpf[2];
     double Ixy0_ref[3];
     double F_xy[2];
+    double F_xy_out[2];
     double delta_mes[2];
     double delta_mes_lpf[2];
     double err_delta[2];

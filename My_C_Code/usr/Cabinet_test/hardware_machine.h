@@ -14,6 +14,7 @@ typedef struct para_bim_machine{
 	double Lr;
 	double tau_r;
 	double Lss;
+	double theta_offset_xy;
 	int p;
 	int ps;
 

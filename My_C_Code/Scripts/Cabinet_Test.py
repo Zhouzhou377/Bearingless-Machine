@@ -382,6 +382,15 @@ class cmd():
         out = self.amdc.cmd(f'BIM set_ixy_ref {ix_ref:.6f} {iy_ref:.6f}')
         if self.debug:
             return out
+    def BIM_set_Fxy(self, Fx_ref, Fy_ref):
+        out = self.amdc.cmd(f'BIM set_Fxy_ref {Fx_ref:.6f} {Fy_ref:.6f}')
+        if self.debug:
+            return out
+    
+    def BIM_set_theta_offset(self, theta_offset):
+        out = self.amdc.cmd(f'BIM set_theta_offset {theta_offset:.6f} ')
+        if self.debug:
+            return out
 
     def BIM_disable(self):
         out = self.amdc.cmd('BIM disable_ctrl')

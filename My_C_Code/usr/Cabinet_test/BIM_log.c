@@ -51,6 +51,9 @@ double LOG_vy_ref = 0.0;
 double LOG_delta_x = 0.0;
 double LOG_delta_y = 0.0;
 
+double LOG_F_x = 0.0;
+double LOG_F_y = 0.0;
+
 double LOG_delta_x_ref = 0.0;
 double LOG_delta_y_ref = 0.0;
 
@@ -110,5 +113,10 @@ void BIM_log (bim_control *data){
 
 	LOG_delta_x_ref_lpf = data->bim_lev_control.delta_ref_lpf[0];
 	LOG_delta_y_ref_lpf = data->bim_lev_control.delta_ref_lpf[1];
+
+	LOG_F_x = data->bim_lev_control.F_xy_out[0];
+	LOG_F_y = data->bim_lev_control.F_xy_out[1];
+
+
 
 }
