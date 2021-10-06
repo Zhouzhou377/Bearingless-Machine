@@ -33,7 +33,7 @@ static para_bim BIM_PARA = {
 	
 	.para_machine.iabc_max = 40.0,
 	.para_machine.wrm_max = 1000.0,
-	.para_machine.id_ref = 1.0,
+	.para_machine.id_ref = 2.0,
 
 	.para_control.v_pi_Kp = 0.01,
 	.para_control.v_pi_Ki= 0.001,
@@ -41,7 +41,7 @@ static para_bim BIM_PARA = {
 	.para_control.lev_pi_Kp= 0.0,
 	.para_control.lev_pi_Ki= 0.0,
 	.para_control.lev_lpf_f= 200.0,
-	.para_control.lev_delta_lpf_f= 0.1,
+	.para_control.lev_delta_lpf_f= 1,
 	.para_control.lev_ka= 2.1804e+05,
 	.para_control.lev_ba= 942.4778,
 	.para_control.lev_sat_low= -10.0,
@@ -69,6 +69,6 @@ void update_para_activedamping(para_bim *data, double id){
 	data->para_control.lev_ba = 2.0*w_bw*data->para_machine.m_rotor*1.0;
 	data->para_control.lev_antiwp_k = 0.0/data->para_machine.k_delta*10.0;
 	data->para_control.lev_pi_Ki = ((data->para_control.lev_ka - data->para_machine.k_delta)*w_bw/10.0)*1.0;
-	data->para_control.lev_pi_Kp = (data->para_control.lev_pi_Ki/30)*1.0;
+	data->para_control.lev_pi_Kp = (data->para_control.lev_pi_Ki/10)*1.0;
 
 }

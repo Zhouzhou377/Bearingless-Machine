@@ -3,6 +3,7 @@
 #include "usr/Cabinet_test/BIM_id.h"
 #include "sys/util.h"
 #include "drv/cpu_timer.h"
+#include <math.h>
 
 static double t = 0.0;
 static uint32_t time = 0;
@@ -51,19 +52,19 @@ void BIM_injection_sin(double w, double mag, double *theta, double *out, int Num
 	if (time == 0 && t == 0.0){
 		t = 0.0;
 		time = time_now;
-		t_us = 0.0;
+		t_delta = 0.0;
 	}else if(time_now>time){
 		
 		t_delta = cpu_timer_ticks_to_sec(time_now-time);
 		time = time_now;
 	}else{
 		
-		t_delta = cpu_timer_ticks_to_sec(time_now+(0xFFFF-time);
+		t_delta = cpu_timer_ticks_to_sec(time_now +(0xFFFF-time));
 		time = time_now;
 	}
 	t = t + t_delta;
-
-	for(int i=0; i++; i<Num_var){
+	int i=0;
+	for(i=0; i<Num_var; i++){
 		out[i] = mag*cos(w*t+theta[i]);
 	}
 

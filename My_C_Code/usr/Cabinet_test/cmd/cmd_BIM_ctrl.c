@@ -289,7 +289,7 @@ int cmd_BIM(int argc, char **argv)
 
 		//read in arguments
 		double w = strtod(argv[2], NULL);
-		double mag = strtod(argv[2], NULL);
+		double mag = strtod(argv[3], NULL);
 		cmd_enable.enable_inject_tq_cctrl= 0;
 		cmd_enable.enable_inject_s1_cctrl= 0;
 		cmd_enable.enable_inject_Fxy= 1;

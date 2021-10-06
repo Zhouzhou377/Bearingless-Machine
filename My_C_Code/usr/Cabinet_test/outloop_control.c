@@ -26,12 +26,12 @@
 #define M_PER_VOLT (4e-4)
 #define POSITION_RATIO_X (1.0)
 #define POSITION_RATIO_y (1.2252)
-#define GEO_CENTER_X (-0e-6)
-#define GEO_CENTER_y (0)
+#define GEO_CENTER_X (+8.0566e-6-6e-6)
+#define GEO_CENTER_y (-1.7557e-4)
 #define TS_v  (0.0001)
 
 #define ID_CCTRL (0)
-#define ID_STIFFNESS(1)
+//#define ID_STIFFNESS(1)
 
 #define DEBUG_DFLUX (0)
 
@@ -286,9 +286,11 @@ bim_control *init_bim(void){
 	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
-    cmd_enable.enable_inject_Fxyl= 0;
+    cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
+    bim_control_data.bim_lev_control.F_xy[0] = 0.0;
+    bim_control_data.bim_lev_control.F_xy[1] = 0.0;
 
     return &(bim_control_data);
 }
@@ -345,14 +347,16 @@ bim_control *reset_bim(void){
 
     cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
-	cmd_enable.enable_BIMcontrol = 0;
+	//cmd_enable.enable_BIMcontrol = 0;
 	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
-    cmd_enable.enable_inject_Fxyl= 0;
+    cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
 
+    bim_control_data.bim_lev_control.F_xy[0] = 0.0;
+	bim_control_data.bim_lev_control.F_xy[1] = 0.0;
     return &(bim_control_data);
 }
 
@@ -680,7 +684,7 @@ void bim_controlloop (bim_control* data)
         theta[0] = 0.0;
         theta[1] = PI*0.5;
 
-        BIM_injection_sin(data->bim_lev_controlw_inject, data->bim_lev_controlmag_inject, &theta[0], &(data->bim_lev_control.F_xy), 2);
+        BIM_injection_sin(data->bim_lev_control.w_inject, data->bim_lev_control.mag_inject, &theta[0], &(data->bim_lev_control.F_xy[0]), 2);
     }
     // levitation 
     if(data->bim_lev_control.enable){

@@ -11,7 +11,7 @@
 #include "usr/Cabinet_test/definitions.h"
 #include <math.h>
 #include <stdbool.h>
-#define ID_SYS (0)
+#define ID_SYS (1)
 
 
 #define INV1 (2)
