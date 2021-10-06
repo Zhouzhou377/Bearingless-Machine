@@ -69,6 +69,6 @@ void update_para_activedamping(para_bim *data, double id){
 	data->para_control.lev_ba = 2.0*w_bw*data->para_machine.m_rotor*1.0;
 	data->para_control.lev_antiwp_k = 0.0/data->para_machine.k_delta*10.0;
 	data->para_control.lev_pi_Ki = ((data->para_control.lev_ka - data->para_machine.k_delta)*w_bw/10.0)*1.0;
-	data->para_control.lev_pi_Kp = (data->para_control.lev_pi_Ki/20)*1.0;
+	data->para_control.lev_pi_Kp = (data->para_control.lev_pi_Ki/30)*1.0;
 
 }

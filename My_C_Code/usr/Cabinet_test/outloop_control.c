@@ -539,6 +539,7 @@ void levitation_regulation(bim_control* data){
     data->bim_lev_control.F_xy_out[0] = out[0];
     data->bim_lev_control.F_xy_out[1] = out[1];
 
+
     for(int i = 0; i<2; i++){
     	if(data->BIM_PARA->para_machine.kf != 0){
     	            out[i] = out[i]*kf_inv;
@@ -546,7 +547,8 @@ void levitation_regulation(bim_control* data){
     	            out[i] = 0.0;
     	        }
     }
-
+    data->bim_lev_control.Ixy0_log[0] = out[0];
+    data->bim_lev_control.Ixy0_log[1] = out[1];
     double theta_rad;
        double out_xy[3];
        theta_rad = data->BIM_PARA->para_machine.kf_theta_rad;
