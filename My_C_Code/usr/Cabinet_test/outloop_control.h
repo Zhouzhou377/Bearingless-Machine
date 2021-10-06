@@ -113,6 +113,9 @@ typedef struct bim_levitation_control{
     double out_antiwp[3];
 
     double diff_state[2];
+
+    double w_inject;
+    double mag_inject;
     para_levitation_control para_levi_control;
 
 }bim_levitation_control;

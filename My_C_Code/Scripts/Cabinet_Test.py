@@ -392,6 +392,14 @@ class cmd():
         if self.debug:
             return out
 
+    def set_injection_Fxy(self, w, mag):
+        out = self.amdc.cmd(f'BIM set_theta_offset {w:.6f} {mag:.6f}')
+        if self.debug:
+            return out
+    def BIM_disable_injection(self):
+        out = self.amdc.cmd('BIM disable_injection')
+        if self.debug:
+            return out 
     def BIM_disable(self):
         out = self.amdc.cmd('BIM disable_ctrl')
         if self.debug:

@@ -153,15 +153,26 @@ void task_cabinet_init(void)
 	cmd_enable.enable_currentcontrol = 0;
 	cmd_enable.enable_BIMcontrol = 0;
 	cmd_enable.enable_log = 0;
+	cmd_enable.enable_inject_tq_cctrl= 0;
+    cmd_enable.enable_inject_s1_cctrl= 0;
+    cmd_enable.enable_inject_Fxy= 0;
+    cmd_enable.enable_inject_tq_vref= 0;
+    cmd_enable.enable_inject_s1_vref= 0;
 }
 
 //stop task
 void task_cabinet_deinit(void)
 {
+	
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_currentcontrol = 0;
 	cmd_enable.enable_BIMcontrol = 0;
 	cmd_enable.enable_log = 0;
+	cmd_enable.enable_inject_tq_cctrl= 0;
+    cmd_enable.enable_inject_s1_cctrl= 0;
+    cmd_enable.enable_inject_Fxy= 0;
+    cmd_enable.enable_inject_tq_vref= 0;
+    cmd_enable.enable_inject_s1_vref= 0;
 	scheduler_tcb_unregister(&tcb);
 	twin_data = deinit_twinbearingless();
 	injection_ctx_unregister(ctx);

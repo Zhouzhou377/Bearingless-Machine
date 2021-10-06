@@ -15,6 +15,11 @@ typedef struct cmd_signal {
     bool enable_log;
     bool enable_testloop;
     bool enable_BIMcontrol;
+    bool enable_inject_tq_cctrl;
+    bool enable_inject_s1_cctrl;
+    bool enable_inject_Fxy;
+    bool enable_inject_tq_vref;
+    bool enable_inject_s1_vref;
 
 }cmd_signal;
 

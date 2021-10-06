@@ -1,5 +1,6 @@
 
 #include "usr/Cabinet_test/outloop_control.h"
+#include "usr/Cabinet_test/task_cabinet.h"
 
 #include "usr/Cabinet_test/BIM_id.h"
 #include "usr/Cabinet_test/hardware_machine.h"
@@ -25,11 +26,12 @@
 #define M_PER_VOLT (4e-4)
 #define POSITION_RATIO_X (1.0)
 #define POSITION_RATIO_y (1.2252)
-#define GEO_CENTER_X (+8.0566e-6)
-#define GEO_CENTER_y (-1.7557e-4)
+#define GEO_CENTER_X (-0e-6)
+#define GEO_CENTER_y (0)
 #define TS_v  (0.0001)
 
 #define ID_CCTRL (0)
+#define ID_STIFFNESS(1)
 
 #define DEBUG_DFLUX (0)
 
@@ -48,8 +50,8 @@ void reset_states_3phase (double *state){
 }
 
 void get_deltaxy_mes(bim_control* data){
-    data->bim_lev_control.delta_mes[0] = POSITION_RATIO_X*(eddy_current_sensor_read_x_voltage() * M_PER_VOLT + GEO_CENTER_X);
-    data->bim_lev_control.delta_mes[1] = POSITION_RATIO_y*(eddy_current_sensor_read_y_voltage() * M_PER_VOLT + GEO_CENTER_y);
+    data->bim_lev_control.delta_mes[0] = POSITION_RATIO_X*(eddy_current_sensor_read_x_voltage() * M_PER_VOLT) + GEO_CENTER_X;
+    data->bim_lev_control.delta_mes[1] = POSITION_RATIO_y*(eddy_current_sensor_read_y_voltage() * M_PER_VOLT) + GEO_CENTER_y;
 }
 
 double get_encoder_pos(void){
@@ -221,6 +223,8 @@ bim_control *init_bim(void){
     bim_control_data.bim_v_control.para_velocity_control.para_lpf.fs = BIM_PARA->para_control.v_lpf_f;
 
     bim_control_data.bim_v_control.Idq0_ref[0] = BIM_PARA->para_machine.id_ref;
+    bim_control_data.bim_v_control.wrm_ref = 0.0;
+    bim_control_data.bim_v_control.wrm_ref_lpf = 0.0;
     bim_control_data.bim_v_control.Ts = TS;
 
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.state_1));
@@ -275,6 +279,17 @@ bim_control *init_bim(void){
 
     bim_control_data.bim_lev_control.F_xy[0] = 0.0;
     bim_control_data.bim_lev_control.F_xy[1] = 0.0;
+
+    cmd_enable.enable_openloop = 0;
+	cmd_enable.enable_currentcontrol = 0;
+	cmd_enable.enable_BIMcontrol = 0;
+	cmd_enable.enable_log = 0;
+	cmd_enable.enable_inject_tq_cctrl= 0;
+    cmd_enable.enable_inject_s1_cctrl= 0;
+    cmd_enable.enable_inject_Fxyl= 0;
+    cmd_enable.enable_inject_tq_vref= 0;
+    cmd_enable.enable_inject_s1_vref= 0;
+
     return &(bim_control_data);
 }
 
@@ -312,6 +327,7 @@ bim_control *reset_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.Ixy0_ref[0]));
 
     bim_control_data.bim_v_control.wrm_ref = 0.0;
+    bim_control_data.bim_v_control.wrm_ref_lpf = 0.0;
     reset_states_3phase(&(bim_control_data.bim_v_control.Idq0_ref[0]));
     bim_control_data.bim_v_control.Idq0_ref[0] = 1.0;
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1));
@@ -326,6 +342,17 @@ bim_control *reset_bim(void){
 
     bim_control_data.bim_lev_control.F_xy[0] = 0.0;
     bim_control_data.bim_lev_control.F_xy[1] = 0.0;
+
+    cmd_enable.enable_openloop = 0;
+	cmd_enable.enable_currentcontrol = 0;
+	cmd_enable.enable_BIMcontrol = 0;
+	cmd_enable.enable_log = 0;
+	cmd_enable.enable_inject_tq_cctrl= 0;
+    cmd_enable.enable_inject_s1_cctrl= 0;
+    cmd_enable.enable_inject_Fxyl= 0;
+    cmd_enable.enable_inject_tq_vref= 0;
+    cmd_enable.enable_inject_s1_vref= 0;
+
     return &(bim_control_data);
 }
 
@@ -648,13 +675,19 @@ void bim_controlloop (bim_control* data)
         CFO(data);
    }
     
+    if(cmd_enable.enable_inject_Fxy){
+        double theta[2];
+        theta[0] = 0.0;
+        theta[1] = PI*0.5;
 
+        BIM_injection_sin(data->bim_lev_controlw_inject, data->bim_lev_controlmag_inject, &theta[0], &(data->bim_lev_control.F_xy), 2);
+    }
     // levitation 
     if(data->bim_lev_control.enable){
         levitation_regulation(data);
     }else{
 
-        double theta_rad = data->bim_v_control.theta_re_ref*(-0.50) + data->BIM_PARA->para_machine.kf_theta_rad;
+        double theta_rad = data->bim_v_control.theta_re_ref*(0.0) + data->BIM_PARA->para_machine.kf_theta_rad;
         double Ixy_ref[3];
         func_Park(&(data->bim_lev_control.Ixy0_ref[0]), &(Ixy_ref[0]), theta_rad);
         data->current_control->s1.Idq0_ref[0] = Ixy_ref[0];
@@ -676,7 +709,19 @@ void bim_controlloop (bim_control* data)
 
 
    if(ID_CCTRL){
-    	BIM_injection_callback(data);}
+    	BIM_injection_callback(data);
+        /*double theta[4];
+        theta[0] = 0.0;
+        theta[1] = PI*0.5;
+        theta[2] = 0.0;
+        theta[3] = PI*0.5;
+        double out[4];
+        BIM_injection_sin(data->bim_lev_controlw_inject, data->bim_lev_controlmag_inject, &theta[0], &(out[0]), 4);
+        data->current_control->tq.Idq0_ref[0] = data->current_control->tq.Idq0_ref[0] + out[0];
+        data->current_control->tq.Idq0_ref[1] = data->current_control->tq.Idq0_ref[1] + out[1];
+        data->current_control->s1.Idq0_ref[0] = data->current_control->s1.Idq0_ref[0] + out[0];
+        data->current_control->s1.Idq0_ref[1] = data->current_control->s1.Idq0_ref[1] + out[1];*/
+        }
    current_regulation (data->current_control);
     //theta_pre =data->bim_v_control.theta_rm_mes;
 }

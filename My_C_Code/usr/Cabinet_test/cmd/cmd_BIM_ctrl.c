@@ -24,7 +24,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(19)
+#define NUM_HELP_ENTRIES	(21)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -44,6 +44,8 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_ixy_ref", "Set ixy reference"},
 		{"set_Fxy_ref", "Set ixy reference"},
 		{"set_deltaxy", "Set rotor position xy0"},
+		{"set_injection_Fxy", "high frequency injection of Fxy"},
+		{"disable_injection", "Disable injection"},
 		{"disable_ctrl", "Disable BIM regulation"}
 
 };
@@ -278,6 +280,38 @@ int cmd_BIM(int argc, char **argv)
 	
 
 		bim_control_data.bim_v_control.Te_ref = Te;
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("set_injection_Fxy", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 4) return CMD_INVALID_ARGUMENTS;
+
+		//read in arguments
+		double w = strtod(argv[2], NULL);
+		double mag = strtod(argv[2], NULL);
+		cmd_enable.enable_inject_tq_cctrl= 0;
+		cmd_enable.enable_inject_s1_cctrl= 0;
+		cmd_enable.enable_inject_Fxy= 1;
+		cmd_enable.enable_inject_tq_vref= 0;
+		cmd_enable.enable_inject_s1_vref= 0;
+
+		bim_control_data.bim_lev_control.w_inject = w;
+		bim_control_data.bim_lev_control.mag_inject = mag;
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("disable_injection", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+
+		cmd_enable.enable_inject_tq_cctrl= 0;
+		cmd_enable.enable_inject_s1_cctrl= 0;
+		cmd_enable.enable_inject_Fxy= 0;
+		cmd_enable.enable_inject_tq_vref= 0;
+		cmd_enable.enable_inject_s1_vref= 0;
+
+		
 		return CMD_SUCCESS;
 	}
 
