@@ -13,6 +13,7 @@
 #include "sys/scheduler.h"
 #include "sys/debug.h"
 #include "drv/cpu_timer.h"
+#include "drv/pwm.h"
 
 
 //LOGGING VARIABLES
@@ -200,7 +201,7 @@ void task_cabinet_callback(void *arg)
 	else if(cmd_enable.enable_currentcontrol)
 	{
 		twin_data = &twin_control;
-		current_regulation (twin_data);
+		current_regulation(twin_data);
 		 if(twin_data->sel_config == InvFour){
 			set_line_volts_three_phase(twin_data->twin_inv1.vabc_ref[0], twin_data->twin_inv1.vabc_ref[1], twin_data->twin_inv1.vabc_ref[2], twin_data->twin_inv1.inv);
 			set_line_volts_three_phase(twin_data->twin_inv2.vabc_ref[0], twin_data->twin_inv2.vabc_ref[1], twin_data->twin_inv2.vabc_ref[2], twin_data->twin_inv2.inv);
@@ -216,8 +217,11 @@ void task_cabinet_callback(void *arg)
 	}
 	else if(cmd_enable.enable_BIMcontrol){
 		bim_control_pt = &bim_control_data;
+		if(pwm_is_enabled()){
+			bim_controlloop(bim_control_pt);
+		}
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
-		bim_controlloop(bim_control_pt);
+		//bim_controlloop(bim_control_pt);
 		//bim_control_pt = &bim_control_data;
 		
 		set_line_volts_three_phase(bim_control_pt->current_control->twin_inv1.vabc_ref[0], bim_control_pt->current_control->twin_inv1.vabc_ref[1], bim_control_pt->current_control->twin_inv1.vabc_ref[2], bim_control_pt->current_control->twin_inv1.inv);

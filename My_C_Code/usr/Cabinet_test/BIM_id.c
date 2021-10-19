@@ -9,7 +9,7 @@ static double t = 0.0;
 static uint32_t time = 0;
 
 // Injection contexts for controller commands
-inj_ctx_t inj_ctx_ctrl[8] = { 0 };
+inj_ctx_t inj_ctx_ctrl[11] = { 0 };
 void BIM_injection_init (void){
 	injection_ctx_init(&inj_ctx_ctrl[0], "vd_ref");
 	injection_ctx_init(&inj_ctx_ctrl[1], "vq_ref");
@@ -23,6 +23,12 @@ void BIM_injection_init (void){
 	injection_ctx_init(&inj_ctx_ctrl[6], "ix_ref");
 	injection_ctx_init(&inj_ctx_ctrl[7], "iy_ref");
 
+	injection_ctx_init(&inj_ctx_ctrl[8], "wrm_ref");
+
+	injection_ctx_init(&inj_ctx_ctrl[9], "Fx_ref");
+	injection_ctx_init(&inj_ctx_ctrl[10], "Fy_ref");
+	
+
 
 	 // Register all signal injection points
     for (int i = 0; i < ARRAY_SIZE(inj_ctx_ctrl); i++) {
@@ -32,17 +38,22 @@ void BIM_injection_init (void){
 	time = 0;
 }
 void BIM_injection_callback (bim_control *data){
-	injection_inj(&(data->current_control->tq.vdq0_ref[0]), &inj_ctx_ctrl[0], data->current_control->tq.PI_regulator->Ts);
-	injection_inj(&(data->current_control->tq.vdq0_ref[1]), &inj_ctx_ctrl[1], data->current_control->tq.PI_regulator->Ts);
+	injection_inj(&(data->current_control->tq.vdq0_ref_inject[0]), &inj_ctx_ctrl[0], data->current_control->tq.PI_regulator->Ts);
+	injection_inj(&(data->current_control->tq.vdq0_ref_inject[1]), &inj_ctx_ctrl[1], data->current_control->tq.PI_regulator->Ts);
 
-	injection_inj(&(data->current_control->s1.vdq0_ref[0]), &inj_ctx_ctrl[2], data->current_control->s1.PI_regulator->Ts);
-	injection_inj(&(data->current_control->s1.vdq0_ref[1]), &inj_ctx_ctrl[3], data->current_control->s1.PI_regulator->Ts);
+	injection_inj(&(data->current_control->s1.vdq0_ref_inject[0]), &inj_ctx_ctrl[2], data->current_control->s1.PI_regulator->Ts);
+	injection_inj(&(data->current_control->s1.vdq0_ref_inject[1]), &inj_ctx_ctrl[3], data->current_control->s1.PI_regulator->Ts);
 
-	injection_inj(&(data->current_control->tq.Idq0_ref[0]), &inj_ctx_ctrl[4], data->current_control->tq.PI_regulator->Ts);
-	injection_inj(&(data->current_control->tq.Idq0_ref[1]), &inj_ctx_ctrl[5], data->current_control->tq.PI_regulator->Ts);
+	injection_inj(&(data->current_control->tq.Idq0_ref_inject[0]), &inj_ctx_ctrl[4], data->current_control->tq.PI_regulator->Ts);
+	injection_inj(&(data->current_control->tq.Idq0_ref_inject[1]), &inj_ctx_ctrl[5], data->current_control->tq.PI_regulator->Ts);
 
-	injection_inj(&(data->current_control->s1.Idq0_ref[0]), &inj_ctx_ctrl[6], data->current_control->s1.PI_regulator->Ts);
-	injection_inj(&(data->current_control->s1.Idq0_ref[1]), &inj_ctx_ctrl[7], data->current_control->s1.PI_regulator->Ts);
+	injection_inj(&(data->current_control->s1.Idq0_ref_inject[0]), &inj_ctx_ctrl[6], data->current_control->s1.PI_regulator->Ts);
+	injection_inj(&(data->current_control->s1.Idq0_ref_inject[1]), &inj_ctx_ctrl[7], data->current_control->s1.PI_regulator->Ts);
+
+	injection_inj(&(data->bim_v_control.wrm_ref_inject), &inj_ctx_ctrl[8], data->bim_v_control.Ts);
+
+	injection_inj(&(data->bim_lev_control.F_xy_inject[0]), &inj_ctx_ctrl[9], data->bim_v_control.Ts);
+	injection_inj(&(data->bim_lev_control.F_xy_inject[1]), &inj_ctx_ctrl[10], data->bim_v_control.Ts);
 
 }
 

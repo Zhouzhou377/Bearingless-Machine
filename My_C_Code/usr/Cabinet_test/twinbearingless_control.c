@@ -489,7 +489,11 @@ void current_regulation (twinbearingless_control *data)
 
     	bim_control *bim_data = &bim_control_data;
         if(ID_SYS){
-    	BIM_injection_callback(bim_data);}
+    	BIM_injection_callback(bim_data);
+        data->tq.vdq0_ref[0] += data->tq.vdq0_ref_inject[0];
+        data->tq.vdq0_ref[1] += data->tq.vdq0_ref_inject[1];
+        data->s1.vdq0_ref[0] += data->s1.vdq0_ref_inject[0];
+        data->s1.vdq0_ref[1] += data->s1.vdq0_ref_inject[1];}
         decouple(data);
         //
         double vdq0[3];

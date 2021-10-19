@@ -24,12 +24,14 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(21)
+#define NUM_HELP_ENTRIES	(23)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
 		{"reset", "Reset regulator"},
 		{"set_vdc", "Set DC Bus for a Specific Inverter"},
+		{"set_vdc_tq", "Set DC Bus for a Torque Inverter"},
+		{"set_vdc_s1", "Set DC Bus for a Suspension Inverter"},
 		{"enable_ctrl", "Enable BIM control"},
 		{"enable_ob", "Enable speed observer"},
 		{"enable_vctrl", "Enable BIM velocity control"},
@@ -117,6 +119,31 @@ int cmd_BIM(int argc, char **argv)
 
 		return CMD_SUCCESS;
 	}
+
+	if (strcmp("set_vdc_tq", argv[1]) == 0) {
+			// Check correct number of arguments
+			if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+			//read in arguments
+			double Vdc = strtod(argv[2], NULL);
+
+			bim_control_data.current_control->twin_inv1.inv->Vdc = Vdc;
+
+			return CMD_SUCCESS;
+		}
+
+	if (strcmp("set_vdc_s1", argv[1]) == 0) {
+			// Check correct number of arguments
+			if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+			//read in arguments
+			double Vdc = strtod(argv[2], NULL);
+
+			bim_control_data.current_control->twin_inv2.inv->Vdc = Vdc;
+
+			return CMD_SUCCESS;
+		}
+
 
 	
 	if (strcmp("enable_ctrl", argv[1]) == 0) {

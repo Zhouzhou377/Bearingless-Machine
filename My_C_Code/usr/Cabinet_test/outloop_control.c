@@ -31,6 +31,8 @@
 #define TS_v  (0.0001)
 
 #define ID_CCTRL (0)
+#define ID_VCTRL (0)
+#define ID_LEVCTRL (1)
 //#define ID_STIFFNESS(1)
 
 #define DEBUG_DFLUX (0)
@@ -331,7 +333,7 @@ bim_control *reset_bim(void){
     bim_control_data.bim_v_control.wrm_ref = 0.0;
     bim_control_data.bim_v_control.wrm_ref_lpf = 0.0;
     reset_states_3phase(&(bim_control_data.bim_v_control.Idq0_ref[0]));
-    bim_control_data.bim_v_control.Idq0_ref[0] = 1.0;
+    bim_control_data.bim_v_control.Idq0_ref[0] = bim_control_data.BIM_PARA->para_machine.id_ref;
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_delta_lpf.state_1));
     get_deltaxy_mes(&bim_control_data);
     bim_control_data.bim_lev_control.delta_ref[0] = bim_control_data.bim_lev_control.delta_mes[0]*0.95;
@@ -398,7 +400,7 @@ void func_PI_normal(double *in, double *out, int Num_variable, para_PI_discrete_
     }
 }
 
-void func_observer_theta(double theta_mes, double *theta_est, double *w_est, double *w_est_hf, para_observer *para_ob){
+void func_observer_theta(double theta_mes, double *theta_est, double *w_est, double *w_est_hf, para_observer *para_ob, double tq){
     double error;
     error = theta_mes - *theta_est;
     if (error<-1.0*PI){
@@ -409,6 +411,7 @@ void func_observer_theta(double theta_mes, double *theta_est, double *w_est, dou
     double out_PI;
     double antiwp = 0.0;
     func_PI_normal(&error, &out_PI, 1, &(para_ob->para_PI), &antiwp);
+    out_PI += tq;
     double out_Kd;
     out_Kd = error*para_ob->Kd;
     
@@ -445,7 +448,7 @@ void velocity_regulation(bim_control* data){
     //data->bim_v_control.theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
     //func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), 1, &(data->bim_v_control.para_velocity_control.para_lpf));
     func_lpf(&(data->bim_v_control.wrm_ref), &(data->bim_v_control.wrm_ref_lpf), &(data->bim_v_control.para_velocity_control.para_lpf), &(data->bim_v_control.para_velocity_control.para_lpf.state_1[0]));
-
+    data->bim_v_control.wrm_ref_lpf += data->bim_v_control.wrm_ref_inject;
     data->bim_v_control.err_wrm = data->bim_v_control.wrm_ref_lpf - data->bim_v_control.wrm_mes;
     func_PI_normal(&(data->bim_v_control.err_wrm), &(data->bim_v_control.Te_ref), 1, &(data->bim_v_control.para_velocity_control.para_PI), &(antiwp));
     /*
@@ -538,7 +541,7 @@ void levitation_regulation(bim_control* data){
     }
     out[2] = 0.0;
 
-    out[1] = out[1];
+    out[1] = out[1] + 15;
 
     //data->bim_lev_control.F_xy[0] = out[0];
     //data->bim_lev_control.F_xy[1] = out[1];
@@ -566,6 +569,8 @@ void levitation_regulation(bim_control* data){
 
     out[0] =  out[0]+ data->bim_lev_control.F_xy[0];
     out[1] =  out[1] +data->bim_lev_control.F_xy[1];
+    out[0] =  out[0]+ data->bim_lev_control.F_xy_inject[0];
+    out[1] =  out[1] +data->bim_lev_control.F_xy_inject[1];
 
     data->bim_lev_control.F_xy_out[0] = out[0];
     data->bim_lev_control.F_xy_out[1] = out[1];
@@ -633,7 +638,9 @@ void bim_controlloop (bim_control* data)
     double theta = get_encoder_pos();
     data->bim_v_control.theta_rm_mes = -1.0*theta + PI2;
     if (data->bim_v_control.para_ob.enable == 1){
-        func_observer_theta(data->bim_v_control.theta_rm_mes, &(data->bim_v_control.theta_rm_est), &(data->bim_v_control.wrm_est), &(data->bim_v_control.wrm_est_hf), &(data->bim_v_control.para_ob));
+        double tq;
+        tq = 1.5*data->BIM_PARA->para_machine.p*data->BIM_PARA->para_machine.Lm/data->BIM_PARA->para_machine.Lr*data->current_control->tq.Idq0_ref[0]*data->BIM_PARA->para_machine.Lm*data->current_control->tq.Idq0_ref[1];
+        func_observer_theta(data->bim_v_control.theta_rm_mes, &(data->bim_v_control.theta_rm_est), &(data->bim_v_control.wrm_est), &(data->bim_v_control.wrm_est_hf), &(data->bim_v_control.para_ob), tq);
         data->bim_v_control.wrm_mes = data->bim_v_control.wrm_est;
     }else{
         data->bim_v_control.wrm_mes = 0.0;
@@ -645,11 +652,12 @@ void bim_controlloop (bim_control* data)
 
    //protection
    // w
-   /* if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
-        data = reset_bim();
+   if(data->bim_v_control.wrm_mes>=data->BIM_PARA->para_machine.wrm_max || data->bim_v_control.wrm_mes<=(data->BIM_PARA->para_machine.wrm_max*-1.0)){
         pwm_disable();
+        data = reset_bim();
+
         return;
-    }*/
+    }
 
     int flag_t = 0;
     int flag_s = 0;
@@ -672,6 +680,9 @@ void bim_controlloop (bim_control* data)
            data->bim_v_control.theta_rm_mes = theta_test;*/
 
        }else{
+           if(ID_VCTRL){
+    	    BIM_injection_callback(data);
+            }
            velocity_regulation(data);
        }
        
@@ -679,15 +690,18 @@ void bim_controlloop (bim_control* data)
         CFO(data);
    }
     
-    if(cmd_enable.enable_inject_Fxy){
+    /*if(cmd_enable.enable_inject_Fxy){
         double theta[2];
         theta[0] = 0.0;
         theta[1] = PI*0.5;
 
         BIM_injection_sin(data->bim_lev_control.w_inject, data->bim_lev_control.mag_inject, &theta[0], &(data->bim_lev_control.F_xy[0]), 2);
-    }
+    }*/
     // levitation 
     if(data->bim_lev_control.enable){
+        if(ID_LEVCTRL){
+    	    BIM_injection_callback(data);
+        }
         levitation_regulation(data);
     }else{
 
@@ -714,6 +728,10 @@ void bim_controlloop (bim_control* data)
 
    if(ID_CCTRL){
     	BIM_injection_callback(data);
+        data->current_control->tq.Idq0_ref[0] += data->current_control->tq.Idq0_ref_inject[0];
+        data->current_control->tq.Idq0_ref[1] += data->current_control->tq.Idq0_ref_inject[1];
+        data->current_control->s1.Idq0_ref[0] += data->current_control->s1.Idq0_ref_inject[0];
+        data->current_control->s1.Idq0_ref[1] += data->current_control->s1.Idq0_ref_inject[1];
         /*double theta[4];
         theta[0] = 0.0;
         theta[1] = PI*0.5;

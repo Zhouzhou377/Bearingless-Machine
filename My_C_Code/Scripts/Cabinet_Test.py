@@ -325,6 +325,14 @@ class cmd():
         out = self.amdc.cmd(f'BIM set_vdc {vdc:.6f}')
         if self.debug:
             return out
+    def BIM_set_Vdc_tq(self, vdc):
+        out = self.amdc.cmd(f'BIM set_vdc_tq {vdc:.6f}')
+        if self.debug:
+            return out
+    def BIM_set_Vdc_s1(self, vdc):
+        out = self.amdc.cmd(f'BIM set_vdc_s1 {vdc:.6f}')
+        if self.debug:
+            return out
 
     def BIM_enable_ctrl(self):
         out = self.amdc.cmd('BIM enable_ctrl')

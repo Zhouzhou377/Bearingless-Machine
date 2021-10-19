@@ -73,6 +73,7 @@ typedef struct bim_velocity_control{
     double Ts;
     double wrm_ref;
     double wrm_ref_lpf;
+    double wrm_ref_inject;
     double err_wrm;
     double Te_ref;
     double Idq0_ref[3];
@@ -106,6 +107,7 @@ typedef struct bim_levitation_control{
     double Ixy0_ref[3];
     double Ixy0_log[3];
     double F_xy[2];
+    double F_xy_inject[2];
     double F_xy_out[2];
     double delta_mes[2];
     double delta_mes_lpf[2];

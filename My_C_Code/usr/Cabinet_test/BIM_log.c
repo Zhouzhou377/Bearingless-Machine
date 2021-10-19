@@ -24,8 +24,11 @@ double LOG_Is1_y = 0.0;
 double LOG_Te_ref = 0.0;
 
 double LOG_wrm = 0.0;
+double LOG_wrm_ref = 0.0;
+double LOG_wrm_hf = 0.0;
+
 double LOG_theta_rm = 0.0;
-double LOG_theta_rm_pre = 0.0;
+
 
 double LOG_wsl = 0.0;
 double LOG_theta_e = 0.0;
@@ -65,6 +68,8 @@ double LOG_delta_y_ref_lpf = 0.0;
 
 void BIM_log (bim_control *data){
     LOG_wrm = data->bim_v_control.wrm_mes;
+	LOG_wrm_ref = data->bim_v_control.wrm_ref_lpf;
+	LOG_wrm_hf = data->bim_v_control.wrm_est_hf;
 	LOG_theta_rm = data->bim_v_control.theta_rm_mes;
     LOG_wsl = data->bim_v_control.wsl_ref;
 	LOG_theta_e = data->bim_v_control.theta_re_ref;

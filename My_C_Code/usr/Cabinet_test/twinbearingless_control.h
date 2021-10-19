@@ -58,7 +58,9 @@ typedef struct twin_control_data{
     double Idq0[3];
     double Idq0_m1[3];
     double Idq0_ref[3];
+    double Idq0_ref_inject[3];
     double vdq0_ref[3];
+    double vdq0_ref_inject[3];
     double vdq0_decouple[3];
     double theta_rad;
     double we;
