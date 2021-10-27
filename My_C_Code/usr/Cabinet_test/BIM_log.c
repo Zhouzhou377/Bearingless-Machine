@@ -25,6 +25,7 @@ double LOG_Te_ref = 0.0;
 
 double LOG_wrm = 0.0;
 double LOG_wrm_ref = 0.0;
+double LOG_wrm_inject = 0.0;
 double LOG_wrm_hf = 0.0;
 
 double LOG_theta_rm = 0.0;
@@ -48,14 +49,21 @@ double LOG_vd_ref = 0.0;
 double LOG_vq_ref = 0.0;
 double LOG_v0_ref = 0.0;
 
+double LOG_vd_inject = 0.0;
+double LOG_vq_inject= 0.0;
+
 double LOG_vx_ref = 0.0;
 double LOG_vy_ref = 0.0;
+double LOG_vx_inject = 0.0;
+double LOG_vy_inject = 0.0;
 
 double LOG_delta_x = 0.0;
 double LOG_delta_y = 0.0;
 
 double LOG_F_x = 0.0;
 double LOG_F_y = 0.0;
+double LOG_F_x_inject = 0.0;
+double LOG_F_y_inject = 0.0;
 double LOG_error_x = 0.0;
 double LOG_error_y = 0.0;
 
@@ -69,6 +77,7 @@ double LOG_delta_y_ref_lpf = 0.0;
 void BIM_log (bim_control *data){
     LOG_wrm = data->bim_v_control.wrm_mes;
 	LOG_wrm_ref = data->bim_v_control.wrm_ref_lpf;
+	LOG_wrm_inject = data->bim_v_control.wrm_ref_inject;
 	LOG_wrm_hf = data->bim_v_control.wrm_est_hf;
 	LOG_theta_rm = data->bim_v_control.theta_rm_mes;
     LOG_wsl = data->bim_v_control.wsl_ref;
@@ -103,9 +112,14 @@ void BIM_log (bim_control *data){
 	LOG_vd_ref = data->current_control->tq.vdq0_ref[0];
 	LOG_vq_ref = data->current_control->tq.vdq0_ref[1];
 	LOG_v0_ref = data->current_control->tq.vdq0_ref[2];
+	LOG_vd_inject = data->current_control->tq.vdq0_ref_inject[0];
+	LOG_vq_inject = data->current_control->tq.vdq0_ref_inject[1];
 
 	LOG_vx_ref = data->current_control->s1.vdq0_ref[0];
 	LOG_vy_ref = data->current_control->s1.vdq0_ref[1];
+
+	LOG_vx_inject = data->current_control->s1.vdq0_ref_inject[0];
+	LOG_vy_inject = data->current_control->s1.vdq0_ref_inject[1];
 
 	LOG_Is1_x = data->current_control->s1.Idq0[0];
 	LOG_Is1_y = data->current_control->s1.Idq0[1];
@@ -123,6 +137,8 @@ void BIM_log (bim_control *data){
 
 	LOG_F_x = data->bim_lev_control.F_xy_out[0];
 	LOG_F_y = data->bim_lev_control.F_xy_out[1];
+	LOG_F_x_inject = data->bim_lev_control.F_xy_inject[0];
+	LOG_F_y_inject = data->bim_lev_control.F_xy_inject[1];
 
 	LOG_error_x = data->bim_lev_control.err_delta[0];
 	LOG_error_y = data->bim_lev_control.err_delta[1];

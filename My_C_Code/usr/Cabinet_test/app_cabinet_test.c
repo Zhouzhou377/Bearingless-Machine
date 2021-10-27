@@ -8,6 +8,9 @@
 #include "sys/injection.h"
 
 #include "drv/gpio_mux.h"
+#include "drv/pwm.h"
+
+#define PWM_DEADTIME_NS (300)
 
 void app_cabinet_test_init(void)
 {
@@ -26,7 +29,7 @@ void app_cabinet_test_init(void)
 
 	// AMDS
 	gpio_mux_set_device(0, GPIO_MUX_DEVICE2);
-
+	pwm_set_deadtime_ns(PWM_DEADTIME_NS);
 
 }
 
