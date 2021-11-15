@@ -382,7 +382,7 @@ class cmd():
             return out 
 
     def BIM_set_deltaxy(self, deltax, deltay):
-        out = self.amdc.cmd(f'BIM set_deltaxy {deltax:.6f} {deltay:.6f}')
+        out = self.amdc.cmd(f'BIM set_deltaxy {deltax:.8f} {deltay:.8f}')
         if self.debug:
             return out 
 

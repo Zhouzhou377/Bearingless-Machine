@@ -572,8 +572,10 @@ void levitation_regulation(bim_control* data){
     out[0] =  out[0]+ data->bim_lev_control.F_xy_inject[0];
     out[1] =  out[1] +data->bim_lev_control.F_xy_inject[1];
 
-    data->bim_lev_control.F_xy_out[0] = out[0];
-    data->bim_lev_control.F_xy_out[1] = out[1];
+    //data->bim_lev_control.F_xy_out[0] = out[0];
+    //data->bim_lev_control.F_xy_out[1] = out[1];
+    data->bim_lev_control.F_xy_out[0] = pi_out[0];
+    data->bim_lev_control.F_xy_out[1] = pi_out[1];
 
 
     for(int i = 0; i<2; i++){

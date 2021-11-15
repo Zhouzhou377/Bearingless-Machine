@@ -10,7 +10,7 @@
 #include "drv/gpio_mux.h"
 #include "drv/pwm.h"
 
-#define PWM_DEADTIME_NS (300)
+#define PWM_DEADTIME_NS (200)
 
 void app_cabinet_test_init(void)
 {
