@@ -9,7 +9,7 @@ static double t = 0.0;
 static uint32_t time = 0;
 
 // Injection contexts for controller commands
-inj_ctx_t inj_ctx_ctrl[11] = { 0 };
+inj_ctx_t inj_ctx_ctrl[19] = { 0 };
 void BIM_injection_init (void){
 	injection_ctx_init(&inj_ctx_ctrl[0], "vd_ref");
 	injection_ctx_init(&inj_ctx_ctrl[1], "vq_ref");
@@ -27,8 +27,18 @@ void BIM_injection_init (void){
 
 	injection_ctx_init(&inj_ctx_ctrl[9], "Fx_ref");
 	injection_ctx_init(&inj_ctx_ctrl[10], "Fy_ref");
-	
 
+	injection_ctx_init(&inj_ctx_ctrl[11], "vd2_ref");
+	injection_ctx_init(&inj_ctx_ctrl[12], "vq2_ref");
+
+	injection_ctx_init(&inj_ctx_ctrl[13], "vx2_ref");
+	injection_ctx_init(&inj_ctx_ctrl[14], "vy2_ref");
+
+	injection_ctx_init(&inj_ctx_ctrl[15], "id2_ref");
+	injection_ctx_init(&inj_ctx_ctrl[16], "iq2_ref");
+
+	injection_ctx_init(&inj_ctx_ctrl[17], "ix2_ref");
+	injection_ctx_init(&inj_ctx_ctrl[18], "iy2_ref");
 
 	 // Register all signal injection points
     for (int i = 0; i < ARRAY_SIZE(inj_ctx_ctrl); i++) {
@@ -54,6 +64,18 @@ void BIM_injection_callback (bim_control *data){
 
 	injection_inj(&(data->bim_lev_control.F_xy_inject[0]), &inj_ctx_ctrl[9], data->bim_v_control.Ts);
 	injection_inj(&(data->bim_lev_control.F_xy_inject[1]), &inj_ctx_ctrl[10], data->bim_v_control.Ts);
+
+	injection_inj(&(data->current_control->tq2.vdq0_ref_inject[0]), &inj_ctx_ctrl[11], data->current_control->tq2.PI_regulator->Ts);
+	injection_inj(&(data->current_control->tq2.vdq0_ref_inject[1]), &inj_ctx_ctrl[12], data->current_control->tq2.PI_regulator->Ts);
+
+	injection_inj(&(data->current_control->s2.vdq0_ref_inject[0]), &inj_ctx_ctrl[13], data->current_control->s2.PI_regulator->Ts);
+	injection_inj(&(data->current_control->s2.vdq0_ref_inject[1]), &inj_ctx_ctrl[14], data->current_control->s2.PI_regulator->Ts);
+
+	injection_inj(&(data->current_control->tq2.Idq0_ref_inject[0]), &inj_ctx_ctrl[15], data->current_control->tq2.PI_regulator->Ts);
+	injection_inj(&(data->current_control->tq2.Idq0_ref_inject[1]), &inj_ctx_ctrl[16], data->current_control->tq2.PI_regulator->Ts);
+
+	injection_inj(&(data->current_control->s2.Idq0_ref_inject[0]), &inj_ctx_ctrl[17], data->current_control->s2.PI_regulator->Ts);
+	injection_inj(&(data->current_control->s2.Idq0_ref_inject[1]), &inj_ctx_ctrl[18], data->current_control->s2.PI_regulator->Ts);
 
 }
 

@@ -11,7 +11,7 @@
 #include "usr/Cabinet_test/definitions.h"
 #include <math.h>
 #include <stdbool.h>
-#define ID_SYS (0)
+#define ID_SYS (1)
 
 
 #define INV1 (3) //torque 1
@@ -472,8 +472,6 @@ void current_regulation (twinbearingless_control *data)
     }
     
 
-
-
     if(data->sel_config == InvFour){
     	cal_invI_to_controlI_configInvFour(data);
     	update_control_current(&data->tq);
@@ -492,8 +490,15 @@ void current_regulation (twinbearingless_control *data)
     	BIM_injection_callback(bim_data);
         data->tq.vdq0_ref[0] += data->tq.vdq0_ref_inject[0];
         data->tq.vdq0_ref[1] += data->tq.vdq0_ref_inject[1];
+
         data->s1.vdq0_ref[0] += data->s1.vdq0_ref_inject[0];
-        data->s1.vdq0_ref[1] += data->s1.vdq0_ref_inject[1];}
+        data->s1.vdq0_ref[1] += data->s1.vdq0_ref_inject[1];
+
+        data->tq2.vdq0_ref[0] += data->tq2.vdq0_ref_inject[0];
+        data->tq2.vdq0_ref[1] += data->tq2.vdq0_ref_inject[1];
+        
+        data->s2.vdq0_ref[0] += data->s2.vdq0_ref_inject[0];
+        data->s2.vdq0_ref[1] += data->s2.vdq0_ref_inject[1];}
         decouple(data);
         //
         double vdq0[3];
@@ -541,6 +546,20 @@ void current_regulation (twinbearingless_control *data)
         data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] +  data->tq.PR_regulator->v_PR[0]*1.0;
         data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] +  data->tq.PR_regulator->v_PR[1]*1.0;
         data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] +  data->tq.PR_regulator->v_PR[2]*1.0;
+
+        if(ID_SYS){
+    	//BIM_injection_callback(bim_data);
+        data->tq.vdq0_ref[0] += data->tq.vdq0_ref_inject[0];
+        data->tq.vdq0_ref[1] += data->tq.vdq0_ref_inject[1];
+
+        data->s1.vdq0_ref[0] += data->s1.vdq0_ref_inject[0];
+        data->s1.vdq0_ref[1] += data->s1.vdq0_ref_inject[1];
+
+        data->tq2.vdq0_ref[0] += data->tq2.vdq0_ref_inject[0];
+        data->tq2.vdq0_ref[1] += data->tq2.vdq0_ref_inject[1];
+        
+        data->s2.vdq0_ref[0] += data->s2.vdq0_ref_inject[0];
+        data->s2.vdq0_ref[1] += data->s2.vdq0_ref_inject[1];}
 
         decouple(data);
         //

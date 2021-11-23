@@ -15,11 +15,29 @@ double LOG_Itq_q_ref = 0.0;
 double LOG_Is1_x_ref = 0.0;
 double LOG_Is1_y_ref = 0.0;
 
+double LOG_Itq_d_inject = 0.0;
+double LOG_Itq_q_inject = 0.0;
+
+double LOG_Is1_x_inject = 0.0;
+double LOG_Is1_y_inject = 0.0;
+
 double LOG_Itq_d = 0.0;
 double LOG_Itq_q = 0.0;
 
 double LOG_Is1_x = 0.0;
 double LOG_Is1_y = 0.0;
+
+double LOG_Itq2_d_inject = 0.0;
+double LOG_Itq2_q_inject = 0.0;
+
+double LOG_Is2_x_inject = 0.0;
+double LOG_Is2_y_inject = 0.0;
+
+double LOG_Itq2_d = 0.0;
+double LOG_Itq2_q = 0.0;
+
+double LOG_Is2_x = 0.0;
+double LOG_Is2_y = 0.0;
 
 double LOG_Te_ref = 0.0;
 
@@ -56,6 +74,18 @@ double LOG_vx_ref = 0.0;
 double LOG_vy_ref = 0.0;
 double LOG_vx_inject = 0.0;
 double LOG_vy_inject = 0.0;
+
+double LOG_vd2_ref = 0.0;
+double LOG_vq2_ref = 0.0;
+
+double LOG_vd2_inject = 0.0;
+double LOG_vq2_inject= 0.0;
+
+double LOG_vx2_ref = 0.0;
+double LOG_vy2_ref = 0.0;
+
+double LOG_vx2_inject = 0.0;
+double LOG_vy2_inject = 0.0;
 
 double LOG_delta_x = 0.0;
 double LOG_delta_y = 0.0;
@@ -120,6 +150,17 @@ void BIM_log (bim_control *data){
 
 	LOG_vx_inject = data->current_control->s1.vdq0_ref_inject[0];
 	LOG_vy_inject = data->current_control->s1.vdq0_ref_inject[1];
+
+	LOG_vd2_ref = data->current_control->tq2.vdq0_ref[0];
+	LOG_vq2_ref = data->current_control->tq2.vdq0_ref[1];
+	LOG_vd2_inject = data->current_control->tq2.vdq0_ref_inject[0];
+	LOG_vq2_inject = data->current_control->tq2.vdq0_ref_inject[1];
+
+	LOG_vx2_ref = data->current_control->s2.vdq0_ref[0];
+	LOG_vy2_ref = data->current_control->s2.vdq0_ref[1];
+
+	LOG_vx2_inject = data->current_control->s2.vdq0_ref_inject[0];
+	LOG_vy2_inject = data->current_control->s2.vdq0_ref_inject[1];
 
 	LOG_Is1_x = data->current_control->s1.Idq0[0];
 	LOG_Is1_y = data->current_control->s1.Idq0[1];
