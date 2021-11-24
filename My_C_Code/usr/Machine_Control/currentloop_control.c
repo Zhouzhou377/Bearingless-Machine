@@ -14,7 +14,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-
+#define SINGLE_INV (1)
 
 #define INV1 (3) //torque 1
 #define INV2 (2) //suspension 1
@@ -481,7 +481,7 @@ void current_regulation (currentloop_control *data)
     	update_control_current(&data->s2);
     	update_control_current(&data->tq2);
 
-    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq, 1);
+    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq, 0);
     	
     	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1, 0);
     	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2, 0);
@@ -510,6 +510,7 @@ void current_regulation (currentloop_control *data)
         
         data->s2.vdq0_ref[0] += data->s2.vdq0_ref_inject[0];
         data->s2.vdq0_ref[1] += data->s2.vdq0_ref_inject[1];}
+        if(!SINGLE_INV){
         decouple(data);
         //
         double vdq0[3];
@@ -537,7 +538,7 @@ void current_regulation (currentloop_control *data)
         vdq0[1] = data->tq2.vdq0_ref[1] + data->tq2.vdq0_decouple[1];
         vdq0[2] = data->tq2.vdq0_ref[2] + data->tq2.vdq0_decouple[2];
 
-        dq0_to2_abc(&(data->c_loop_inv4.vabc_ref[0]), &vdq0[0], data->tq2.theta_rad);
+        dq0_to2_abc(&(data->c_loop_inv4.vabc_ref[0]), &vdq0[0], data->tq2.theta_rad);}
 
     }else{
     	//calculate torque and suspension currents
