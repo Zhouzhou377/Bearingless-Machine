@@ -49,6 +49,7 @@
 // Enable SensorCard platform motherboard auto request new ADC sample data
 // set to 1 for enabled, 0 for disabled
 #define USER_CONFIG_ENABLE_MOTHERBOARD_AUTO_TX (1)
+
 #define APP_CABINET (1)
 
 
