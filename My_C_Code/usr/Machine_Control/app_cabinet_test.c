@@ -5,8 +5,8 @@
 #include "usr/Machine_Control/app_cabinet_test.h"
 #include "usr/Machine_Control/cmd/cmd_c_loop_ctrl.h"
 #include "usr/Machine_Control/cmd/cmd_cabinet_test.h"
-#include "usr/Machine_Control/cmd/BIM/cmd/cmd_bim_ctrl.h"
-#include "usr/Machine_Control/cmd/BP3/cmd/cmd_bp3_ctrl.h"
+#include "usr/Machine_Control/BIM/cmd/cmd_bim_ctrl.h"
+#include "usr/Machine_Control/BP3/cmd/cmd_bp3_ctrl.h"
 #include "sys/injection.h"
 
 #include "drv/gpio_mux.h"

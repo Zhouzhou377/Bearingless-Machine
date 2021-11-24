@@ -3,7 +3,7 @@
 #ifdef APP_CABINET
 #include "usr/Machine_Control/currentloop_control.h"
 #include "usr/Machine_Control/BIM/bim_outloop_control.h"
-#include "usr/Machine_Control/cmd/BIM/cmd/cmd_bim_ctrl.h"
+#include "usr/Machine_Control/BIM/cmd/cmd_bim_ctrl.h"
 #include "usr/Machine_Control/task_cabinet.h"
 #include "drv/cpu_timer.h"
 #include "usr/Machine_Control/cabinet.h"

@@ -1,4 +1,5 @@
-#include "usr/Machine_Control/sys_paramter.h"
+#include "usr/Machine_Control/sys_parameter.h"
+#include "usr/Machine_Control/control_structure.h"
 #include "usr/Machine_Control/BP3/bp3_outloop_control.h"
 #include "usr/Machine_Control/task_cabinet.h"
 #include "usr/Machine_Control/inverter.h"
@@ -35,143 +36,14 @@ bp3_control bp3_control_data;
 static double theta_pre = 0.0;
 
 
-void reset_states_3phase (double *state){
-    state[0] = 0.0;
-    state[1] = 0.0;
-    state[2] = 0.0;
-}
 
-void get_deltaxy_mes(bp3_control* data){
+
+void bp3_get_deltaxy_mes(bp3_control* data){
     data->bp3_lev_control.delta_mes[0] = POSITION_RATIO_X*(eddy_current_sensor_read_x_voltage() * M_PER_VOLT) + GEO_CENTER_X;
     data->bp3_lev_control.delta_mes[1] = POSITION_RATIO_y*(eddy_current_sensor_read_y_voltage() * M_PER_VOLT) + GEO_CENTER_y;
 }
 
-double get_encoder_pos(void){
-    uint32_t position;
-    encoder_get_position(&position);
 
-    double theta_now;
-
-    position =  position&0x0000003FF;
-    theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));
-
-}
-
-void get_pos_w_mes(double theta_now, double *theta_pre, double *w){
-	//uint32_t position = 0;
-    //uint32_t now;
-
-    /*uint32_t time_test_int = fpga_timer_now();
-    double time_test = fpga_timer_ticks_to_sec(time_test_int);*/
-
-	// Get delta position and speed
-	//now = fpga_timer_now();
-	//encoder_get_position(&position);
-	//now = cpu_timer_now();
-	//int32_t steps;
-    //int32_t dsteps;
-	//encoder_get_steps(&steps);
-    //dsteps = steps - data->bp3_v_control.step_pre;
-    //int32_t dstep_abs;
-/*
-    if(dsteps <=0){
-        dstep_abs = -1*dsteps;
-    }else{
-        dstep_abs = dsteps;
-    }
-
-    double dsteps_rad = PI2 * ( (double) dsteps / (double) (ENCODER_BP3_PPR));
-    
-
-    
-
-	//double steps_rad = PI2 * ( (double) steps / (double) (ENCODER_BP3_PPR));
-		// Add d axis offset
-	//position += mo.d_offset;
-	uint32_t dt_int;
-     
-    if(now<data->bp3_v_control.time_pre){
-        dt_int = 0xFFFFFFFF-data->bp3_v_control.time_pre;
-        dt_int = dt_int + now;
-    }else{
-        dt_int = now - data->bp3_v_control.time_pre;
-    }
-	double dt;
-	dt = fpga_timer_ticks_to_sec(dt_int);
-	// dt = cpu_timer_ticks_to_sec(dt_int);
-	
-    /*uint32_t dpos;
-    dpos = position - data->bp3_v_control.pos_pre;*/
-    //data->bp3_v_control.pos_pre = position;
-    /*while (position >= ENCODER_BP3_PPR) {
-        position -= ENCODER_BP3_PPR;
-    }*/
-    
-	// Convert to radians
-    /*double theta_now;
-
-    position =  position&0x0000003FF;
-    theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));*/
-    double dtheta;
-    //dtheta = fmod(dtheta, PI2);
-    //dtheta = theta_now - data->bp3_v_control.theta_rm_mes;
-    //double w;
-
-
-   // theta_now = fmod(theta_now, PI2);
-
-    /*if(data->bp3_v_control.wrm_mes>=0 && theta_now<data->bp3_v_control.theta_rm_mes){
-    	dtheta = theta_now + PI - data->bp3_v_control.theta_rm_mes_pre;
-    }else if(data->bp3_v_control.wrm_mes<0 && theta_now>data->bp3_v_control.theta_rm_mes){
-    	dtheta = theta_now - PI - data->bp3_v_control.theta_rm_mes_pre;
-    }else{
-    	dtheta = theta_now - data->bp3_v_control.theta_rm_mes_pre;
-    }*/
-    //double theta_now = data->bp3_v_control.theta_rm_mes;
-    dtheta = theta_now - theta_pre[0];
-    double dtheta_abs;
-    if(dtheta<0){
-    	dtheta_abs = -1.0*dtheta;
-    }else{
-    	dtheta_abs = 1.0*dtheta;
-    }
-    if(dtheta_abs>=PI){
-        if(theta_now>PI && (theta_pre[0])<=PI){
-            dtheta = dtheta - PI;
-        }else{
-            dtheta = dtheta + PI;
-        }
-    	
-    }
-
-    *w = dtheta/TS_v;
-    theta_pre[1] = theta_pre[0];
-    theta_pre[0] = theta_now;
- 
-    /*double w_steps = dsteps_rad/TS_v;
-        /*if(data->bp3_v_control.wrm_mes!=0 && w!=0 && abs((w - data->bp3_v_control.wrm_mes)/data->bp3_v_control.wrm_mes)>=0.2){
-        	w = data->bp3_v_control.wrm_mes;
-        }*/
-
-    /*if(data->bp3_v_control.theta_rm_mes == 0 && data->bp3_v_control.time_pre == 0){
-        data->bp3_v_control.wrm_mes = 0.0;
-    }else if(dt==0){
-        ;
-    }else if(dstep_abs>=0x8FFF0000){
-    	;
-    }
-    else{
-        data->bp3_v_control.wrm_mes = w_steps;
-    }*/
-     //data->bp3_v_control.w_test = theta_now - data->bp3_v_control.theta_rm_mes;
-    //bp3_control_data.bp3_v_control.wrm_mes = w;
-    //data->bp3_v_control.theta_rm_mes_pre = data->bp3_v_control.theta_rm_mes;
-    //data->bp3_v_control.theta_rm_mes = theta_now;
-    //data->theta_rm_mes_pre[1] = theta_now;
-    //data->bp3_v_control.time_pre = now;
-    //data->bp3_v_control.step_pre = steps;
-    
-}
 
 bp3_control *init_bp3(void){
     //init regulators
@@ -252,7 +124,7 @@ bp3_control *init_bp3(void){
 
     bp3_control_data.BP3_PARA = BP3_PARA;
 
-    injection_ctx_clear(&inj_ctx_ctrl);
+    injection_ctx_clear(&inj_ctx_ctrl_bp3);
 
     bp3_control_data.bp3_lev_control.delta_ref[0] = 0.0;
     bp3_control_data.bp3_lev_control.delta_ref[1] = 0.0;
@@ -262,7 +134,7 @@ bp3_control *init_bp3(void){
     bp3_control_data.bp3_v_control.wrm_ref = 0.0;
     reset_states_3phase(&(bp3_control_data.bp3_v_control.Idq0_ref[0]));
     bp3_control_data.bp3_v_control.Idq0_ref[0] = 1.0;
-    get_deltaxy_mes(&bp3_control_data);
+    bp3_get_deltaxy_mes(&bp3_control_data);
     bp3_control_data.bp3_lev_control.delta_ref[0] = bp3_control_data.bp3_lev_control.delta_mes[0]*0.95;
     bp3_control_data.bp3_lev_control.delta_ref[1] = bp3_control_data.bp3_lev_control.delta_mes[1]*0.95;
 
@@ -315,7 +187,7 @@ bp3_control *reset_bp3(void){
     reset_states_3phase(&(bp3_control_data.bp3_v_control.para_ob.para_PI.state_1));
 
     reset_regulator();
-    injection_ctx_clear(&inj_ctx_ctrl);
+    injection_ctx_clear(&inj_ctx_ctrl_bp3);
 
     bp3_control_data.bp3_lev_control.delta_ref[0] = 0.0;
     bp3_control_data.bp3_lev_control.delta_ref[1] = 0.0;
@@ -327,7 +199,7 @@ bp3_control *reset_bp3(void){
     reset_states_3phase(&(bp3_control_data.bp3_v_control.Idq0_ref[0]));
     bp3_control_data.bp3_v_control.Idq0_ref[0] = bp3_control_data.BP3_PARA->para_machine.id_ref;
     reset_states_3phase(&(bp3_control_data.bp3_lev_control.para_levi_control.para_delta_lpf.state_1));
-    get_deltaxy_mes(&bp3_control_data);
+    bp3_get_deltaxy_mes(&bp3_control_data);
     bp3_control_data.bp3_lev_control.delta_ref[0] = bp3_control_data.bp3_lev_control.delta_mes[0]*0.95;
     bp3_control_data.bp3_lev_control.delta_ref[1] = bp3_control_data.bp3_lev_control.delta_mes[1]*0.95;
 
@@ -365,79 +237,14 @@ bp3_control *deinit_bp3(void){
 }
 
 // need to get eddy current sensor and encoder signals
-void func_lpf(double *in, double *out, para_lpf *para_lpf, double *state){
-    double t = 1/(PI2*para_lpf->fs);
-    double a = 1/(t+para_lpf->Ts);
-    double k1 = para_lpf->Ts*a;
-    double k2 = t*a; 
 
-
-    *out= *in*k1 + (*state)*k2;
-    *state = *out;
-
-}
-
-void func_PI_normal(double *in, double *out, int Num_variable, para_PI_discrete_normal *para_PI, double *out_antiwp){
-    double Ts = para_PI->Ts;
-    double state_p;
-    double state_i;
-
-    for (int i = 0; i<Num_variable; i++){
-        state_p = para_PI->Kp*(*(in+i));
-        double state;
-        state = *(in+i) + *(out_antiwp+i);
-        state_i = para_PI->Ki*Ts*state+ para_PI->state_1[i];
-        para_PI->state_1[i] = state_i;
-        *(out+i) = state_i + state_p;
-    }
-}
-
-void func_observer_theta(double theta_mes, double *theta_est, double *w_est, double *w_est_hf, para_observer *para_ob, double tq){
-    double error;
-    error = theta_mes - *theta_est;
-    if (error<-1.0*PI){
-        error = (error+PI2);
-    }else if(error>PI){
-        error = (error-PI2);
-    }
-    double out_PI;
-    double antiwp = 0.0;
-    func_PI_normal(&error, &out_PI, 1, &(para_ob->para_PI), &antiwp);
-    out_PI += tq;
-    double out_Kd;
-    out_Kd = error*para_ob->Kd;
-    
-    *w_est = out_PI*para_ob->Ts*para_ob->Kj + para_ob->state1;
-    *w_est_hf = *w_est + out_Kd;
-    *theta_est = fmod((para_ob->Ts*(*w_est_hf) + para_ob->state2), PI2);
-    para_ob->state1 = *w_est;
-    para_ob->state2 = *theta_est;
-
-
-}
-
-void func_anti_windup(para_anti_windup *para_antiwp, double in, double *in_antiwp, double *out){
-    double error;
-    if (in>=para_antiwp->sat_high){
-        *in_antiwp = para_antiwp->sat_high;
-        error = *in_antiwp - in;
-    }else if (in<=para_antiwp->sat_low){
-        *in_antiwp = para_antiwp->sat_low;
-        error = *in_antiwp - in;
-    }else{
-        *in_antiwp =  in;
-        error = 0.0;
-    }
-    
-    *out = error*para_antiwp->k;
-}
 
 void bm_start_theta(bp3_control* data){
     if (pwm_is_enabled()){
         
     
     //double V = data->current_control->c_loop_inv1.inv->Vdc*0.3;
-    set_line_volts_three_phase(set_line_volts_three_phase(5, 0, 0, data->current_control->c_loop_inv1.inv);
+    set_line_volts_three_phase(5, 0, 0, data->current_control->c_loop_inv1.inv);
     uint32_t time_int = cpu_timer_now();
     double time_begin = cpu_timer_ticks_to_sec(time_int);
     double time_end = time_begin;
@@ -452,7 +259,7 @@ void bm_start_theta(bp3_control* data){
     }
 }
 
-void velocity_regulation(bp3_control* data){
+void bp3_velocity_regulation(bp3_control* data){
     double antiwp = 0.0;
     //get_pos_w_mes(data);
 
@@ -482,7 +289,7 @@ void velocity_regulation(bp3_control* data){
 
 }
 
-void levitation_regulation(bp3_control* data){
+void bp3_levitation_regulation(bp3_control* data){
     double id = data->bp3_v_control.Idq0_ref[0];
     update_para_bp3_activedamping(data->BP3_PARA, id);
     data->bp3_lev_control.para_levi_control.ba = data->BP3_PARA->para_control.lev_ba;
@@ -590,20 +397,6 @@ void levitation_regulation(bp3_control* data){
 }
 
 
-
-int protection_overcurrent(double iabc[3], double i_max){
-    int flag;
-    flag = 0;
-    for(int x = 0; x<3; x++){
-        if(iabc[x]>=i_max || iabc[x]<=(i_max*-1.0)){
-            flag = 1;
-            break;
-        }
-    }
-    return flag;
-}
-
-
 void bp3_controlloop (bp3_control* data)
 {
     if(!data->is_init || data == 0x00000000){
@@ -615,7 +408,7 @@ void bp3_controlloop (bp3_control* data)
     
     //theta_pre = data->bp3_v_control.theta_rm_mes;
     //update eddy current position
-    get_deltaxy_mes(data);
+    bp3_get_deltaxy_mes(data);
     //update theta and we
     //data->theta_rm_mes_pre = data->bp3_v_control.theta_rm_mes;
     ////data->bp3_v_control.w_test = data->bp3_v_control.theta_rm_mes_pre;
@@ -624,9 +417,9 @@ void bp3_controlloop (bp3_control* data)
     while(data->bp3_v_control.theta_rm_mes<0||data->bp3_v_control.theta_rm_mes>PI2){
         if(data->bp3_v_control.theta_rm_mes<0){
             data->bp3_v_control.theta_rm_mes+=PI2;
-        }else(
+        }else{
             data->bp3_v_control.theta_rm_mes-=PI2;
-        )
+        }
     }
 
     if (data->bp3_v_control.para_ob.enable == 1){
@@ -675,7 +468,7 @@ void bp3_controlloop (bp3_control* data)
            if(ID_VCTRL){
     	    bp3_injection_callback(data);
             }
-           velocity_regulation(data);
+           bp3_velocity_regulation(data);
        }
    }
     
@@ -691,7 +484,7 @@ void bp3_controlloop (bp3_control* data)
         if(ID_LEVCTRL){
     	    bp3_injection_callback(data);
         }
-        levitation_regulation(data);
+        bp3_levitation_regulation(data);
     }else{
 
         double theta_rad = data->bp3_v_control.theta_re_ref*(0.0) + data->BP3_PARA->para_machine.kf_theta_rad;

@@ -2,69 +2,10 @@
 #define bim_OUTLOOP_CONTROL_H
 
 #include "usr/Machine_Control/currentloop_control.h"
+#include "usr/Machine_Control//BIM/bim_para_machine.h"
+#include "usr/Machine_Control/control_structure.h"
 #include <stdint.h>
 
-
-
-typedef struct para_PI_discrete_normal{
-
-    //Controller Parameters Calculated from Bilinear Transform
-    double Ts;
-    double Kp;
-    double Ki;
-    double state_1[3];
-
-} para_PI_discrete_normal;
-
-typedef struct para_lpf{
-
-    //Controller Parameters Calculated from Bilinear Transform
-    double Ts;
-    double fs;
-
-    double state_1[3];
-
-} para_lpf;
-
-typedef struct para_observer{
-    double enable;
-    double Ts;
-    double Kd;
-    double Kj;
-    double state1;
-    double state2;
-    para_PI_discrete_normal para_PI;
-
-} para_observer;
-
-typedef struct para_anti_windup{
-    
-    double sat_low;
-    double sat_high;
-    double k;
-
-} para_anti_windup;
-
-typedef struct para_levitation_control{
-    int enable;
-    para_PI_discrete_normal para_PI;
-    double Ts;
-    double ka;
-    double ba;
-    double state_1[3];
-    para_anti_windup para_anti_wp;
-    para_lpf para_lpf;
-    para_lpf para_delta_lpf;
-
-} para_levitation_control;
-
-typedef struct para_velocity_control{
-    double wrm_max;
-    para_lpf para_lpf;
-    para_PI_discrete_normal para_PI;
-
-
-} para_velocity_control;
 
 
 typedef struct bim_velocity_control{

@@ -3,7 +3,7 @@
 #ifdef APP_CABINET
 #include "usr/Machine_Control/currentloop_control.h"
 #include "usr/Machine_Control/BP3/bp3_outloop_control.h"
-#include "usr/Machine_Control/cmd/BP3/cmd/cmd_bp3_ctrl.h"
+#include "usr/Machine_Control/BP3/cmd/cmd_bp3_ctrl.h"
 #include "usr/Machine_Control/task_cabinet.h"
 #include "drv/cpu_timer.h"
 #include "usr/Machine_Control/cabinet.h"

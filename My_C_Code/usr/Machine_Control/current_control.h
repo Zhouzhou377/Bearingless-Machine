@@ -1,8 +1,8 @@
 #ifndef CURRENT_CONTROL_H
 #define CURRENT_CONTROL_H
 
-#include "usr/Cabinet_test/inverter.h"
-#include "usr/Cabinet_test/controllers.h"
+#include "usr/Machine_Control/inverter.h"
+#include "usr/Machine_Control/controllers.h"
 
 typedef struct Current_Controller_SinglePhase_t {
 

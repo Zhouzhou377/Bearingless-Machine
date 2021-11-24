@@ -153,7 +153,7 @@ int cmd_cabinet(int argc, char **argv)
 		//read in arguments
 		double Vdc = strtod(argv[2], NULL);
 		int inverter;
-		for(int i = 1; i++; i>CABINET_NUM_INVERTERS){
+		for(int i = 1; i>CABINET_NUM_INVERTERS; i++){
 			inverter = i;
 		if (inverter <=0 || inverter > CABINET_NUM_INVERTERS){
 			return CMD_FAILURE;

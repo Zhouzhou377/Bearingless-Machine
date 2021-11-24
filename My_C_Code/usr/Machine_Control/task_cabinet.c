@@ -33,7 +33,7 @@ OpenLoop_Command VSI_Openloop_command;
 OpenLoop_Command *OpenLoop;
 
 cmd_signal cmd_enable;
-inj_ctx_t *ctx = &inj_ctx_ctrl[0];
+inj_ctx_t *ctx;
 //#define TS	(1.0 / TASK_CABINET_UPDATES_PER_SEC)// sample time
 
 static task_control_block_t tcb;
@@ -84,6 +84,9 @@ void task_cabinet_deinit(void)
     cmd_enable.enable_inject_s1_vref= 0;
 	scheduler_tcb_unregister(&tcb);
 	c_loop_data = deinit_currentloop();
+	ctx = &inj_ctx_ctrl_bim[0];
+	injection_ctx_unregister(ctx);
+	ctx = &inj_ctx_ctrl_bp3[0];
 	injection_ctx_unregister(ctx);
 }
 
