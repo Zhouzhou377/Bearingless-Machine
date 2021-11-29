@@ -17,6 +17,7 @@ static para_bp3 BP3_PARA = {
 	.para_machine.p = 1,
 	.para_machine.ps = 2,
 
+	.para_machine.kt = 0.07,
 	.para_machine.kf = 13.333333,
 	.para_machine.kf_theta_rad = 130.0/180.0*PI,
 	.para_machine.kf_a2 = 0.0130322,

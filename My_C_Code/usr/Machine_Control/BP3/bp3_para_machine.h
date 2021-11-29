@@ -18,7 +18,7 @@ typedef struct para_bp3_machine{
 	int p;
 	int ps;
 
-
+	double kt;
 	double kf;
 	double kf_a2;
 	double kf_a1;

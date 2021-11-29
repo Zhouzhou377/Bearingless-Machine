@@ -144,15 +144,20 @@ void task_cabinet_callback(void *arg)
 	else if(cmd_enable.enable_bp3_control){
 		bp3_control_pt = &bp3_control_data;
 		if(pwm_is_enabled()){
-			bp3_controlloop(bp3_control_pt);
-		}
+
+			if(!bp3_control_pt->bp3_v_control.is_start){
+			    bm_start_theta(bp3_control_pt);
+			}else{
+				bp3_controlloop(bp3_control_pt);
+
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
 		//bim_controlloop(bim_control_pt);
 		//bim_control_pt = &bim_control_data;
 		
-		set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv1.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv1.inv);
-		set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv2.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv2.inv);
-
+				set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv1.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv1.inv);
+				set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv2.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv2.inv);
+		}
+		}
 
 	}
 

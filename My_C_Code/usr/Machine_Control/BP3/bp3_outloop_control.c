@@ -244,7 +244,7 @@ void bm_start_theta(bp3_control* data){
         
     
     //double V = data->current_control->c_loop_inv1.inv->Vdc*0.3;
-    set_line_volts_three_phase(5, 0, 0, data->current_control->c_loop_inv1.inv);
+    set_line_volts_three_phase(1, -0.5, -0.5, data->current_control->c_loop_inv1.inv);
     uint32_t time_int = cpu_timer_now();
     double time_begin = cpu_timer_ticks_to_sec(time_int);
     double time_end = time_begin;
@@ -402,9 +402,6 @@ void bp3_controlloop (bp3_control* data)
     if(!data->is_init || data == 0x00000000){
         data = init_bp3();
     }
-    if(!data->bp3_v_control.is_start){
-        bm_start_theta(data);
-    }
     
     //theta_pre = data->bp3_v_control.theta_rm_mes;
     //update eddy current position
@@ -421,7 +418,7 @@ void bp3_controlloop (bp3_control* data)
             data->bp3_v_control.theta_rm_mes-=PI2;
         }
     }
-
+    data->bp3_v_control.theta_re_ref = data->bp3_v_control.theta_rm_mes*data->BP3_PARA->para_machine.p;
     if (data->bp3_v_control.para_ob.enable == 1){
         double tq;
         tq = 1.5*data->BP3_PARA->para_machine.p*data->BP3_PARA->para_machine.Lm/data->BP3_PARA->para_machine.Lr*data->current_control->tq.Idq0_ref[0]*data->BP3_PARA->para_machine.Lm*data->current_control->tq.Idq0_ref[1];
@@ -469,6 +466,7 @@ void bp3_controlloop (bp3_control* data)
     	    bp3_injection_callback(data);
             }
            bp3_velocity_regulation(data);
+           data->bp3_v_control.Idq0_ref[1] = data->bp3_v_control.Te_ref/data->BP3_PARA->para_machine.kt;
        }
    }
     
