@@ -283,6 +283,11 @@ class cmd():
         if self.debug:
             return out
 
+    def bp3_enable_align(self):
+        out = self.amdc.cmd('bp3 enable_align')
+        if self.debug:
+            return out
+
     def bp3_enable_vctrl(self):
         out = self.amdc.cmd('bp3 enable_vctrl')
         if self.debug:

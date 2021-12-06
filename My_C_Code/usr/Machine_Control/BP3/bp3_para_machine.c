@@ -33,11 +33,11 @@ static para_bp3 BP3_PARA = {
 	.para_machine.J = 0.005,
 	
 	.para_machine.iabc_max = 30.0,
-	.para_machine.wrm_max = 5000.0,
-	.para_machine.id_ref = 2.0,
+	.para_machine.wrm_max = 2000.0,
+	.para_machine.id_ref = 0.0,
 
-	.para_control.v_pi_Kp = 0.1,
-	.para_control.v_pi_Ki= 0.05,
+	.para_control.v_pi_Kp = 0.001,
+	.para_control.v_pi_Ki= 0.0001,
 	.para_control.v_lpf_f= 0.1,
 	.para_control.lev_pi_Kp= 0.0,
 	.para_control.lev_pi_Ki= 0.0,

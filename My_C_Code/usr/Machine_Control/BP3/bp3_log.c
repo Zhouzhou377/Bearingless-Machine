@@ -2,15 +2,15 @@
 #include "usr/Machine_Control/BP3/bp3_outloop_control.h"
 #include "usr/Machine_Control/log_parameter.h"
 
-
+ double LOG_theta_offset = 0.0;
 
 void bp3_log (bp3_control *data){
     LOG_wrm = data->bp3_v_control.wrm_mes;
 	LOG_wrm_ref = data->bp3_v_control.wrm_ref_lpf;
 	LOG_wrm_inject = data->bp3_v_control.wrm_ref_inject;
 	LOG_wrm_hf = data->bp3_v_control.wrm_est_hf;
+	LOG_theta_offset = data->bp3_v_control.theta_rm_mes_offset;
 	LOG_theta_rm = data->bp3_v_control.theta_rm_mes;
-    LOG_wsl = data->bp3_v_control.wsl_ref;
 	LOG_theta_e = data->bp3_v_control.theta_re_ref;
     //LOG_theta_rm_pre = data->bp3_v_control.theta_rm_mes_pre[0];
 	//LOG_Te_ref

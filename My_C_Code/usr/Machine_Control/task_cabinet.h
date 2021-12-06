@@ -16,6 +16,7 @@ typedef struct cmd_signal {
     bool enable_testloop;
     bool enable_bim_control;
     bool enable_bp3_control;
+    bool enable_bp3_align;
     bool enable_inject_tq_cctrl;
     bool enable_inject_s1_cctrl;
     bool enable_inject_Fxy;

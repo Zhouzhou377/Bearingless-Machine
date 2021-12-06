@@ -60,6 +60,7 @@ void task_cabinet_init(void)
 	cmd_enable.enable_current_control = 0;
 	cmd_enable.enable_bim_control = 0;
 	cmd_enable.enable_bp3_control = 0;
+	cmd_enable.enable_bp3_align = 0;
 	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
@@ -76,6 +77,7 @@ void task_cabinet_deinit(void)
 	cmd_enable.enable_current_control = 0;
 	cmd_enable.enable_bim_control = 0;
 	cmd_enable.enable_bp3_control = 0;
+	cmd_enable.enable_bp3_align = 0;
 	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
@@ -140,14 +142,18 @@ void task_cabinet_callback(void *arg)
 
 
 	}
+	else if(cmd_enable.enable_bp3_align){
+		bp3_control_pt = &bp3_control_data;
+		bm_start_theta(bp3_control_pt);
 
+		cmd_enable.enable_bp3_control = 0;
+	}
 	else if(cmd_enable.enable_bp3_control){
+		cmd_enable.enable_bp3_align = 0;
 		bp3_control_pt = &bp3_control_data;
 		if(pwm_is_enabled()){
 
-			if(!bp3_control_pt->bp3_v_control.is_start){
-			    bm_start_theta(bp3_control_pt);
-			}else{
+
 				bp3_controlloop(bp3_control_pt);
 
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
@@ -156,7 +162,7 @@ void task_cabinet_callback(void *arg)
 		
 				set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv1.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv1.inv);
 				set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv2.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv2.inv);
-		}
+
 		}
 
 	}

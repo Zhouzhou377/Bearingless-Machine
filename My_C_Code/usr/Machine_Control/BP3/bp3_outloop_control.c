@@ -149,6 +149,7 @@ bp3_control *init_bp3(void){
     cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;
 	cmd_enable.enable_bp3_control = 0;
+	cmd_enable.enable_bp3_align = 0;
 	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
@@ -213,14 +214,15 @@ bp3_control *reset_bp3(void){
 
     cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;
-	//cmd_enable.enable_bp3_control = 0;
+	cmd_enable.enable_bp3_align = 0;
+	cmd_enable.enable_bp3_control = 0;
 	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
     cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
-
+    bp3_control_data.bp3_v_control.is_start = 0;
     bp3_control_data.bp3_lev_control.F_xy[0] = 0.0;
 	bp3_control_data.bp3_lev_control.F_xy[1] = 0.0;
     return &(bp3_control_data);
@@ -244,15 +246,26 @@ void bm_start_theta(bp3_control* data){
         
     
     //double V = data->current_control->c_loop_inv1.inv->Vdc*0.3;
-    set_line_volts_three_phase(1, -0.5, -0.5, data->current_control->c_loop_inv1.inv);
+    set_line_volts_three_phase(2, -1, -1, data->current_control->c_loop_inv1.inv);
     uint32_t time_int = cpu_timer_now();
     double time_begin = cpu_timer_ticks_to_sec(time_int);
     double time_end = time_begin;
     while((time_end-time_begin)<=2){
         time_int = cpu_timer_now();
         time_end = cpu_timer_ticks_to_sec(time_int);
+        data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
     }
     data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
+    double theta = get_encoder_pos();
+    data->bp3_v_control.theta_rm_mes = theta-data->bp3_v_control.theta_rm_mes_offset;
+        while(data->bp3_v_control.theta_rm_mes<0||data->bp3_v_control.theta_rm_mes>PI2){
+            if(data->bp3_v_control.theta_rm_mes<0){
+                data->bp3_v_control.theta_rm_mes+=PI2;
+            }else{
+                data->bp3_v_control.theta_rm_mes-=PI2;
+            }
+        }
+    data->bp3_v_control.theta_re_ref = data->bp3_v_control.theta_rm_mes*data->BP3_PARA->para_machine.p;
     data->bp3_v_control.is_start = 1;}
     else{
         data->bp3_v_control.is_start = 0;
@@ -262,7 +275,6 @@ void bm_start_theta(bp3_control* data){
 void bp3_velocity_regulation(bp3_control* data){
     double antiwp = 0.0;
     //get_pos_w_mes(data);
-
     //get_pos_w_mes(data->bp3_v_control.theta_rm_mes, &(data->bp3_v_control.theta_rm_mes_pre), &(data->bp3_v_control.wrm_mes));
     //data->bp3_v_control.theta_rm_mes_pre = data->bp3_v_control.theta_rm_mes;
     //func_lpf(&(data->bp3_v_control.wrm_ref), &(data->bp3_v_control.wrm_ref_lpf), 1, &(data->bp3_v_control.para_velocity_control.para_lpf));
@@ -409,8 +421,11 @@ void bp3_controlloop (bp3_control* data)
     //update theta and we
     //data->theta_rm_mes_pre = data->bp3_v_control.theta_rm_mes;
     ////data->bp3_v_control.w_test = data->bp3_v_control.theta_rm_mes_pre;
+    if(!data->bp3_v_control.is_start){
+    			    bm_start_theta(data);
+    			}
     double theta = get_encoder_pos();
-    data->bp3_v_control.theta_rm_mes = -1.0*(theta- data->bp3_v_control.theta_rm_mes_offset) + PI2;
+    data->bp3_v_control.theta_rm_mes = 1.0*(theta- data->bp3_v_control.theta_rm_mes_offset);
     while(data->bp3_v_control.theta_rm_mes<0||data->bp3_v_control.theta_rm_mes>PI2){
         if(data->bp3_v_control.theta_rm_mes<0){
             data->bp3_v_control.theta_rm_mes+=PI2;
@@ -455,7 +470,7 @@ void bp3_controlloop (bp3_control* data)
    // velocity control
    if(data->bp3_v_control.enable){
        if(DEBUG_DFLUX){
-           data->bp3_v_control.Te_ref = 0.0;
+           //data->bp3_v_control.Te_ref = 0.0;
            /*wrm_test = 0.0*PI2;
            theta_test = theta_test + wrm_test*TS;
            data->bp3_v_control.wrm_mes = wrm_test;
@@ -466,10 +481,9 @@ void bp3_controlloop (bp3_control* data)
     	    bp3_injection_callback(data);
             }
            bp3_velocity_regulation(data);
-           data->bp3_v_control.Idq0_ref[1] = data->bp3_v_control.Te_ref/data->BP3_PARA->para_machine.kt;
        }
    }
-    
+   data->bp3_v_control.Idq0_ref[1] = data->bp3_v_control.Te_ref/data->BP3_PARA->para_machine.kt;
     /*if(cmd_enable.enable_inject_Fxy){
         double theta[2];
         theta[0] = 0.0;

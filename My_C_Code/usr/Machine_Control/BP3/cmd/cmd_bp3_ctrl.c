@@ -24,7 +24,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(23)
+#define NUM_HELP_ENTRIES	(24)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -33,6 +33,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_vdc_tq", "Set DC Bus for a Torque Inverter"},
 		{"set_vdc_s1", "Set DC Bus for a Suspension Inverter"},
 		{"enable_ctrl", "Enable bp3 control"},
+		{"enable_align", "Enable bp3 align function"},
 		{"enable_ob", "Enable speed observer"},
 		{"enable_vctrl", "Enable bp3 velocity control"},
 		{"enable_levctrl", "Enable bp3 levitation control"},
@@ -93,6 +94,7 @@ int cmd_bp3(int argc, char **argv)
 		cmd_enable.enable_openloop = 0;
 		cmd_enable.enable_testloop = 0;
 		cmd_enable.enable_bp3_control = 0;
+		cmd_enable.enable_bp3_align = 0;
 		cmd_enable.enable_bim_control = 0;
 		return CMD_SUCCESS;
 	}
@@ -151,12 +153,29 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		cmd_enable.enable_bp3_control = 1;
+		cmd_enable.enable_bp3_align = 0;
 		cmd_enable.enable_bim_control = 0;
 		cmd_enable.enable_current_control = 0;
 		cmd_enable.enable_openloop = 0;
-		reset_bp3();
+		bp3_control_data.bp3_v_control.enable = 0;
+		bp3_control_data.bp3_lev_control.enable = 0;
+		//reset_bp3();
 		return CMD_SUCCESS;
 	}
+
+	if (strcmp("enable_align", argv[1]) == 0) {
+			// Check correct number of arguments
+			if (argc != 2) return CMD_INVALID_ARGUMENTS;
+			cmd_enable.enable_bp3_align = 1;
+			cmd_enable.enable_bp3_control = 0;
+			cmd_enable.enable_bim_control = 0;
+			cmd_enable.enable_current_control = 0;
+			cmd_enable.enable_openloop = 0;
+			bp3_control_data.bp3_v_control.enable = 0;
+			bp3_control_data.bp3_lev_control.enable = 0;
+			//reset_bp3();
+			return CMD_SUCCESS;
+		}
 
 	if (strcmp("enable_vctrl", argv[1]) == 0) {
 		// Check correct number of arguments
