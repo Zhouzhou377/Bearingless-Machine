@@ -155,28 +155,27 @@ int cmd_cabinet(int argc, char **argv)
 		int inverter;
 		for(int i = 1; i>CABINET_NUM_INVERTERS; i++){
 			inverter = i;
-		if (inverter <=0 || inverter > CABINET_NUM_INVERTERS){
-			return CMD_FAILURE;
-		} else if (inverter == 1 || inverter == 4){
-			inverter = find_invIdex_invID(inverter);
-			if (inverter == -1)
-			{
+			if (inverter <=0 || inverter > CABINET_NUM_INVERTERS){
 				return CMD_FAILURE;
-			}
-			//Current_Controller_SinglePhase_t *cc_1 = get_single_phase_cc(inverter - 1);
-			//cc_1->inverter->Vdc = Vdc;
+			} else if (inverter == 1 || inverter == 4){
+				inverter = find_invIdex_invID(inverter);
+				if (inverter == -1)
+				{
+					return CMD_FAILURE;
+				}
+				//Current_Controller_SinglePhase_t *cc_1 = get_single_phase_cc(inverter - 1);
+				//cc_1->inverter->Vdc = Vdc;
 
-		} else{
-			inverter = find_invIdex_invID(inverter);
-			if (inverter == -1)
-			{
-				return CMD_FAILURE;
+			} else{
+				inverter = find_invIdex_invID(inverter);
+				if (inverter == -1)
+				{
+					return CMD_FAILURE;
+				}
+				InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
+				inv->Vdc = Vdc;
+			} 
 			}
-			InverterThreePhase_t *inv = get_three_phase_inverter(inverter);
-			inv->Vdc = Vdc;
-
-		} 
-		}
 		return CMD_SUCCESS;
 	}
 

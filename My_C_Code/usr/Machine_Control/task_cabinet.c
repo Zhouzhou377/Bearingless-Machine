@@ -50,11 +50,12 @@ void task_cabinet_init(void)
 
 	default_inverter_setup(0);
 	OpenLoop = init_OpenLoop_Command();
-	if(!BM_ENABLE){
+	//if(!BM_ENABLE){
 		c_loop_data = init_currentloop();
-	}else{
+	//}else{
 		bim_control_pt = init_bim();
-	}
+	//}
+		bp3_control_pt = init_bp3();
 	bim_injection_init();
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;

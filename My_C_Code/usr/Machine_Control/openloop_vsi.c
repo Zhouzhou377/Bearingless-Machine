@@ -3,7 +3,8 @@
 #include "usr/Machine_Control/openloop_vsi.h"
 #include "usr/Machine_Control/definitions.h"
 #include "sys/scheduler.h"
-
+#include "drv/encoder.h"
+#include "usr/Machine_Control/control_structure.h"
 #include <math.h>
 #include <stdint.h>
 
@@ -14,9 +15,12 @@ static task_control_block_t tcb;
 double LOG_va = 0;
 double LOG_vb = 0;
 double LOG_vc = 0;
+double LOG_theta = 0;
+uint32_t LOG_theta_raw = 0;
 
-static double Ts = 1.0 / 10000.0; // [sec]
-static double theta = 0.0;        // [rad]
+const double Ts = 1.0/10000.0;
+
+static double theta_vsi = 0.0;        // [rad]
 
 OpenLoop_Command VSI_Openloop_command;
 
@@ -25,18 +29,20 @@ void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
     // Update theta
     double omega;
     omega = 2.0*PI*OpenLoop->freq;
-    theta += (Ts * omega);
-    theta = fmod(theta, 2.0 * PI); // Wrap to 2*pi
+    theta_vsi += (Ts * omega);
+    theta_vsi = fmod(theta_vsi, 2.0 * PI); // Wrap to 2*pi
 
     // Calculate desired duty ratios
-    OpenLoop->command_volatge[0] = OpenLoop->amp * cos(theta);
-    OpenLoop->command_volatge[1] = OpenLoop->amp * cos(theta + 2.0 * PI / 3.0);
-    OpenLoop->command_volatge[2] = OpenLoop->amp * cos(theta + 4.0 * PI / 3.0);
+    OpenLoop->command_volatge[0] = OpenLoop->amp * cos(theta_vsi);
+    OpenLoop->command_volatge[1] = OpenLoop->amp * cos(theta_vsi - 2.0 * PI / 3.0);
+    OpenLoop->command_volatge[2] = OpenLoop->amp * cos(theta_vsi - 4.0 * PI / 3.0);
 
     // Update logging variables
     LOG_va = (double) (OpenLoop->command_volatge[0]);
     LOG_vb = (double) (OpenLoop->command_volatge[1] );
     LOG_vc = (double) (OpenLoop->command_volatge[2] );
+    LOG_theta = get_encoder_pos();
+    encoder_get_position(&LOG_theta_raw);
 }
 
 OpenLoop_Command *init_OpenLoop_Command(void)

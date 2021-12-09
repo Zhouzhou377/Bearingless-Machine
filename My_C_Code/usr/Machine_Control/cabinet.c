@@ -17,9 +17,13 @@
 #define CAB_INV2_PHB	(5)
 #define CAB_INV2_PHC    (4)
 
-#define CAB_INV3_PHA	(6)
-#define CAB_INV3_PHB	(8)
-#define CAB_INV3_PHC	(7)
+//#define CAB_INV3_PHA	(6)
+//#define CAB_INV3_PHB	(8)
+//#define CAB_INV3_PHC	(7)
+
+#define CAB_INV3_PHA	(21)
+#define CAB_INV3_PHB	(23)
+#define CAB_INV3_PHC	(22)
 
 #define CAB_INV4_PHA	(10)
 #define CAB_INV4_PHB	(9)
@@ -28,9 +32,13 @@
 #define CAB_INV5_PHB	(14)
 #define CAB_INV5_PHC	(13)
 
-#define CAB_INV6_PHA	(21)
+/*#define CAB_INV6_PHA	(21)
 #define CAB_INV6_PHB	(23)
-#define CAB_INV6_PHC	(22)
+#define CAB_INV6_PHC	(22)*/
+
+#define CAB_INV6_PHA	(18)
+#define CAB_INV6_PHB	(20)
+#define CAB_INV6_PHC	(19)
 
 /*
  * Required ADC connections

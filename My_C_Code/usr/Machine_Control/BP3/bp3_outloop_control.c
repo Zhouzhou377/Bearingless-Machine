@@ -231,11 +231,13 @@ bp3_control *reset_bp3(void){
 
 bp3_control *deinit_bp3(void){
 
-    bp3_control_data.is_init = 0;
+
     reset_bp3();
     bp3_control_data.current_control= deinit_currentloop();
+    bp3_control_data.is_init = 0;
     // init machine control parameters
     return &bp3_control_data;
+
 }
 
 // need to get eddy current sensor and encoder signals
@@ -250,22 +252,14 @@ void bm_start_theta(bp3_control* data){
     uint32_t time_int = cpu_timer_now();
     double time_begin = cpu_timer_ticks_to_sec(time_int);
     double time_end = time_begin;
-    while((time_end-time_begin)<=2){
+    while((time_end-time_begin)<=10){
         time_int = cpu_timer_now();
         time_end = cpu_timer_ticks_to_sec(time_int);
         data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
     }
     data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
     double theta = get_encoder_pos();
-    data->bp3_v_control.theta_rm_mes = theta-data->bp3_v_control.theta_rm_mes_offset;
-        while(data->bp3_v_control.theta_rm_mes<0||data->bp3_v_control.theta_rm_mes>PI2){
-            if(data->bp3_v_control.theta_rm_mes<0){
-                data->bp3_v_control.theta_rm_mes+=PI2;
-            }else{
-                data->bp3_v_control.theta_rm_mes-=PI2;
-            }
-        }
-    data->bp3_v_control.theta_re_ref = data->bp3_v_control.theta_rm_mes*data->BP3_PARA->para_machine.p;
+    data->bp3_v_control.theta_re_ref = 1.0*(theta - data->bp3_v_control.theta_rm_mes_offset)*data->BP3_PARA->para_machine.p;
     data->bp3_v_control.is_start = 1;}
     else{
         data->bp3_v_control.is_start = 0;
@@ -422,18 +416,18 @@ void bp3_controlloop (bp3_control* data)
     //data->theta_rm_mes_pre = data->bp3_v_control.theta_rm_mes;
     ////data->bp3_v_control.w_test = data->bp3_v_control.theta_rm_mes_pre;
     if(!data->bp3_v_control.is_start){
-    			    bm_start_theta(data);
+    	bm_start_theta(data);
     			}
     double theta = get_encoder_pos();
-    data->bp3_v_control.theta_rm_mes = 1.0*(theta- data->bp3_v_control.theta_rm_mes_offset);
-    while(data->bp3_v_control.theta_rm_mes<0||data->bp3_v_control.theta_rm_mes>PI2){
-        if(data->bp3_v_control.theta_rm_mes<0){
-            data->bp3_v_control.theta_rm_mes+=PI2;
-        }else{
-            data->bp3_v_control.theta_rm_mes-=PI2;
+    data->bp3_v_control.theta_rm_mes = 1.0*(theta);
+    data->bp3_v_control.theta_re_ref = 1.0*(theta - data->bp3_v_control.theta_rm_mes_offset)*data->BP3_PARA->para_machine.p;
+    while(data->bp3_v_control.theta_re_ref<0||data->bp3_v_control.theta_re_ref>PI2){
+            if(data->bp3_v_control.theta_re_ref<0){
+                data->bp3_v_control.theta_re_ref+=PI2;
+            }else{
+                data->bp3_v_control.theta_re_ref-=PI2;
+            }
         }
-    }
-    data->bp3_v_control.theta_re_ref = data->bp3_v_control.theta_rm_mes*data->BP3_PARA->para_machine.p;
     if (data->bp3_v_control.para_ob.enable == 1){
         double tq;
         tq = 1.5*data->BP3_PARA->para_machine.p*data->BP3_PARA->para_machine.Lm/data->BP3_PARA->para_machine.Lr*data->current_control->tq.Idq0_ref[0]*data->BP3_PARA->para_machine.Lm*data->current_control->tq.Idq0_ref[1];

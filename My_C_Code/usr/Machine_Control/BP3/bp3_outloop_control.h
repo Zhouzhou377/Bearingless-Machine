@@ -81,6 +81,6 @@ extern bp3_control bp3_control_data;
 bp3_control *init_bp3(void);
 bp3_control *deinit_bp3(void);
 bp3_control *reset_bp3(void);
-
+void bm_start_theta(bp3_control* data);
 void bp3_controlloop(bp3_control *data);
 #endif// TWINBEARINGLESS_CONTROL_H

@@ -21,7 +21,7 @@ double get_encoder_pos(void){
 
     double theta_now;
 
-    position =  position&0x0000003FF;
+    position =  position&0x0000003FF; //0x0000003FF
     theta_now = PI2 * ( (double) position / (double) (ENCODER_BP3_PPR));
 
 }
