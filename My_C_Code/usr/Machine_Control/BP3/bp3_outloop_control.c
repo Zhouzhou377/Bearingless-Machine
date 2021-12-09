@@ -2,6 +2,7 @@
 #include "usr/Machine_Control/control_structure.h"
 #include "usr/Machine_Control/BP3/bp3_outloop_control.h"
 #include "usr/Machine_Control/task_cabinet.h"
+
 #include "usr/Machine_Control/inverter.h"
 #include "usr/Machine_Control/BP3/bp3_id.h"
 #include "usr/Machine_Control//BP3/bp3_para_machine.h"
@@ -29,13 +30,10 @@
 #define TS_v  (0.0001)
 
 
-static double theta_test;
-static double wrm_test;
-
 bp3_control bp3_control_data;
-static double theta_pre = 0.0;
 
-
+static double theta_OPL = 0.0;
+static int flag_enc = 0;
 
 
 void bp3_get_deltaxy_mes(bp3_control* data){
@@ -50,7 +48,7 @@ bp3_control *init_bp3(void){
     encoder_set_pulses_per_rev_bits(ENCODER_BP3_PPR_BITS);
     para_bp3 *BP3_PARA;
     BP3_PARA = get_para_bp3();
-    
+    flag_enc = 0;
     bp3_control_data.bp3_lev_control.enable = 0;
     bp3_control_data.bp3_lev_control.para_levi_control.Ts = TS;
     bp3_control_data.bp3_lev_control.para_levi_control.ba = BP3_PARA->para_control.lev_ba;
@@ -113,7 +111,7 @@ bp3_control *init_bp3(void){
     bp3_control_data.bp3_v_control.para_ob.state2 = 0.0;
     bp3_control_data.bp3_v_control.para_ob.enable = 0;
     double theta = get_encoder_pos();
-    bp3_control_data.bp3_v_control.theta_rm_est = -1.0*theta + PI2;
+    bp3_control_data.bp3_v_control.theta_rm_est = 1.0*theta + PI2;
     //bp3_control_data.bp3_v_control.theta_rm_est = PI2;
     reset_states_3phase(&(bp3_control_data.bp3_v_control.para_ob.para_PI.state_1));
 
@@ -146,6 +144,8 @@ bp3_control *init_bp3(void){
     bp3_control_data.bp3_lev_control.F_xy[0] = 0.0;
     bp3_control_data.bp3_lev_control.F_xy[1] = 0.0;
 
+    bp3_control_data.bp3_v_control.enable_encoder = 0;
+
     cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;
 	cmd_enable.enable_bp3_control = 0;
@@ -156,8 +156,8 @@ bp3_control *init_bp3(void){
     cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
-    bp3_control_data.bp3_lev_control.F_xy[0] = 0.0;
-    bp3_control_data.bp3_lev_control.F_xy[1] = 0.0;
+
+
 
     return &(bp3_control_data);
 }
@@ -212,19 +212,17 @@ bp3_control *reset_bp3(void){
     bp3_control_data.bp3_lev_control.F_xy[0] = 0.0;
     bp3_control_data.bp3_lev_control.F_xy[1] = 0.0;
 
+    bp3_control_data.bp3_v_control.enable_encoder = 0;
+
     cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;
-	cmd_enable.enable_bp3_align = 0;
-	cmd_enable.enable_bp3_control = 0;
-	cmd_enable.enable_log = 0;
 	cmd_enable.enable_inject_tq_cctrl= 0;
     cmd_enable.enable_inject_s1_cctrl= 0;
     cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
-    bp3_control_data.bp3_v_control.is_start = 0;
-    bp3_control_data.bp3_lev_control.F_xy[0] = 0.0;
-	bp3_control_data.bp3_lev_control.F_xy[1] = 0.0;
+
+
     return &(bp3_control_data);
 }
 
@@ -235,35 +233,70 @@ bp3_control *deinit_bp3(void){
     reset_bp3();
     bp3_control_data.current_control= deinit_currentloop();
     bp3_control_data.is_init = 0;
+	cmd_enable.enable_bp3_align = 0;
+	cmd_enable.enable_bp3_control = 0;
+	cmd_enable.enable_log = 0;
+	bp3_control_data.bp3_v_control.is_start = 0;
     // init machine control parameters
     return &bp3_control_data;
 
 }
 
 // need to get eddy current sensor and encoder signals
-
-
+static uint32_t time_begin;
+static uint32_t time_end;
+static int count;
 void bm_start_theta(bp3_control* data){
+
     if (pwm_is_enabled()){
-        
-    
-    //double V = data->current_control->c_loop_inv1.inv->Vdc*0.3;
-    set_line_volts_three_phase(2, -1, -1, data->current_control->c_loop_inv1.inv);
-    uint32_t time_int = cpu_timer_now();
-    double time_begin = cpu_timer_ticks_to_sec(time_int);
-    double time_end = time_begin;
-    while((time_end-time_begin)<=10){
-        time_int = cpu_timer_now();
-        time_end = cpu_timer_ticks_to_sec(time_int);
-        data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
-    }
-    data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
-    double theta = get_encoder_pos();
-    data->bp3_v_control.theta_re_ref = 1.0*(theta - data->bp3_v_control.theta_rm_mes_offset)*data->BP3_PARA->para_machine.p;
-    data->bp3_v_control.is_start = 1;}
-    else{
-        data->bp3_v_control.is_start = 0;
-    }
+    	if (!data->bp3_v_control.enable_encoder){
+    		if(!flag_enc){
+    			time_begin = cpu_timer_now();
+    			count = 0;
+    			flag_enc = 1;
+    		}
+
+			double amp = 1;
+			double freq = 1;
+			double omega = PI2*freq;
+			double v_OPL[3];
+			theta_OPL += (data->bp3_v_control.Ts*omega);
+			theta_OPL = fmod(theta_OPL, PI2);
+			v_OPL[0] = amp * cos(theta_OPL);
+			v_OPL[1] = amp * cos(theta_OPL - PI23);
+			v_OPL[2] = amp * cos(theta_OPL - 2.0 * PI23);
+
+			set_line_volts_three_phase(v_OPL[0], v_OPL[1], v_OPL[2], data->current_control->c_loop_inv1.inv);
+
+			time_end = cpu_timer_now();
+			double delta_time = cpu_timer_ticks_to_sec(time_end-time_begin);
+			count ++;
+			if(count>=10000){
+				data->bp3_v_control.enable_encoder = 1;
+				count = 0;
+				}
+
+    	}
+    	else{
+			set_line_volts_three_phase(2, -1, -1, data->current_control->c_loop_inv1.inv);
+
+			time_begin = cpu_timer_now();
+			time_end = time_begin;
+			count ++;
+			while(count<=20000){
+				count ++;
+				time_end = cpu_timer_now;
+				data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
+			}
+			data->bp3_v_control.theta_rm_mes_offset = get_encoder_pos();
+			double theta = get_encoder_pos();
+			data->bp3_v_control.theta_re_ref = 1.0*(theta - data->bp3_v_control.theta_rm_mes_offset)*data->BP3_PARA->para_machine.p;
+			data->bp3_v_control.is_start = 1;}}
+	   else{
+			data->bp3_v_control.is_start = 0;
+			data->bp3_v_control.enable_encoder = 1;
+			count = 0;
+			}
 }
 
 void bp3_velocity_regulation(bp3_control* data){

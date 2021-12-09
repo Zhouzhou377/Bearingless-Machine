@@ -145,7 +145,7 @@ void task_cabinet_callback(void *arg)
 	}
 	else if(cmd_enable.enable_bp3_align){
 		bp3_control_pt = &bp3_control_data;
-		bm_start_theta(bp3_control_pt);
+			bm_start_theta(bp3_control_pt);
 
 		cmd_enable.enable_bp3_control = 0;
 	}

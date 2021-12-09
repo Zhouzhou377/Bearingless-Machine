@@ -12,6 +12,7 @@ typedef struct bp3_velocity_control{
 
     int enable;
     int is_start;
+    int enable_encoder;
     double Ts;
     double wrm_ref;
     double wrm_ref_lpf;

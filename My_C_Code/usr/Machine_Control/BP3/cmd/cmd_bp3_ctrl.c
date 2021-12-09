@@ -80,6 +80,14 @@ int cmd_bp3(int argc, char **argv)
 
 		// Make sure cabinet task was not already inited
 		init_bp3();
+		cmd_enable.enable_current_control = 0;
+		cmd_enable.enable_openloop = 0;
+		cmd_enable.enable_testloop = 0;
+		cmd_enable.enable_bp3_control = 0;
+		cmd_enable.enable_bp3_align = 0;
+		cmd_enable.enable_bim_control = 0;
+		bp3_control_data.bp3_v_control.enable = 0;
+		bp3_control_data.bp3_lev_control.enable = 0;
 		
 		return CMD_SUCCESS;
 	}
@@ -96,6 +104,8 @@ int cmd_bp3(int argc, char **argv)
 		cmd_enable.enable_bp3_control = 0;
 		cmd_enable.enable_bp3_align = 0;
 		cmd_enable.enable_bim_control = 0;
+		bp3_control_data.bp3_v_control.enable = 0;
+		bp3_control_data.bp3_lev_control.enable = 0;
 		return CMD_SUCCESS;
 	}
 
@@ -166,6 +176,7 @@ int cmd_bp3(int argc, char **argv)
 	if (strcmp("enable_align", argv[1]) == 0) {
 			// Check correct number of arguments
 			if (argc != 2) return CMD_INVALID_ARGUMENTS;
+			reset_bp3();
 			cmd_enable.enable_bp3_align = 1;
 			cmd_enable.enable_bp3_control = 0;
 			cmd_enable.enable_bim_control = 0;
@@ -173,7 +184,10 @@ int cmd_bp3(int argc, char **argv)
 			cmd_enable.enable_openloop = 0;
 			bp3_control_data.bp3_v_control.enable = 0;
 			bp3_control_data.bp3_lev_control.enable = 0;
-			//reset_bp3();
+			bp3_control_data.bp3_v_control.enable = 0;
+			bp3_control_data.bp3_lev_control.enable = 0;
+			bp3_control_data.bp3_v_control.is_start = 0;
+			reset_bp3();
 			return CMD_SUCCESS;
 		}
 
@@ -205,7 +219,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_v_control.enable = 0;
-		//reset_bp3();
+		reset_bp3();
 		return CMD_SUCCESS;
 	}
 
@@ -213,7 +227,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_v_control.para_ob.enable = 0;
-		//reset_bp3();
+		reset_bp3();
 		return CMD_SUCCESS;
 	}
 
@@ -221,7 +235,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_lev_control.enable = 0;
-		//reset_bp3();
+		reset_bp3();
 		return CMD_SUCCESS;
 	}
 

@@ -15,8 +15,8 @@ static task_control_block_t tcb;
 double LOG_va = 0;
 double LOG_vb = 0;
 double LOG_vc = 0;
-double LOG_theta = 0;
-uint32_t LOG_theta_raw = 0;
+double LOG_theta_OL = 0;
+double LOG_theta_OL_raw = 0;
 
 const double Ts = 1.0/10000.0;
 
@@ -41,8 +41,10 @@ void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
     LOG_va = (double) (OpenLoop->command_volatge[0]);
     LOG_vb = (double) (OpenLoop->command_volatge[1] );
     LOG_vc = (double) (OpenLoop->command_volatge[2] );
-    LOG_theta = get_encoder_pos();
-    encoder_get_position(&LOG_theta_raw);
+    LOG_theta_OL_raw = get_encoder_pos();
+    //uint32_t theta_raw;
+    //encoder_get_position(&theta_raw);
+    //LOG_theta_OL_raw = (double) theta_raw;
 }
 
 OpenLoop_Command *init_OpenLoop_Command(void)
