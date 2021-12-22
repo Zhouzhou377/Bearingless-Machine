@@ -496,11 +496,6 @@ void current_regulation (currentloop_control *data)
                 bim_control *bim_data = &bim_control_data;
                 bim_injection_callback(bim_data);
             }
-
-            if(BP3_ENABLE){
-                bp3_control *bp3_data = &bp3_control_data;
-                bp3_injection_callback(bp3_data);
-            }
     	
         data->tq.vdq0_ref[0] += data->tq.vdq0_ref_inject[0];
         data->tq.vdq0_ref[1] += data->tq.vdq0_ref_inject[1];

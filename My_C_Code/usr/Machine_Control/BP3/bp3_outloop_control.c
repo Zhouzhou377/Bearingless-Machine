@@ -565,6 +565,9 @@ void bp3_controlloop (bp3_control* data)
         data->current_control->s1.Idq0_ref[0] = data->current_control->s1.Idq0_ref[0] + out[0];
         data->current_control->s1.Idq0_ref[1] = data->current_control->s1.Idq0_ref[1] + out[1];*/
         }
+   if(ID_SYS){
+	   bp3_injection_callback(data);
+       }
    current_regulation (data->current_control);
     //theta_pre =data->bp3_v_control.theta_rm_mes;
 }

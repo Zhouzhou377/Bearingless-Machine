@@ -53,10 +53,14 @@ void task_cabinet_init(void)
 	//if(!BM_ENABLE){
 		c_loop_data = init_currentloop();
 	//}else{
+	if(BIM_ENABLE){
 		bim_control_pt = init_bim();
+		bim_injection_init();}
 	//}
+	if(BP3_ENABLE){
 		bp3_control_pt = init_bp3();
-	bim_injection_init();
+		bp3_injection_init ();}
+	//bim_injection_init();
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;
 	cmd_enable.enable_bim_control = 0;
