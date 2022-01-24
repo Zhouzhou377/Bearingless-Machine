@@ -11,6 +11,7 @@
 typedef struct bim_velocity_control{
 
     int enable;
+    int enable_encoder;
     double Ts;
     double wrm_ref;
     double wrm_ref_lpf;
@@ -79,6 +80,6 @@ extern bim_control bim_control_data;
 bim_control *init_bim(void);
 bim_control *deinit_bim(void);
 bim_control *reset_bim(void);
-
+void bim_start_theta(bim_control* data);
 void bim_controlloop(bim_control *data);
 #endif// TWINBEARINGLESS_CONTROL_H

@@ -136,7 +136,12 @@ void task_cabinet_callback(void *arg)
 	else if(cmd_enable.enable_bim_control){
 		bim_control_pt = &bim_control_data;
 		if(pwm_is_enabled()){
-			bim_controlloop(bim_control_pt);
+			//if(!bim_control_pt->bim_v_control.enable_encoder){
+				//bim_start_theta(bim_control_pt);}
+			//else{
+				bim_controlloop(bim_control_pt);
+				//}
+			
 		}
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
 		//bim_controlloop(bim_control_pt);

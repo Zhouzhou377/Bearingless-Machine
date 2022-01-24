@@ -14,7 +14,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define SINGLE_INV (1)
+#define SINGLE_INV (0)
 
 #define INV1 (3) //torque 1
 #define INV2 (2) //suspension 1

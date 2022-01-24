@@ -28,12 +28,8 @@
 
 
 
-
-static double theta_test;
-static double wrm_test;
-
 bim_control bim_control_data;
-static double theta_pre = 0.0;
+
 
 
 
@@ -50,6 +46,7 @@ bim_control *init_bim(void){
     encoder_set_pulses_per_rev_bits(ENCODER_BP3_PPR_BITS);
     para_bim *BIM_PARA;
     BIM_PARA = get_para_bim();
+    bim_control_data.bim_v_control.enable_encoder = 0;
     bim_control_data.bim_lev_control.enable = 0;
     bim_control_data.bim_lev_control.para_levi_control.Ts = TS;
     bim_control_data.bim_lev_control.para_levi_control.ba = BIM_PARA->para_control.lev_ba;
@@ -169,6 +166,7 @@ bim_control *reset_bim(void){
     reset_states_3phase(&(bim_control_data.bim_lev_control.para_levi_control.para_lpf.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_PI.state_1));
     reset_states_3phase(&(bim_control_data.bim_v_control.para_velocity_control.para_lpf.state_1));
+    bim_control_data.bim_v_control.enable_encoder = 0;
     bim_control_data.bim_lev_control.delta_mes_lpf[0] = 0.0;
     bim_control_data.bim_lev_control.delta_mes_lpf[1] = 0.0;
     bim_control_data.bim_lev_control.diff_state[0] = 0.0;
@@ -233,9 +231,40 @@ bim_control *deinit_bim(void){
     // init machine control parameters
     return &bim_control_data;
 }
-
+static uint32_t time_begin;
+static uint32_t time_end;
+static int count;
+static int flag_enc;
+static double theta_OPL;
 // need to get eddy current sensor and encoder signals
+void bim_start_theta(bim_control* data){
 
+    		if(!flag_enc){
+    			time_begin = cpu_timer_now();
+    			count = 0;
+    			flag_enc = 1;
+    		}
+
+			double amp = 1;
+			double freq = 1;
+			double omega = PI2*freq;
+			double v_OPL[3];
+			theta_OPL += (data->bim_v_control.Ts*omega);
+			theta_OPL = fmod(theta_OPL, PI2);
+			v_OPL[0] = amp * cos(theta_OPL);
+			v_OPL[1] = amp * cos(theta_OPL - PI23);
+			v_OPL[2] = amp * cos(theta_OPL - 2.0 * PI23);
+
+			set_line_volts_three_phase(v_OPL[0], v_OPL[1], v_OPL[2], data->current_control->c_loop_inv1.inv);
+
+			time_end = cpu_timer_now();
+			double delta_time = cpu_timer_ticks_to_sec(time_end-time_begin);
+			count ++;
+			if(count>=10000){
+				data->bim_v_control.enable_encoder = 1;
+				count = 0;
+				}
+}
 
 void bim_velocity_regulation(bim_control* data){
     double antiwp = 0.0;
@@ -418,6 +447,10 @@ void bim_controlloop (bim_control* data)
     //theta_pre = data->bim_v_control.theta_rm_mes;
     //update eddy current position
     bim_get_deltaxy_mes(data);
+    /*if (!data->bim_v_control.enable_encoder && pwm_is_enabled()){
+        bim_start_theta(data);
+        return;
+    }*/
     //update theta and we
     //data->theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
     ////data->bim_v_control.w_test = data->bim_v_control.theta_rm_mes_pre;

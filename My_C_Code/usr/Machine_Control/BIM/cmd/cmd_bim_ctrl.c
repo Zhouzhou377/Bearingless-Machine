@@ -44,7 +44,7 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_id", "Set id"},
 		{"set_Te", "Set Te"},
 		{"set_ixy_ref", "Set ixy reference"},
-		{"set_Fxy_ref", "Set ixy reference"},
+		{"set_Fxy_ref", "Set Fxy reference"},
 		{"set_deltaxy", "Set rotor position xy0"},
 		{"set_injection_Fxy", "high frequency injection of Fxy"},
 		{"disable_injection", "Disable injection"},
