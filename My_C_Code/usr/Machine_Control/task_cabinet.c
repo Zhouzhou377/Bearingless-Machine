@@ -15,7 +15,7 @@
 #include "usr/Machine_Control//BP3/bp3_para_machine.h"
 #include "usr/Machine_Control/BP3/bp3_id.h"
 #include "usr/Machine_Control/BP3/bp3_log.h"
-
+#include "drv/encoder.h"
 #include "sys/scheduler.h"
 #include "sys/debug.h"
 #include "drv/cpu_timer.h"
@@ -61,6 +61,7 @@ void task_cabinet_init(void)
 		bp3_control_pt = init_bp3();
 		bp3_injection_init ();}
 	//bim_injection_init();
+
 	cmd_enable.enable_openloop = 0;
 	cmd_enable.enable_current_control = 0;
 	cmd_enable.enable_bim_control = 0;

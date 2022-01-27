@@ -16,8 +16,8 @@
 
 #define SINGLE_INV (0)
 
-#define INV1 (3) //torque 1
-#define INV2 (2) //suspension 1
+#define INV1 (2) //torque 1
+#define INV2 (3) //suspension 1
 #define INV3 (5) //torque 2
 #define INV4 (6) //suspension 2
 
@@ -411,16 +411,16 @@ void decouple(currentloop_control *data){
         dq0_to2_abc(&(vabc[0]), &(data->s1.vdq0_ref[0]), data->s1.theta_rad);
         abc_to_dq0(&(vabc[0]), &(vdecouple[0]), data->tq.theta_rad);
 
-        data->tq.vdq0_decouple[0] = +0.5*vdecouple[0]; 
-        data->tq.vdq0_decouple[1] = +0.5*vdecouple[1]; 
-        data->tq.vdq0_decouple[2] = +0.5*vdecouple[2]; 
+        data->tq.vdq0_decouple[0] = 0.5*vdecouple[0]; 
+        data->tq.vdq0_decouple[1] = 0.5*vdecouple[1]; 
+        data->tq.vdq0_decouple[2] = 0.5*vdecouple[2]; 
 
         dq0_to2_abc(&(vabc[0]), &(data->s2.vdq0_ref[0]), data->s2.theta_rad);
         abc_to_dq0(&(vabc[0]), &(vdecouple[0]), data->tq2.theta_rad);
      
-        data->tq2.vdq0_decouple[0] = +0.5*vdecouple[0]; 
-        data->tq2.vdq0_decouple[1] = +0.5*vdecouple[1]; 
-        data->tq2.vdq0_decouple[2] = +0.5*vdecouple[2]; 
+        data->tq2.vdq0_decouple[0] = 0.5*vdecouple[0]; 
+        data->tq2.vdq0_decouple[1] = 0.5*vdecouple[1]; 
+        data->tq2.vdq0_decouple[2] = 0.5*vdecouple[2]; 
     }else{
         data->tq.vdq0_decouple[0] = 0.0;
         data->tq.vdq0_decouple[1] = 0.0;

@@ -21,10 +21,10 @@
 #include <stdint.h>
 
 
-#define POSITION_RATIO_X (1.0)
-#define POSITION_RATIO_y (1.2252)
-#define GEO_CENTER_X (+8.0566e-6-6e-6)
-#define GEO_CENTER_y (-1.7557e-4)
+#define POSITION_RATIO_X (1.307712)
+#define POSITION_RATIO_y (0.692565)
+#define GEO_CENTER_X (-8.0566e-6-6e-6+0.002027)
+#define GEO_CENTER_y (-1.7557e-4+1.75e-4-1.06e-5)
 
 
 
@@ -43,7 +43,7 @@ void bim_get_deltaxy_mes(bim_control* data){
 
 bim_control *init_bim(void){
     //init regulators
-    encoder_set_pulses_per_rev_bits(ENCODER_BP3_PPR_BITS);
+    //encoder_set_pulses_per_rev_bits(ENCODER_BP3_PPR_BITS);
     para_bim *BIM_PARA;
     BIM_PARA = get_para_bim();
     bim_control_data.bim_v_control.enable_encoder = 0;
@@ -459,7 +459,7 @@ void bim_controlloop (bim_control* data)
     if (data->bim_v_control.para_ob.enable == 1){
         double tq;
         tq = 1.5*data->BIM_PARA->para_machine.p*data->BIM_PARA->para_machine.Lm/data->BIM_PARA->para_machine.Lr*data->current_control->tq.Idq0_ref[0]*data->BIM_PARA->para_machine.Lm*data->current_control->tq.Idq0_ref[1];
-        func_observer_theta(data->bim_v_control.theta_rm_mes, &(data->bim_v_control.theta_rm_est), &(data->bim_v_control.wrm_est), &(data->bim_v_control.wrm_est_hf), &(data->bim_v_control.para_ob), tq);
+        func_observer_theta(data->bim_v_control.theta_rm_mes, &(data->bim_v_control.theta_rm_est), &(data->bim_v_control.wrm_est), &(data->bim_v_control.wrm_est_hf), &(data->bim_v_control.para_ob), 0);
         data->bim_v_control.wrm_mes = data->bim_v_control.wrm_est;
     }else{
         data->bim_v_control.wrm_mes = 0.0;
@@ -503,11 +503,11 @@ void bim_controlloop (bim_control* data)
     	    bim_injection_callback(data);
             }
            bim_velocity_regulation(data);
+           UFO(data);
+           CFO(data);
        }
-       
-        UFO(data);
-        CFO(data);
    }
+
     
     /*if(cmd_enable.enable_inject_Fxy){
         double theta[2];

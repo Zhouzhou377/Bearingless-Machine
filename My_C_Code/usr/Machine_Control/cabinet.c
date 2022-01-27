@@ -10,12 +10,12 @@
 
 
 //PWM CHANNELS
-#define CAB_INV1_PHA	(1)
-#define CAB_INV1_PHB	(0)
+#define CAB_INV1_PHA	(4)
+#define CAB_INV1_PHB	(3)
 
-#define CAB_INV2_PHA	(3)
-#define CAB_INV2_PHB	(5)
-#define CAB_INV2_PHC    (4)
+#define CAB_INV2_PHA	(0)
+#define CAB_INV2_PHB	(2)
+#define CAB_INV2_PHC    (1)
 
 //#define CAB_INV3_PHA	(6)
 //#define CAB_INV3_PHB	(8)
