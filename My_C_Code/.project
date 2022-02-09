@@ -27,7 +27,7 @@
 		<link>
 			<name>common</name>
 			<type>2</type>
-			<location>C:/Users/zwang2299/Zhouzhou_AMDC/AMDC-Firmware/sdk/bare/common</location>
+			<location>C:/Users/zwang2299/Zhouzhou_AMDC/AMDC-Firmware/sdk/app_cpu1/common</location>
 		</link>
 	</linkedResources>
 </projectDescription>
