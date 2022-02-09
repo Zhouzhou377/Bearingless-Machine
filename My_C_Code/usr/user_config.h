@@ -52,6 +52,6 @@
 
 #define APP_CABINET (1)
 
-
+#define APP_BLINK (1)
 
 #endif // USER_CONFIG_H

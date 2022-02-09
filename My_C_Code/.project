@@ -3,7 +3,7 @@
 	<name>bare</name>
 	<comment>Created by SDK v2017.2. amdc_bsp - ps7_cortexa9_0</comment>
 	<projects>
-		<project>amdc_bsp</project>
+		<project>amdc_bsp_cpu1</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

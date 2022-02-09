@@ -10,7 +10,9 @@
 #include "sys/injection.h"
 
 #include "drv/gpio_mux.h"
+#include "drv/gp3io_mux.h"
 #include "drv/pwm.h"
+
 
 
 void app_cabinet_test_init(void)
@@ -23,14 +25,20 @@ void app_cabinet_test_init(void)
 	// Configure GPIO mux
 	// 0: top port on AMDC
 	// GPIO_MUX_DEVICE1: Eddy current I/O IP block in the FPGA
+#if USER_CONFIG_HARDWARE_TARGET == AMDC_REV_E
+	gp3io_mux_set_device(GP3IO_MUX_1_BASE_ADDR, GP3IO_MUX_DEVICE1);
+	gp3io_mux_set_device(GP3IO_MUX_2_BASE_ADDR, GP3IO_MUX_DEVICE2);
+#endif
+#if USER_CONFIG_HARDWARE_TARGET == AMDC_REV_D
 	gpio_mux_set_device(1, GPIO_MUX_DEVICE1);
+	// AMDS
+	gpio_mux_set_device(0, GPIO_MUX_DEVICE2);
+#endif
 
 	// Turn on Kaman eddy current sensor digital interface
 	eddy_current_sensor_init();
 	eddy_current_sensor_enable();
 
-	// AMDS
-	gpio_mux_set_device(0, GPIO_MUX_DEVICE2);
 	pwm_set_deadtime_ns(PWM_DEADTIME_NS);
 
 }
