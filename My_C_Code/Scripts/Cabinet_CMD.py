@@ -14,8 +14,8 @@ class cmd():
         self.amdc = amdc
         self.debug = debug
         
-        self.disconnect()
-        self.connect()
+        #self.disconnect()
+        #self.connect()
         self.cabinet_init()
         self.Vdc_init = Vdc
         self.set_vdc_all(Vdc)

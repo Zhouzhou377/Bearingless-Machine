@@ -50,6 +50,8 @@
 // set to 1 for enabled, 0 for disabled
 #define USER_CONFIG_ENABLE_MOTHERBOARD_AUTO_TX (1)
 
+#define USER_CONFIG_ENABLE_LOGGING (1)
+
 #define APP_CABINET (1)
 
 #define APP_BLINK (1)

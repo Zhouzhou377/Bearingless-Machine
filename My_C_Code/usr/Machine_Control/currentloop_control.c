@@ -26,10 +26,10 @@
 #define WD_S2 (2.0*PI*500.0)
 
 
-static para_PI_discrete PI_tq;
-static para_PI_discrete PI_s1;
-static para_PI_discrete PI_s2;
-static para_PI_discrete PI_tq2;
+para_PI_discrete PI_tq;
+para_PI_discrete PI_s1;
+para_PI_discrete PI_s2;
+para_PI_discrete PI_tq2;
 para_PR PR_tq;
 para_PR PR_s1;
 para_PR PR_s2;

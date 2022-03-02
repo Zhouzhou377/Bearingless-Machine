@@ -93,10 +93,10 @@ typedef struct currentloop_control{
 } currentloop_control;
 
 
-static para_PI_discrete PI_tq;
-static para_PI_discrete PI_s1;
-static para_PI_discrete PI_s2;
-static para_PI_discrete PI_tq2;
+extern para_PI_discrete PI_tq;
+extern para_PI_discrete PI_s1;
+extern para_PI_discrete PI_s2;
+extern para_PI_discrete PI_tq2;
 extern currentloop_control c_loop_control;
 
 currentloop_control *init_currentloop(void);
