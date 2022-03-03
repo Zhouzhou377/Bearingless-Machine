@@ -266,6 +266,54 @@ void bim_start_theta(bim_control* data){
 				}
 }
 
+void bim_we(bim_control* data){
+    double theta = get_encoder_pos();
+    theta = -1.0*theta;
+    while(theta<0 || theta>PI2){
+        if(theta<0 ){
+            theta = theta + PI2;
+        }else if(theta>PI2){
+            theta = theta - PI2;
+        }
+    }
+    double delta_theta = theta - data->bim_v_control.theta_rm_mes;
+    if(fabs(delta_theta)>PI){
+        if(delta_theta>0){
+            delta_theta = delta_theta - PI2;
+        }else if(delta_theta<0){
+             delta_theta = delta_theta + PI2;
+        }
+    }
+    data->bim_v_control.theta_rm_mes = theta;
+    data->bim_v_control.w_test = delta_theta/TS;
+	//set_line_volts_three_phase(v_OPL[0], v_OPL[1], v_OPL[2], data->current_control->c_loop_inv1.inv);
+
+}
+
+
+void bim_vf(bim_control* data){
+    double amp;
+    bim_we(data);
+    func_observer_theta(data->bim_v_control.theta_rm_mes, &(data->bim_v_control.theta_rm_est), &(data->bim_v_control.wrm_est), &(data->bim_v_control.wrm_est_hf), &(data->bim_v_control.para_ob), 0);
+    data->bim_v_control.wrm_mes = data->bim_v_control.wrm_est;
+    data->bim_v_control.const_VF = data->BIM_PARA->para_machine.Lm*13.5*PI2;
+    if(data->bim_v_control.freq_VF != 0 && fabs(data->bim_v_control.freq_VF)<=10){
+        amp = 5.0;
+    }else{
+        amp = data->bim_v_control.const_VF*data->bim_v_control.freq_VF*PI2;
+    }
+	double omega = PI2*data->bim_v_control.freq_VF;
+	theta_OPL += (data->bim_v_control.Ts*omega);
+	theta_OPL = fmod(theta_OPL, PI2);
+	data->current_control->c_loop_inv1.vabc_ref[0] = amp * cos(theta_OPL);
+	data->current_control->c_loop_inv1.vabc_ref[1]  = amp * cos(theta_OPL - PI23);
+	data->current_control->c_loop_inv1.vabc_ref[2]  = amp * cos(theta_OPL - 2.0 * PI23);
+
+	//set_line_volts_three_phase(v_OPL[0], v_OPL[1], v_OPL[2], data->current_control->c_loop_inv1.inv);
+
+}
+
+
 void bim_velocity_regulation(bim_control* data){
     double antiwp = 0.0;
     //get_pos_w_mes(data);
@@ -305,7 +353,7 @@ void UFO(bim_control* data){
         
         data->bim_v_control.wsl_ref = 0.0;
     }else{
-        double x = 1/data->bim_v_control.lamda_m_ref;
+        double x = 1.0/data->bim_v_control.lamda_m_ref;
         Te = data->bim_v_control.Te_ref*0.66666666666666667/data->BIM_PARA->para_machine.p;
         Te = Te*data->BIM_PARA->para_machine.Lr/data->BIM_PARA->para_machine.Lm;
         data->bim_v_control.Idq0_ref[1] = Te*x;
@@ -322,9 +370,18 @@ void CFO(bim_control* data){
     data->bim_v_control.theta_re_ref = data->bim_v_control.theta_rm_mes*data->BIM_PARA->para_machine.p;
     data->bim_v_control.theta_re_ref = data->bim_v_control.theta_re_ref + state_1;
 
-    data->bim_v_control.theta_re_ref = fmod(data->bim_v_control.theta_re_ref, PI2);
+    //data->bim_v_control.theta_re_ref = fmod(data->bim_v_control.theta_re_ref, PI2);
+    while(data->bim_v_control.theta_re_ref>PI2 || data->bim_v_control.theta_re_ref <0){
+        if (data->bim_v_control.theta_re_ref > PI2){
+        data->bim_v_control.theta_re_ref = data->bim_v_control.theta_re_ref-PI2;
+    }else if(data->bim_v_control.theta_re_ref <0){
+        data->bim_v_control.theta_re_ref = data->bim_v_control.theta_re_ref+PI2;
+    }
+    }
     /*if (data->bim_v_control.theta_re_ref >= PI2){
         data->bim_v_control.theta_re_ref = data->bim_v_control.theta_re_ref-PI2;
+    }else if(data->bim_v_control.theta_re_ref <=0){
+        data->bim_v_control.theta_re_ref = data->bim_v_control.theta_re_ref+PI2;
     }*/
 
     data->bim_v_control.wre_ref = data->bim_v_control.wrm_mes*data->BIM_PARA->para_machine.p + data->bim_v_control.wsl_ref;
@@ -503,10 +560,10 @@ void bim_controlloop (bim_control* data)
     	    bim_injection_callback(data);
             }
            bim_velocity_regulation(data);
-           UFO(data);
-           CFO(data);
        }
    }
+    UFO(data);
+    CFO(data);
 
     
     /*if(cmd_enable.enable_inject_Fxy){
@@ -563,6 +620,9 @@ void bim_controlloop (bim_control* data)
         data->current_control->s1.Idq0_ref[0] = data->current_control->s1.Idq0_ref[0] + out[0];
         data->current_control->s1.Idq0_ref[1] = data->current_control->s1.Idq0_ref[1] + out[1];*/
         }
+    if(ID_SYS){
+	   bim_injection_callback(data);
+       }
    current_regulation (data->current_control);
     //theta_pre =data->bim_v_control.theta_rm_mes;
 }

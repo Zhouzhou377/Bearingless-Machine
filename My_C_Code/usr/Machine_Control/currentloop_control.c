@@ -16,12 +16,12 @@
 
 #define SINGLE_INV (0)
 
-#define INV1 (2) //torque 1
-#define INV2 (3) //suspension 1
+#define INV1 (3) //torque 1
+#define INV2 (2) //suspension 1
 #define INV3 (5) //torque 2
 #define INV4 (6) //suspension 2
 
-#define WD_TQ (2.0*PI*500.0)
+#define WD_TQ (2.0*PI*200.0)
 #define WD_S1 (2.0*PI*500.0)
 #define WD_S2 (2.0*PI*500.0)
 
@@ -76,6 +76,7 @@ void init_PR_para(double Ts, para_PR *PR_inv1, para_c_loop_machine_control_singl
 currentloop_control *init_currentloop(void){
 
     c_loop_control.is_init = 1;
+    c_loop_control.sel_config = InvFour;
     if (c_loop_control.sel_config == InvFour){
         c_loop_control.c_loop_inv1.Num_inv = INV1;
         c_loop_control.c_loop_inv2.Num_inv = INV2;

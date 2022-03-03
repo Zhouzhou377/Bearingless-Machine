@@ -43,12 +43,13 @@ extern double LOG_Is2_y ;
 extern double LOG_Te_ref ;
 
 extern double LOG_wrm ;
+extern double LOG_w_test ;
 extern double LOG_wrm_ref ;
 extern double LOG_wrm_inject ;
 extern double LOG_wrm_hf ;
 
 extern double LOG_theta_rm ;
-
+extern double LOG_theta_rm_est ;
 
 extern double LOG_wsl ;
 extern double LOG_theta_e ;

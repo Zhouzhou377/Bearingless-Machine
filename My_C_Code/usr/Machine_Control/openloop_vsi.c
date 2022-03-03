@@ -38,10 +38,10 @@ void OpenLoop_VSI(OpenLoop_Command *OpenLoop)
     OpenLoop->command_volatge[2] = OpenLoop->amp * cos(theta_vsi - 4.0 * PI / 3.0);
 
     // Update logging variables
-    LOG_va = (double) (OpenLoop->command_volatge[0]);
+    /*LOG_va = (double) (OpenLoop->command_volatge[0]);
     LOG_vb = (double) (OpenLoop->command_volatge[1] );
     LOG_vc = (double) (OpenLoop->command_volatge[2] );
-    LOG_theta_OL_raw = get_encoder_pos();
+    LOG_theta_OL_raw = get_encoder_pos();*/
     //uint32_t theta_raw;
     //encoder_get_position(&theta_raw);
     //LOG_theta_OL_raw = (double) theta_raw;

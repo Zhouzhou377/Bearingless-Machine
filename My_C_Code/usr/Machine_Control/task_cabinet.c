@@ -134,6 +134,14 @@ void task_cabinet_callback(void *arg)
 		}
 
 	}
+	else if(cmd_enable.enable_bim_VFcontrol){
+		bim_control_pt = &bim_control_data;
+		bim_vf(bim_control_pt);
+		set_line_volts_three_phase(bim_control_pt->current_control->c_loop_inv1.vabc_ref[0], bim_control_pt->current_control->c_loop_inv1.vabc_ref[1], bim_control_pt->current_control->c_loop_inv1.vabc_ref[2], bim_control_pt->current_control->c_loop_inv1.inv);
+		//set_line_volts_three_phase(bim_control_pt->current_control->c_loop_inv2.vabc_ref[0], bim_control_pt->current_control->c_loop_inv2.vabc_ref[1], bim_control_pt->current_control->c_loop_inv2.vabc_ref[2], bim_control_pt->current_control->c_loop_inv2.inv);
+
+
+	}
 	else if(cmd_enable.enable_bim_control){
 		bim_control_pt = &bim_control_data;
 		if(pwm_is_enabled()){
@@ -263,6 +271,7 @@ void task_cabinet_callback(void *arg)
 		LOG_v_tq_d = c_loop_data->tq.vdq0_ref[0];
 		LOG_v_tq_q = c_loop_data->tq.vdq0_ref[1];
 		LOG_we_tq = c_loop_data->tq.we;*/
+		c_loop_log (c_loop_data);
 		}else{
 			if(BIM_ENABLE){
 				bim_log (bim_control_pt);

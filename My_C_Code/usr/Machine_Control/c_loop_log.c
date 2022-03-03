@@ -1,37 +1,34 @@
-#include "usr/Machine_Control/BIM/bim_log.h"
-#include "usr/Machine_Control/BIM/bim_outloop_control.h"
+#include "usr/Machine_Control/c_loop_log.h"
+#include "usr/Machine_Control/currentloop_control.h"
 #include "usr/Machine_Control/log_parameter.h"
 
 
-void bim_log (bim_control *data){
-    LOG_wrm = data->bim_v_control.wrm_mes;
+void c_loop_log (currentloop_control *data){
+    /*LOG_wrm = data->bim_v_control.wrm_mes;
 	LOG_wrm_ref = data->bim_v_control.wrm_ref_lpf;
-	LOG_w_test = data->bim_v_control.w_test;
-
 	LOG_wrm_inject = data->bim_v_control.wrm_ref_inject;
 	LOG_wrm_hf = data->bim_v_control.wrm_est_hf;
-	LOG_theta_rm_est = data->bim_v_control.theta_rm_est;
 	LOG_theta_rm = data->bim_v_control.theta_rm_mes;
     LOG_wsl = data->bim_v_control.wsl_ref;
 	LOG_theta_e = data->bim_v_control.theta_re_ref;
     //LOG_theta_rm_pre = data->bim_v_control.theta_rm_mes_pre[0];
-	LOG_Te_ref = data->bim_v_control.Te_ref;
+	//LOG_Te_ref
 	
 
 	LOG_Itq_d_ref = data->current_control->tq.Idq0_ref[0];
 	LOG_Itq_q_ref = data->current_control->tq.Idq0_ref[1];
 
 	LOG_Itq_d = data->current_control->tq.Idq0[0];
-	LOG_Itq_q = data->current_control->tq.Idq0[1];
+	LOG_Itq_q = data->current_control->tq.Idq0[1];*/
 
-	LOG_Iabc1_a = data->current_control->c_loop_inv1.Iabc[0];
-	LOG_Iabc1_b = data->current_control->c_loop_inv1.Iabc[1];
-	LOG_Iabc1_c = data->current_control->c_loop_inv1.Iabc[2];
-	LOG_Iabc2_a = data->current_control->c_loop_inv2.Iabc[0];
-	LOG_Iabc2_b = data->current_control->c_loop_inv2.Iabc[1];
-	LOG_Iabc2_c = data->current_control->c_loop_inv2.Iabc[2];
+	LOG_Iabc1_a = data->c_loop_inv1.Iabc[0];
+	LOG_Iabc1_b = data->c_loop_inv1.Iabc[1];
+	LOG_Iabc1_c = data->c_loop_inv1.Iabc[2];
+	LOG_Iabc2_a = data->c_loop_inv2.Iabc[0];
+	LOG_Iabc2_b = data->c_loop_inv2.Iabc[1];
+	LOG_Iabc2_c = data->c_loop_inv2.Iabc[2];
 
-	LOG_Te = data->bim_v_control.Te_ref;
+	/*LOG_Te = data->bim_v_control.Te_ref;
 
 	LOG_va1_ref = data->current_control->c_loop_inv1.vabc_ref[0];
 	LOG_vb1_ref = data->current_control->c_loop_inv1.vabc_ref[1];
@@ -84,7 +81,7 @@ void bim_log (bim_control *data){
 	LOG_F_y_inject = data->bim_lev_control.F_xy_inject[1];
 
 	LOG_error_x = data->bim_lev_control.err_delta[0];
-	LOG_error_y = data->bim_lev_control.err_delta[1];
+	LOG_error_y = data->bim_lev_control.err_delta[1];*/
 
 
 

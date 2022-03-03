@@ -24,7 +24,7 @@
 
 static command_entry_t cmd_entry;
 
-#define NUM_HELP_ENTRIES	(23)
+#define NUM_HELP_ENTRIES	(26)
 static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"init", "Initialize control loop"},
 		{"deinit", "Deinitialize control loop"},
@@ -48,7 +48,10 @@ static command_help_t cmd_help[NUM_HELP_ENTRIES] = {
 		{"set_deltaxy", "Set rotor position xy0"},
 		{"set_injection_Fxy", "high frequency injection of Fxy"},
 		{"disable_injection", "Disable injection"},
-		{"disable_ctrl", "Disable bim regulation"}
+		{"disable_ctrl", "Disable bim regulation"},
+		{"enable_VFctrl", "Enable bim VF control"},
+		{"disable_VFctrl", "Disable bim VF control"},
+		{"set_VF_f", "Set VF frequency"}
 
 };
 
@@ -358,6 +361,51 @@ int cmd_bim(int argc, char **argv)
 		bim_control_data.bim_v_control.enable = 0;
 		reset_bim();
 		
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("enable_VFctrl", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+
+		cmd_enable.enable_bim_control = 0;
+		cmd_enable.enable_bim_VFcontrol = 1;
+		cmd_enable.enable_bp3_control = 0;
+		cmd_enable.enable_current_control = 0;
+		cmd_enable.enable_openloop = 0;
+		bim_control_data.bim_lev_control.enable = 0;
+		bim_control_data.bim_v_control.enable = 0;
+		reset_bim();
+		
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("disable_VFctrl", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 2) return CMD_INVALID_ARGUMENTS;
+
+		cmd_enable.enable_bim_control = 0;
+		cmd_enable.enable_bim_VFcontrol = 0;
+		cmd_enable.enable_bp3_control = 0;
+		cmd_enable.enable_current_control = 0;
+		cmd_enable.enable_openloop = 0;
+		bim_control_data.bim_lev_control.enable = 0;
+		bim_control_data.bim_v_control.enable = 0;
+		reset_bim();
+		
+		return CMD_SUCCESS;
+	}
+
+	if (strcmp("set_VF_f", argv[1]) == 0) {
+		// Check correct number of arguments
+		if (argc != 3) return CMD_INVALID_ARGUMENTS;
+
+		//read in arguments
+		double f = strtod(argv[2], NULL);
+
+
+		bim_control_data.bim_v_control.freq_VF = f;
+
 		return CMD_SUCCESS;
 	}
 

@@ -42,11 +42,13 @@
  double LOG_Te_ref = 0.0;
 
  double LOG_wrm = 0.0;
+ double LOG_w_test = 0.0;
  double LOG_wrm_ref = 0.0;
  double LOG_wrm_inject = 0.0;
  double LOG_wrm_hf = 0.0;
 
  double LOG_theta_rm = 0.0;
+ double LOG_theta_rm_est = 0.0;
 
 
  double LOG_wsl = 0.0;

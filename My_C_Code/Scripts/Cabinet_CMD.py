@@ -469,6 +469,21 @@ class cmd():
         out = self.amdc.cmd('bim disable_ctrl')
         if self.debug:
             return out 
+
+    def bim_VF_disable(self):
+        out = self.amdc.cmd('bim disable_VFctrl')
+        if self.debug:
+            return out 
+    
+    def bim_VF_enable(self):
+        out = self.amdc.cmd('bim enable_VFctrl')
+        if self.debug:
+            return out 
+
+    def bim_set_VF_f(self, f):
+        out = self.amdc.cmd(f'bim set_VF_f {f:.6f}')
+        if self.debug:
+            return out 
     
   
 

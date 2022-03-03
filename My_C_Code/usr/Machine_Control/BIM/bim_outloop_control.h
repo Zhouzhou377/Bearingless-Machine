@@ -36,6 +36,9 @@ typedef struct bim_velocity_control{
     double wrm_est;
     double wrm_est_hf;
     double theta_rm_est;
+
+    double freq_VF;
+    double const_VF;
     para_velocity_control para_velocity_control;
     para_observer para_ob;
 
@@ -82,4 +85,5 @@ bim_control *deinit_bim(void);
 bim_control *reset_bim(void);
 void bim_start_theta(bim_control* data);
 void bim_controlloop(bim_control *data);
+void bim_vf(bim_control* data);
 #endif// TWINBEARINGLESS_CONTROL_H
