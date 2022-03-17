@@ -11,6 +11,9 @@
 double get_mb_current_adc(mb_channel_e mbCh);
 double get_mb_current(mb_sensor sensor);
 void get_mb_currents_three_phase_abc(double *Iabc, InverterThreePhase_t *inv);
+double get_mb_voltage_adc(mb_channel_e mbCh);
+double get_mb_voltage(mb_sensor sensor);
+void get_mb_voltage_abc(double *V, InverterThreePhase_t *inv);
 
 
 

@@ -214,6 +214,7 @@ void get_inverter_current_abc(c_loop_threephase_data *c_loop){
     }
 }
 
+
 void get_all_inverter_current_abc(currentloop_control* data){
     if (c_loop_control.sel_config == InvFour){
         get_inverter_current_abc(&(data->c_loop_inv1));
@@ -224,6 +225,28 @@ void get_all_inverter_current_abc(currentloop_control* data){
         get_inverter_current_abc(&(data->c_loop_inv1));
         get_inverter_current_abc(&(data->c_loop_inv2));
         get_inverter_current_abc(&(data->c_loop_inv3));
+    }
+
+}
+
+void get_inverter_Vdc_single(c_loop_threephase_data *c_loop){
+    if (c_loop->inv->HW->mb_Vsensor.enable){
+        get_mb_voltage_abc(&(c_loop->Vdc_mes), c_loop->inv);
+    }else{
+        c_loop->Vdc_mes = 0.0;
+    }
+}
+
+void get_all_inverter_Vdc(currentloop_control* data){
+    if (c_loop_control.sel_config == InvFour){
+        get_inverter_Vdc_single(&(data->c_loop_inv1));
+        get_inverter_Vdc_single(&(data->c_loop_inv2));
+        get_inverter_Vdc_single(&(data->c_loop_inv3));
+        get_inverter_Vdc_single(&(data->c_loop_inv4));
+    }else{
+        get_inverter_Vdc_single(&(data->c_loop_inv1));
+        get_inverter_Vdc_single(&(data->c_loop_inv2));
+        get_inverter_Vdc_single(&(data->c_loop_inv3));
     }
 
 }
@@ -470,6 +493,7 @@ void current_regulation (currentloop_control *data)
     if(!BM_ENABLE){
             //update sensed currents
         get_all_inverter_current_abc(data);
+        get_all_inverter_Vdc(data);
         //update theta and we
         get_theta_we(data);
     }else{

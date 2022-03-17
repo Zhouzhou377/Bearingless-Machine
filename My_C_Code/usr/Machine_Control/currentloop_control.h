@@ -49,6 +49,7 @@ typedef struct c_loop_threephase_data{
     InverterThreePhase_t *inv;
     double Iabc[3];
     double vabc_ref[3];
+    double Vdc_mes;
 
 } c_loop_threephase_data;
 
@@ -107,6 +108,8 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq);
 void current_regulation (currentloop_control *data);
 void get_inverter_current_abc(c_loop_threephase_data *c_loop);
 void get_all_inverter_current_abc(currentloop_control* data);
+void get_inverter_Vdc_single(c_loop_threephase_data *c_loop);
+void get_all_inverter_Vdc(currentloop_control* data);
 void cal_invI_to_controlI_configseries(currentloop_control* data);
 void cal_invI_to_controlI_configInvFour(currentloop_control* data);
 void update_control_current(c_loop_control_data *data);

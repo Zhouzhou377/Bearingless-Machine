@@ -45,15 +45,20 @@ typedef struct mb_three_phase_sensor {
     mb_sensor mb_Ia;
     mb_sensor mb_Ib;
     mb_sensor mb_Ic;
-
 } mb_three_phase_sensor;
 //
+
+typedef struct mb_voltage_sensor {
+    bool enable;
+    mb_sensor mb_V;
+} mb_voltage_sensor;
 
 typedef struct HW_three_phase_t {
 
     hw_three_phase_pwm_t pwm;
     hw_three_phase_sensor_t sensor;
     mb_three_phase_sensor mb_csensor;
+    mb_voltage_sensor mb_Vsensor;
 } HW_three_phase_t;
 
 typedef struct hw_single_phase_pwm_t {

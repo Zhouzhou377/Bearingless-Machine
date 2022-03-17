@@ -525,6 +525,7 @@ void bim_controlloop (bim_control* data)
     //data->bim_v_control.w_test = data->theta_rm_mes_pre;
    //
    get_all_inverter_current_abc(data->current_control);
+   //get_all_inverter_Vdc(data->current_control);
 
    //protection
    // w

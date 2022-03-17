@@ -73,6 +73,7 @@ void task_cabinet_init(void)
     cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
+
 }
 
 //stop task
@@ -90,6 +91,7 @@ void task_cabinet_deinit(void)
     cmd_enable.enable_inject_Fxy= 0;
     cmd_enable.enable_inject_tq_vref= 0;
     cmd_enable.enable_inject_s1_vref= 0;
+
 	scheduler_tcb_unregister(&tcb);
 	c_loop_data = deinit_currentloop();
 	ctx = &inj_ctx_ctrl_bim[0];
@@ -121,7 +123,15 @@ void task_cabinet_callback(void *arg)
 	{
 		c_loop_data = &c_loop_control;
 		current_regulation(c_loop_data);
+		get_all_inverter_Vdc(c_loop_data);
+			if(SENSE_V_ENABLE){
+				c_loop_data->c_loop_inv1.inv->Vdc = c_loop_data->c_loop_inv1.Vdc_mes;
+				c_loop_data->c_loop_inv2.inv->Vdc = c_loop_data->c_loop_inv2.Vdc_mes;
+				c_loop_data->c_loop_inv3.inv->Vdc = c_loop_data->c_loop_inv3.Vdc_mes;
+				c_loop_data->c_loop_inv4.inv->Vdc = c_loop_data->c_loop_inv4.Vdc_mes;
+			}
 		 if(c_loop_data->sel_config == InvFour){
+			 
 			set_line_volts_three_phase(c_loop_data->c_loop_inv1.vabc_ref[0], c_loop_data->c_loop_inv1.vabc_ref[1], c_loop_data->c_loop_inv1.vabc_ref[2], c_loop_data->c_loop_inv1.inv);
 			set_line_volts_three_phase(c_loop_data->c_loop_inv2.vabc_ref[0], c_loop_data->c_loop_inv2.vabc_ref[1], c_loop_data->c_loop_inv2.vabc_ref[2], c_loop_data->c_loop_inv2.inv);
 			set_line_volts_three_phase(c_loop_data->c_loop_inv3.vabc_ref[0], c_loop_data->c_loop_inv3.vabc_ref[1], c_loop_data->c_loop_inv3.vabc_ref[2], c_loop_data->c_loop_inv3.inv);
@@ -137,6 +147,13 @@ void task_cabinet_callback(void *arg)
 	else if(cmd_enable.enable_bim_VFcontrol){
 		bim_control_pt = &bim_control_data;
 		bim_vf(bim_control_pt);
+		get_all_inverter_Vdc(bim_control_pt->current_control);
+		if(SENSE_V_ENABLE){
+			bim_control_pt->current_control->c_loop_inv1.inv->Vdc = bim_control_pt->current_control->c_loop_inv1.Vdc_mes;
+			bim_control_pt->current_control->c_loop_inv2.inv->Vdc = bim_control_pt->current_control->c_loop_inv2.Vdc_mes;
+			bim_control_pt->current_control->c_loop_inv3.inv->Vdc = bim_control_pt->current_control->c_loop_inv3.Vdc_mes;
+			bim_control_pt->current_control->c_loop_inv4.inv->Vdc = bim_control_pt->current_control->c_loop_inv4.Vdc_mes;
+		}
 		set_line_volts_three_phase(bim_control_pt->current_control->c_loop_inv1.vabc_ref[0], bim_control_pt->current_control->c_loop_inv1.vabc_ref[1], bim_control_pt->current_control->c_loop_inv1.vabc_ref[2], bim_control_pt->current_control->c_loop_inv1.inv);
 		//set_line_volts_three_phase(bim_control_pt->current_control->c_loop_inv2.vabc_ref[0], bim_control_pt->current_control->c_loop_inv2.vabc_ref[1], bim_control_pt->current_control->c_loop_inv2.vabc_ref[2], bim_control_pt->current_control->c_loop_inv2.inv);
 
@@ -155,7 +172,13 @@ void task_cabinet_callback(void *arg)
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
 		//bim_controlloop(bim_control_pt);
 		//bim_control_pt = &bim_control_data;
-		
+		get_all_inverter_Vdc(bim_control_pt->current_control);
+		if(SENSE_V_ENABLE){
+			bim_control_pt->current_control->c_loop_inv1.inv->Vdc = bim_control_pt->current_control->c_loop_inv1.Vdc_mes;
+			bim_control_pt->current_control->c_loop_inv2.inv->Vdc = bim_control_pt->current_control->c_loop_inv2.Vdc_mes;
+			bim_control_pt->current_control->c_loop_inv3.inv->Vdc = bim_control_pt->current_control->c_loop_inv3.Vdc_mes;
+			bim_control_pt->current_control->c_loop_inv4.inv->Vdc = bim_control_pt->current_control->c_loop_inv4.Vdc_mes;
+		}
 		set_line_volts_three_phase(bim_control_pt->current_control->c_loop_inv1.vabc_ref[0], bim_control_pt->current_control->c_loop_inv1.vabc_ref[1], bim_control_pt->current_control->c_loop_inv1.vabc_ref[2], bim_control_pt->current_control->c_loop_inv1.inv);
 		set_line_volts_three_phase(bim_control_pt->current_control->c_loop_inv2.vabc_ref[0], bim_control_pt->current_control->c_loop_inv2.vabc_ref[1], bim_control_pt->current_control->c_loop_inv2.vabc_ref[2], bim_control_pt->current_control->c_loop_inv2.inv);
 
@@ -178,7 +201,13 @@ void task_cabinet_callback(void *arg)
 		//theta_pre = bim_control_data.bim_v_control.theta_rm_mes;
 		//bim_controlloop(bim_control_pt);
 		//bim_control_pt = &bim_control_data;
-		
+		get_all_inverter_Vdc(bp3_control_pt->current_control);
+		if(SENSE_V_ENABLE){
+			bp3_control_pt->current_control->c_loop_inv1.inv->Vdc = bp3_control_pt->current_control->c_loop_inv1.Vdc_mes;
+			bp3_control_pt->current_control->c_loop_inv2.inv->Vdc = bp3_control_pt->current_control->c_loop_inv2.Vdc_mes;
+			bp3_control_pt->current_control->c_loop_inv3.inv->Vdc = bp3_control_pt->current_control->c_loop_inv3.Vdc_mes;
+			bp3_control_pt->current_control->c_loop_inv4.inv->Vdc = bp3_control_pt->current_control->c_loop_inv4.Vdc_mes;
+		}
 				set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv1.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv1.inv);
 				set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv2.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv2.inv);
 
