@@ -511,8 +511,8 @@ void bim_controlloop (bim_control* data)
     //update theta and we
     //data->theta_rm_mes_pre = data->bim_v_control.theta_rm_mes;
     ////data->bim_v_control.w_test = data->bim_v_control.theta_rm_mes_pre;
-    double theta = get_encoder_pos();
-    data->bim_v_control.theta_rm_mes = -1.0*theta + PI2;
+    //double theta = get_encoder_pos();
+    //data->bim_v_control.theta_rm_mes = -1.0*theta + PI2;
     if (data->bim_v_control.para_ob.enable == 1){
         double tq;
         tq = 1.5*data->BIM_PARA->para_machine.p*data->BIM_PARA->para_machine.Lm/data->BIM_PARA->para_machine.Lr*data->current_control->tq.Idq0_ref[0]*data->BIM_PARA->para_machine.Lm*data->current_control->tq.Idq0_ref[1];
@@ -524,7 +524,7 @@ void bim_controlloop (bim_control* data)
     
     //data->bim_v_control.w_test = data->theta_rm_mes_pre;
    //
-   get_all_inverter_current_abc(data->current_control);
+   //get_all_inverter_current_abc(data->current_control);
    //get_all_inverter_Vdc(data->current_control);
 
    //protection

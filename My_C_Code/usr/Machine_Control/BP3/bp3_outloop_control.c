@@ -451,9 +451,9 @@ void bp3_controlloop (bp3_control* data)
     if(!data->bp3_v_control.is_start){
     	bm_start_theta(data);
     			}
-    double theta = get_encoder_pos();
-    data->bp3_v_control.theta_rm_mes = 1.0*(theta);
-    data->bp3_v_control.theta_re_ref = 1.0*(theta - data->bp3_v_control.theta_rm_mes_offset)*data->BP3_PARA->para_machine.p;
+    //double theta = get_encoder_pos();
+    //data->bp3_v_control.theta_rm_mes = 1.0*(theta);
+    data->bp3_v_control.theta_re_ref = 1.0*(data->bp3_v_control.theta_rm_mes - data->bp3_v_control.theta_rm_mes_offset)*data->BP3_PARA->para_machine.p;
     while(data->bp3_v_control.theta_re_ref<0||data->bp3_v_control.theta_re_ref>PI2){
             if(data->bp3_v_control.theta_re_ref<0){
                 data->bp3_v_control.theta_re_ref+=PI2;
@@ -472,7 +472,7 @@ void bp3_controlloop (bp3_control* data)
     
     //data->bp3_v_control.w_test = data->theta_rm_mes_pre;
    //
-   get_all_inverter_current_abc(data->current_control);
+   //get_all_inverter_current_abc(data->current_control);
    //get_all_inverter_Vdc(data->current_control);
 
    //protection

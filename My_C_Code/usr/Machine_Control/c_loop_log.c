@@ -28,6 +28,11 @@ void c_loop_log (currentloop_control *data){
 	LOG_Iabc2_b = data->c_loop_inv2.Iabc[1];
 	LOG_Iabc2_c = data->c_loop_inv2.Iabc[2];
 
+	LOG_vdc_inv1_mes = data->c_loop_inv1.Vdc_mes;
+	LOG_vdc_inv2_mes = data->c_loop_inv2.Vdc_mes;
+	LOG_vdc_inv3_mes = data->c_loop_inv3.Vdc_mes;
+	LOG_vdc_inv4_mes = data->c_loop_inv4.Vdc_mes;
+
 	/*LOG_Te = data->bim_v_control.Te_ref;
 
 	LOG_va1_ref = data->current_control->c_loop_inv1.vabc_ref[0];

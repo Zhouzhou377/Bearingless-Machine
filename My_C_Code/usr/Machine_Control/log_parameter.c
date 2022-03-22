@@ -57,6 +57,12 @@
 
  double LOG_Te = 0.0;
 
+ double LOG_vdc_inv1_mes = 0.0;
+ double LOG_vdc_inv2_mes = 0.0;
+ double LOG_vdc_inv3_mes = 0.0;
+ double LOG_vdc_inv4_mes = 0.0;
+
+
  double LOG_va1_ref = 0.0;
  double LOG_vb1_ref = 0.0;
  double LOG_vc1_ref = 0.0;

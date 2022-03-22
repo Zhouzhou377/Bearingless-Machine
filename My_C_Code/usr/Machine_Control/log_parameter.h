@@ -57,6 +57,11 @@ extern double LOG_we ;
 
 extern double LOG_Te ;
 
+extern double LOG_vdc_inv1_mes;
+extern double LOG_vdc_inv2_mes;
+extern double LOG_vdc_inv3_mes;
+extern double LOG_vdc_inv4_mes;
+
 extern double LOG_va1_ref ;
 extern double LOG_vb1_ref ;
 extern double LOG_vc1_ref ;

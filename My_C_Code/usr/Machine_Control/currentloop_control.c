@@ -492,8 +492,6 @@ void current_regulation (currentloop_control *data)
 
     if(!BM_ENABLE){
             //update sensed currents
-        get_all_inverter_current_abc(data);
-        get_all_inverter_Vdc(data);
         //update theta and we
         get_theta_we(data);
     }else{

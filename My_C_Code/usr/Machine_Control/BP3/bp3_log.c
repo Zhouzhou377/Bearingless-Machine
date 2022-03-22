@@ -39,6 +39,11 @@ void bp3_log (bp3_control *data){
 	LOG_vb2_ref = data->current_control->c_loop_inv2.vabc_ref[1];
 	LOG_vc2_ref = data->current_control->c_loop_inv2.vabc_ref[2];
 
+	LOG_vdc_inv1_mes = data->current_control->c_loop_inv1.Vdc_mes;
+	LOG_vdc_inv2_mes = data->current_control->c_loop_inv2.Vdc_mes;
+	LOG_vdc_inv3_mes = data->current_control->c_loop_inv3.Vdc_mes;
+	LOG_vdc_inv4_mes = data->current_control->c_loop_inv4.Vdc_mes;
+
 	LOG_vd_ref = data->current_control->tq.vdq0_ref[0];
 	LOG_vq_ref = data->current_control->tq.vdq0_ref[1];
 	LOG_v0_ref = data->current_control->tq.vdq0_ref[2];

@@ -76,6 +76,7 @@
 #define CAB_INV6_PHB_ADC (ANALOG_IN6)
 #define CAB_INV6_PHC_ADC (ANALOG_IN7)
 
+// DC voltages
 #define CAB_INV2_VDC_ADC (-1)
 #define CAB_INV3_VDC_ADC (MB_IN8)
 #define CAB_INV5_VDC_ADC (-1)
@@ -137,6 +138,8 @@
 #define CAB_INV6_PHA_ADC_OFFSET (-0.0635924)
 #define CAB_INV6_PHB_ADC_OFFSET (0.153899)
 #define CAB_INV6_PHC_ADC_OFFSET (0.0968906)
+
+// voltage sensors
 
 #define CAB_INV2_VDC_ADC_OFFSET (0)
 #define CAB_INV2_VDC_ADC_GAIN (1.0)
