@@ -11,6 +11,8 @@
 
 #include "drv/gpio_mux.h"
 #include "drv/gp3io_mux.h"
+#include "drv/eddy_current_sensor.h"
+#include "drv/encoder.h"
 #include "drv/pwm.h"
 
 
@@ -26,8 +28,9 @@ void app_cabinet_test_init(void)
 	// 0: top port on AMDC
 	// GPIO_MUX_DEVICE1: Eddy current I/O IP block in the FPGA
 #if USER_CONFIG_HARDWARE_TARGET == AMDC_REV_E
+	gp3io_mux_init();
 	gp3io_mux_set_device(GP3IO_MUX_1_BASE_ADDR, GP3IO_MUX_DEVICE1);
-	gp3io_mux_set_device(GP3IO_MUX_2_BASE_ADDR, GP3IO_MUX_DEVICE2);
+	gp3io_mux_set_device(GP3IO_MUX_3_BASE_ADDR, GP3IO_MUX_DEVICE2);
 #endif
 #if USER_CONFIG_HARDWARE_TARGET == AMDC_REV_D
 	gpio_mux_set_device(1, GPIO_MUX_DEVICE1);
@@ -37,9 +40,10 @@ void app_cabinet_test_init(void)
 
 	// Turn on Kaman eddy current sensor digital interface
 	eddy_current_sensor_init();
-	eddy_current_sensor_enable();
+	eddy_current_sensor_enable(EDDY_CURRENT_SENSOR_3_BASE_ADDR);
 
 	pwm_set_deadtime_ns(PWM_DEADTIME_NS);
+	encoder_set_pulses_per_rev_bits(ENCODER_BP3_PPR_BITS);
 
 }
 

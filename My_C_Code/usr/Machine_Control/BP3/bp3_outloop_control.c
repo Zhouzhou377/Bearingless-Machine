@@ -37,8 +37,8 @@ static int flag_enc = 0;
 
 
 void bp3_get_deltaxy_mes(bp3_control* data){
-    data->bp3_lev_control.delta_mes[0] = POSITION_RATIO_X*(eddy_current_sensor_read_x_voltage(EDDY_CURRENT_SENSOR_2_BASE_ADDR) * M_PER_VOLT) + GEO_CENTER_X;
-    data->bp3_lev_control.delta_mes[1] = POSITION_RATIO_y*(eddy_current_sensor_read_y_voltage(EDDY_CURRENT_SENSOR_2_BASE_ADDR) * M_PER_VOLT) + GEO_CENTER_y;
+    data->bp3_lev_control.delta_mes[0] = POSITION_RATIO_X*(eddy_current_sensor_read_x_voltage(EDDY_CURRENT_SENSOR_3_BASE_ADDR) * M_PER_VOLT) + GEO_CENTER_X;
+    data->bp3_lev_control.delta_mes[1] = POSITION_RATIO_y*(eddy_current_sensor_read_y_voltage(EDDY_CURRENT_SENSOR_3_BASE_ADDR) * M_PER_VOLT) + GEO_CENTER_y;
 }
 
 
