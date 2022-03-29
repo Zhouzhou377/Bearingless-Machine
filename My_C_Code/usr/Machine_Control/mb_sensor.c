@@ -38,7 +38,7 @@ double mb_int32todouble_voltage(int32_t data_raw){
 double get_mb_current_adc(mb_channel_e mbCh){
     float mb_adc;
     int32_t data_raw;
-    if(motherboard_get_data(mbCh, &data_raw)==SUCCESS){
+    if(motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, mbCh, &data_raw)==SUCCESS){
         mb_adc = mb_int32todouble_current(data_raw);
     	//mb_adc = data_raw;
         //return (int32_t) data_raw;
@@ -51,7 +51,7 @@ double get_mb_current_adc(mb_channel_e mbCh){
 double get_mb_voltage_adc(mb_channel_e mbCh){
     float mb_adc;
     int32_t data_raw;
-    if(motherboard_get_data(mbCh, &data_raw)==SUCCESS){
+    if(motherboard_get_data(MOTHERBOARD_1_BASE_ADDR, mbCh, &data_raw)==SUCCESS){
         mb_adc = mb_int32todouble_voltage(data_raw);
     	//mb_adc = data_raw;
         //return (int32_t) data_raw;

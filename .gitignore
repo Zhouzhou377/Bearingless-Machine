@@ -13,3 +13,4 @@
 *.a
 My_C_Code/Scripts/*.csv
 *.xlsx
+/AMDC-Firmware
