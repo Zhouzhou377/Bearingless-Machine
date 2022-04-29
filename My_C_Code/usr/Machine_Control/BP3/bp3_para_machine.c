@@ -61,15 +61,13 @@ para_bp3 *get_para_bp3(void){
 
 void update_para_bp3_activedamping(para_bp3 *data, double id){
 
-	data->para_machine.k_delta = data->para_machine.k_delta_a2*id*id+data->para_machine.k_delta_a1*id+data->para_machine.k_delta_a0;
-	data->para_machine.k_delta = (data->para_machine.k_delta*1000.0)*1.0;
-	data->para_machine.kf = (data->para_machine.kf_a2*id*id+data->para_machine.kf_a1*id+data->para_machine.kf_a0)*1.0;
-	double f_bw = 15.0;
-	double w_bw = PI2*f_bw;
-	data->para_control.lev_ka = (w_bw*w_bw*data->para_machine.m_rotor+data->para_machine.k_delta)*1.00;
-	data->para_control.lev_ba = 2.0*w_bw*data->para_machine.m_rotor*1.8;
-	data->para_control.lev_antiwp_k = 0.0/data->para_machine.k_delta*10.0;
-	data->para_control.lev_pi_Ki = ((data->para_control.lev_ka - data->para_machine.k_delta)*w_bw/10.0)*1.0;
+	data->para_machine.kf = 9.8;
+
+	double w_bw = PI2*15.0;
+	data->para_control.lev_ka = 4.3791e+8;
+	data->para_control.lev_ba = 339.2920;
+	data->para_control.lev_antiwp_k = 0.0;
+	data->para_control.lev_pi_Ki = 1.5903e+05;
 	data->para_control.lev_pi_Kp = (data->para_control.lev_pi_Ki/10)*1.0;
 
 }
