@@ -3,7 +3,7 @@
 	<name>bare</name>
 	<comment>Created by SDK v2017.2. amdc_bsp - ps7_cortexa9_0</comment>
 	<projects>
-		<project>amdc_bsp_cpu1</project>
+		<project>amdc_bsp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -27,7 +27,7 @@
 		<link>
 			<name>common</name>
 			<type>2</type>
-			<location>C:/Users/zwang2299/Zhouzhou_AMDC/AMDC-Firmware/sdk/app_cpu1/common</location>
+			<location>C:/Users/zwang2299/Zhouzhou_AMDC/AMDC-Firmware/sdk/bare/common</location>
 		</link>
 	</linkedResources>
 </projectDescription>

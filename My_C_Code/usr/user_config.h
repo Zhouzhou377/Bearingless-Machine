@@ -7,7 +7,7 @@
 // various system-level firmware features.
 
 // Specify hardware revision (i.e. REV C, REV D, etc)
-#define USER_CONFIG_HARDWARE_TARGET (AMDC_REV_E)
+#define USER_CONFIG_HARDWARE_TARGET (AMDC_REV_D)
 
 // Override the default scheduler elementary frequency by defining SYS_TICK_FREQ here.
 // System uses 10kHz by default
@@ -40,7 +40,7 @@
 
 // Enable injection functionality
 // set to 1 for enabled, 0 for disabled
-#define USER_CONFIG_ENABLE_INJECTION (1)
+#define USER_CONFIG_ENABLE_INJECTION (0)
 
 // Enable SensorCard platform motherboard support
 // set to 1 for enabled, 0 for disabled
@@ -49,11 +49,6 @@
 // Enable SensorCard platform motherboard auto request new ADC sample data
 // set to 1 for enabled, 0 for disabled
 #define USER_CONFIG_ENABLE_MOTHERBOARD_AUTO_TX (1)
-
-#define USER_CONFIG_ENABLE_LOGGING (1)
-
 #define APP_CABINET (1)
-
-#define APP_BLINK (1)
 
 #endif // USER_CONFIG_H

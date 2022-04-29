@@ -1,5 +1,5 @@
 #include "usr/user_apps.h"
-#include "usr/Machine_Control/task_cabinet.h"
+#include "usr/Cabinet_test/task_cabinet.h"
 // Adding applications:
 //
 // To add a new application, create a block
@@ -29,7 +29,7 @@
 #endif
 
 #ifdef APP_CABINET
-#include "usr/Machine_Control/app_cabinet_test.h"
+#include "usr/Cabinet_test/app_cabinet_test.h"
 #endif
 
 void user_apps_init(void)
