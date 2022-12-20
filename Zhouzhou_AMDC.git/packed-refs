@@ -1,0 +1,7 @@
+# pack-refs with: peeled fully-peeled sorted 
+b927b45e83c4f5c1f5e6e02837a3a965699e92ac refs/heads/BP3-single
+9551f36af7404ea14e00b2a1398dfec0162a1b67 refs/heads/RLtests
+16b59af97e6bc4410262cd885a8f892924aa9cf5 refs/heads/bim_test_lev
+d8182470dc2d94f4fc475b0b536eaae95cca4867 refs/heads/master
+90ad86f99449594a5adece7aab70d2c154a21a82 refs/tags/BIM(Lev)_BP3(Rot)
+^16b59af97e6bc4410262cd885a8f892924aa9cf5
