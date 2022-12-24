@@ -68,7 +68,9 @@ para_c_loop_machine_control *init_para_c_loop_machine_control(void){
 
     }else if(BP3_ENABLE){
         para_bp3 * para_bp3;
+        para_bp3 * para_bp3_1;
         para_bp3 = get_para_bp3();
+        para_bp3_1 = get_para_bp3_1();
         // torque equivalent parameters
         
         para_machine_control.para_tq.R = 0.52;

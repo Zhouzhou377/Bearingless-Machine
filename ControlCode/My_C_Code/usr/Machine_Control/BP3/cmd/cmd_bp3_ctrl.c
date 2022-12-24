@@ -58,7 +58,7 @@ void cmd_bp3_register(void)
 	
 	// Populate the command entry block (struct)
 	commands_cmd_init(&cmd_entry,
-			"bp3", "Bearingless Induction Machine Control Commands",
+			"bp3", "Bearingless PM Machine Control Commands",
 			cmd_help, NUM_HELP_ENTRIES,
 			cmd_bp3
 	);
@@ -88,6 +88,8 @@ int cmd_bp3(int argc, char **argv)
 		cmd_enable.enable_bim_control = 0;
 		bp3_control_data.bp3_v_control.enable = 0;
 		bp3_control_data.bp3_lev_control.enable = 0;
+		bp3_control_data_1.bp3_v_control.enable = 0;
+		bp3_control_data_1.bp3_lev_control.enable = 0;
 		
 		return CMD_SUCCESS;
 	}
@@ -106,6 +108,8 @@ int cmd_bp3(int argc, char **argv)
 		cmd_enable.enable_bim_control = 0;
 		bp3_control_data.bp3_v_control.enable = 0;
 		bp3_control_data.bp3_lev_control.enable = 0;
+		bp3_control_data_1.bp3_v_control.enable = 0;
+		bp3_control_data_1.bp3_lev_control.enable = 0;
 		return CMD_SUCCESS;
 	}
 
@@ -129,6 +133,8 @@ int cmd_bp3(int argc, char **argv)
 
 		bp3_control_data.current_control->c_loop_inv1.inv->Vdc = Vdc;
 		bp3_control_data.current_control->c_loop_inv2.inv->Vdc = Vdc;
+		bp3_control_data_1.current_control->c_loop_inv3.inv->Vdc = Vdc;
+		bp3_control_data_1.current_control->c_loop_inv4.inv->Vdc = Vdc;
 
 		return CMD_SUCCESS;
 	}
@@ -141,7 +147,7 @@ int cmd_bp3(int argc, char **argv)
 			double Vdc = strtod(argv[2], NULL);
 
 			bp3_control_data.current_control->c_loop_inv1.inv->Vdc = Vdc;
-
+				
 			return CMD_SUCCESS;
 		}
 
@@ -211,6 +217,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_lev_control.enable = 1;
+		bp3_control_data_1.bp3_lev_control.enable = 1;
 		//reset_bp3();
 		return CMD_SUCCESS;
 	}
@@ -219,6 +226,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_v_control.enable = 0;
+		bp3_control_data_1.bp3_v_control.enable = 0;
 		reset_bp3();
 		return CMD_SUCCESS;
 	}
@@ -227,6 +235,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_v_control.para_ob.enable = 0;
+		bp3_control_data_1.bp3_v_control.para_ob.enable = 0;
 		reset_bp3();
 		return CMD_SUCCESS;
 	}
@@ -235,6 +244,7 @@ int cmd_bp3(int argc, char **argv)
 		// Check correct number of arguments
 		if (argc != 2) return CMD_INVALID_ARGUMENTS;
 		bp3_control_data.bp3_lev_control.enable = 0;
+		bp3_control_data_1.bp3_lev_control.enable = 0;
 		reset_bp3();
 		return CMD_SUCCESS;
 	}
@@ -262,6 +272,8 @@ int cmd_bp3(int argc, char **argv)
 
 		bp3_control_data.bp3_lev_control.delta_ref[0] = delta_x;
 		bp3_control_data.bp3_lev_control.delta_ref[1] = delta_y;
+		bp3_control_data_1.bp3_lev_control.delta_ref[0] = delta_x;
+		bp3_control_data_1.bp3_lev_control.delta_ref[1] = delta_y;
 		
 		return CMD_SUCCESS;
 	}
@@ -318,6 +330,7 @@ int cmd_bp3(int argc, char **argv)
 	
 
 		bp3_control_data.bp3_v_control.wrm_ref = w;
+		bp3_control_data_1.bp3_v_control.wrm_ref = w;
 		return CMD_SUCCESS;
 	}
 
@@ -389,6 +402,8 @@ int cmd_bp3(int argc, char **argv)
 		cmd_enable.enable_openloop = 0;
 		bp3_control_data.bp3_lev_control.enable = 0;
 		bp3_control_data.bp3_v_control.enable = 0;
+		bp3_control_data_1.bp3_lev_control.enable = 0;
+		bp3_control_data_1.bp3_v_control.enable = 0;
 		reset_bp3();
 		
 		return CMD_SUCCESS;

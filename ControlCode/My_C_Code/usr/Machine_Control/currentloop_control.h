@@ -11,6 +11,7 @@
 typedef enum {
     InvFour = 1,
     Inv_Series = 0,
+    Inv_9 = 2;
 } config;
 
 typedef struct para_PI_discrete{

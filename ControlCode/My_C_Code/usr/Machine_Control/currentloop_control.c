@@ -251,6 +251,8 @@ void get_all_inverter_Vdc(currentloop_control* data){
 
 }
 
+
+
 void cal_invI_to_controlI_configseries(currentloop_control* data){
     
     //torque current calculation
@@ -292,6 +294,26 @@ void cal_invI_to_controlI_configInvFour(currentloop_control* data){
     data->s2.Iabc[2] = 1.0*data->c_loop_inv3.Iabc[2] + 0.5*data->c_loop_inv4.Iabc[2];
 }
 
+
+
+void cal_invI_to_controlI_config9(currentloop_control* data){
+    
+    //torque current calculation
+    data->tq.Iabc[0] = 2.0*(data->c_loop_inv1.Iabc[0] + data->c_loop_inv2.Iabc[0]); 
+    data->tq.Iabc[1] = 2.0*(data->c_loop_inv1.Iabc[1] + data->c_loop_inv2.Iabc[1]);
+    data->tq.Iabc[2] = 2.0*(data->c_loop_inv1.Iabc[2] + data->c_loop_inv2.Iabc[2]);
+
+    // suspension 1 
+    data->s1.Iabc[0] = 0.5*(data->c_loop_inv1.Iabc[0] - data->c_loop_inv2.Iabc[0]);
+    data->s1.Iabc[1] = 0.5*(data->c_loop_inv1.Iabc[1] - data->c_loop_inv2.Iabc[1]);
+    data->s1.Iabc[2] = 0.5*(data->c_loop_inv1.Iabc[2] - data->c_loop_inv2.Iabc[2]);
+
+    // suspension 2 
+    data->s2.Iabc[0] = -0.5*data->c_loop_inv1.Iabc[0] - 0.5*data->c_loop_inv2.Iabc[0]-data->c_loop_inv3.Iabc[0];
+    data->s2.Iabc[1] = -0.5*data->c_loop_inv1.Iabc[1] - 0.5*data->c_loop_inv2.Iabc[1]-data->c_loop_inv3.Iabc[1];
+    data->s2.Iabc[2] = -0.5*data->c_loop_inv1.Iabc[2] - 0.5*data->c_loop_inv2.Iabc[2]-data->c_loop_inv3.Iabc[2];
+}
+
 void update_control_current(c_loop_control_data *data){
     data->Idq0_m1[0] = data->Idq0[0];
     data->Idq0_m1[1] = data->Idq0[1];
@@ -326,35 +348,7 @@ void exp_jtheta(double theta, double *in_dq, double*out_dq){
 }
 
 void regulator_PI_current_dq(c_loop_control_data *data_ctrl, para_c_loop_machine_control_single para_m, int tq){
-	/*double Kp;
-	double Ki;
-	if(tq){
-    	Ki = PI2*300.0*para_m.R*1.0;
-    	Kp = PI2*300.0*para_m.L*0.5;
-	}else{
-		Kp = PI2*300.0*para_m.L;
-		Ki = PI2*300.0*para_m.R*1.0;
-	}
-  
-    data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
-    data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
-
-    
-    double  state_p[2];
-    state_p[0] = Kp*data_ctrl->error[0];
-    state_p[1] = Kp*data_ctrl->error[1];
-    
- 
-    double  state_i[2];
-    state_i[0] = Ki*data_ctrl->PI_regulator->Ts*data_ctrl->error[0]+ data_ctrl->PI_regulator->state_1[0];
-    data_ctrl->PI_regulator->state_1[0] = state_i[0];
-    data_ctrl->vdq0_ref[0] = state_i[0] + state_p[0];
-
-    state_i[1] = Ki*data_ctrl->PI_regulator->Ts*data_ctrl->error[1]+ data_ctrl->PI_regulator->state_1[1];
-    data_ctrl->PI_regulator->state_1[1] = state_i[1];
-    data_ctrl->vdq0_ref[1] = state_i[1] + state_p[1];
-    data_ctrl->vdq0_ref[2] = 0.0;*/
-
+	
 
 	double K1 = para_m.R*data_ctrl->PI_regulator->Bd/data_ctrl->PI_regulator->Bp;
     if(tq == 1){
@@ -399,26 +393,7 @@ void regulator_PI_current_dq(c_loop_control_data *data_ctrl, para_c_loop_machine
 }
 
 
-void regulator_PR_current(c_loop_control_data *data_ctrl){
-    
-    double u1[2], u2[2];
 
-    data_ctrl->error[0] = data_ctrl->Idq0_ref[0] - data_ctrl->Idq0[0];
-    data_ctrl->error[1] = data_ctrl->Idq0_ref[1] - data_ctrl->Idq0[1];
-    u1[0] = (data_ctrl->error[0] + data_ctrl->PR_regulator->state_1[0]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
-    u1[1] = (data_ctrl->error[1] + data_ctrl->PR_regulator->state_1[1]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
-    u2[0] = (data_ctrl->error[0] + data_ctrl->PR_regulator->state_2[0]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
-    u2[1] = (data_ctrl->error[1] + data_ctrl->PR_regulator->state_2[1]) * (data_ctrl->PR_regulator->Kr*data_ctrl->PR_regulator->Ts);
-    
-    double theta;
-    theta = data_ctrl->we*(-2.0)*data_ctrl->PR_regulator->Ts;
-    exp_jtheta(theta, u1, data_ctrl->PR_regulator->state_1);
-    exp_jtheta(-1.0*theta, u2, data_ctrl->PR_regulator->state_2);
-
-
-    data_ctrl->PR_regulator->v_PR[0] = u1[0] + u2[0];
-    data_ctrl->PR_regulator->v_PR[1] = u1[1]+ u2[1];
-}
 
 void decouple(currentloop_control *data){
     if(data->sel_config == InvFour){
@@ -445,7 +420,7 @@ void decouple(currentloop_control *data){
         data->tq2.vdq0_decouple[0] = 0.5*vdecouple[0]; 
         data->tq2.vdq0_decouple[1] = 0.5*vdecouple[1]; 
         data->tq2.vdq0_decouple[2] = 0.5*vdecouple[2]; 
-    }else{
+    }else if(data->sel_config == Inv_Series){
         data->tq.vdq0_decouple[0] = 0.0;
         data->tq.vdq0_decouple[1] = 0.0;
         data->tq.vdq0_decouple[2] = 0.0;
@@ -463,6 +438,34 @@ void decouple(currentloop_control *data){
         data->s2.vdq0_decouple[0] = 0.5*vdecouple[0]; 
         data->s2.vdq0_decouple[1] = 0.5*vdecouple[1]; 
         data->s2.vdq0_decouple[2] = 0.5*vdecouple[2]; 
+    }
+    else{
+        
+        data->s2.vdq0_decouple[0] = 0.0;
+        data->s2.vdq0_decouple[1] = 0.0;
+        data->s2.vdq0_decouple[2] = 0.0;
+
+        double vs1_abc[3];
+        double vs2_abc[3];
+        double vtq_abc[3];
+        dq0_to2_abc(&(vs1_abc[0]), &(data->s1.vdq0_ref), data->s1.theta_rad);
+        dq0_to2_abc(&(vs2_abc[0]), &(data->s2.vdq0_ref), data->s2.theta_rad);
+        dq0_to2_abc(&(vtq_abc[0]), &(data->tq.vdq0_ref), data->tq.theta_rad);
+
+        // decoupling for vs1 -->v1
+        double vdecouple_abc[3];
+
+        vdecouple_abc[0] = 0.5*vtq_abc[0]-vs2_abc[0];
+        vdecouple_abc[1] = 0.5*vtq_abc[1]-vs2_abc[1];
+        vdecouple_abc[2] = 0.5*vtq_abc[2]-vs2_abc[2];
+
+        abc_to_dq0(&(vdecouple_abc[0]), &(data->s1.vdq0_decouple[0]), data->s1.theta_rad);
+
+        //decoupling for tq --> v2
+        vdecouple_abc[0] = -vs1_abc[0]-vs2_abc[0];
+        vdecouple_abc[1] = -vs1_abc[1]-vs2_abc[1];
+        vdecouple_abc[2] = -vs1_abc[2]-vs2_abc[2];
+        abc_to_dq0(&(vdecouple_abc[0]), &(data->tq.vdq0_decouple[0]), data->tq.theta_rad);
     }
 }
 
@@ -514,23 +517,6 @@ void current_regulation (currentloop_control *data)
     	regulator_PI_current_dq(&data->tq2, data->para_machine->para_tq2, 0);}
 
     	
-        if(ID_SYS){
-            if(BIM_ENABLE){
-                bim_control *bim_data = &bim_control_data;
-                bim_injection_callback(bim_data);
-            }
-    	
-        data->tq.vdq0_ref[0] += data->tq.vdq0_ref_inject[0];
-        data->tq.vdq0_ref[1] += data->tq.vdq0_ref_inject[1];
-
-        data->s1.vdq0_ref[0] += data->s1.vdq0_ref_inject[0];
-        data->s1.vdq0_ref[1] += data->s1.vdq0_ref_inject[1];
-
-        data->tq2.vdq0_ref[0] += data->tq2.vdq0_ref_inject[0];
-        data->tq2.vdq0_ref[1] += data->tq2.vdq0_ref_inject[1];
-        
-        data->s2.vdq0_ref[0] += data->s2.vdq0_ref_inject[0];
-        data->s2.vdq0_ref[1] += data->s2.vdq0_ref_inject[1];}
         //if(!SINGLE_INV){
         decouple(data);
         //
@@ -561,7 +547,7 @@ void current_regulation (currentloop_control *data)
 
         dq0_to2_abc(&(data->c_loop_inv4.vabc_ref[0]), &vdq0[0], data->tq2.theta_rad);//}
 
-    }else{
+    }else if(data->sel_config == Inv_Series){
     	//calculate torque and suspension currents
     	cal_invI_to_controlI_configseries(data);
     	update_control_current(&data->tq);
@@ -572,27 +558,48 @@ void current_regulation (currentloop_control *data)
     	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1, 0);
     	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2, 0);
 
-    	regulator_PR_current(&(data->tq));
-    	regulator_PR_current(&(data->s1));
-    	regulator_PR_current(&(data->s2));
 
-        data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] +  data->tq.PR_regulator->v_PR[0]*1.0;
-        data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] +  data->tq.PR_regulator->v_PR[1]*1.0;
-        data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] +  data->tq.PR_regulator->v_PR[2]*1.0;
+        data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] ;
+        data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] ;
+        data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] ;
 
-        if(ID_SYS){
-    	//bim_injection_callback(bim_data);
-        data->tq.vdq0_ref[0] += data->tq.vdq0_ref_inject[0];
-        data->tq.vdq0_ref[1] += data->tq.vdq0_ref_inject[1];
 
-        data->s1.vdq0_ref[0] += data->s1.vdq0_ref_inject[0];
-        data->s1.vdq0_ref[1] += data->s1.vdq0_ref_inject[1];
+        decouple(data);
+        //
+        double vdq0[3];
+        vdq0[0] = data->tq.vdq0_ref[0] + data->tq.vdq0_decouple[0];
+        vdq0[1] = data->tq.vdq0_ref[1] + data->tq.vdq0_decouple[1];
+        vdq0[2] = data->tq.vdq0_ref[2] + data->tq.vdq0_decouple[2];
 
-        data->tq2.vdq0_ref[0] += data->tq2.vdq0_ref_inject[0];
-        data->tq2.vdq0_ref[1] += data->tq2.vdq0_ref_inject[1];
-        
-        data->s2.vdq0_ref[0] += data->s2.vdq0_ref_inject[0];
-        data->s2.vdq0_ref[1] += data->s2.vdq0_ref_inject[1];}
+        dq0_to2_abc(data->c_loop_inv1.vabc_ref, vdq0, data->tq.theta_rad);
+
+        vdq0[0] = -data->s1.vdq0_ref[0] + data->s1.vdq0_decouple[0];
+        vdq0[1] = -data->s1.vdq0_ref[1] + data->s1.vdq0_decouple[1];
+        vdq0[2] = -data->s1.vdq0_ref[2] + data->s1.vdq0_decouple[2];
+
+        dq0_to2_abc(data->c_loop_inv2.vabc_ref, vdq0, data->s1.theta_rad);
+
+        vdq0[0] = -data->s2.vdq0_ref[0] + data->s2.vdq0_decouple[0];
+        vdq0[1] = -data->s2.vdq0_ref[1] + data->s2.vdq0_decouple[1];
+        vdq0[2] = -data->s2.vdq0_ref[2] + data->s2.vdq0_decouple[2];
+
+        dq0_to2_abc(data->c_loop_inv3.vabc_ref, vdq0, data->s2.theta_rad);
+    } else{
+    	//calculate torque and suspension currents
+    	cal_invI_to_controlI_config9(data);
+    	update_control_current(&data->tq);
+    	update_control_current(&data->s1);
+    	update_control_current(&data->s2);
+
+    	regulator_PI_current_dq(&data->tq, data->para_machine->para_tq, 0);
+    	regulator_PI_current_dq(&data->s1, data->para_machine->para_s1, 0);
+    	regulator_PI_current_dq(&data->s2, data->para_machine->para_s2, 0);
+
+
+        data->tq.vdq0_ref[0] = data->tq.vdq0_ref[0] ;
+        data->tq.vdq0_ref[1] = data->tq.vdq0_ref[1] ;
+        data->tq.vdq0_ref[2] = data->tq.vdq0_ref[2] ;
+
 
         decouple(data);
         //

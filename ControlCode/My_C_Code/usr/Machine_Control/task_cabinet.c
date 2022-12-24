@@ -206,21 +206,22 @@ void task_cabinet_callback(void *arg)
 	else if(cmd_enable.enable_bp3_control){
 		cmd_enable.enable_bp3_align = 0;
 		bp3_control_pt = &bp3_control_data;
+		bp3_control_pt_1 = &bp3_control_data_1;
 		double theta = get_encoder_pos();
     	bp3_control_pt->bp3_v_control.theta_rm_mes = 1.0*(theta);
 		get_all_inverter_current_abc(bp3_control_pt->current_control);
         get_all_inverter_Vdc(bp3_control_pt->current_control);
-		if(SENSE_V_ENABLE){
-			bp3_control_pt->current_control->c_loop_inv1.inv->Vdc = bp3_control_pt->current_control->c_loop_inv1.Vdc_mes;
-			bp3_control_pt->current_control->c_loop_inv2.inv->Vdc = bp3_control_pt->current_control->c_loop_inv2.Vdc_mes;
-			bp3_control_pt->current_control->c_loop_inv3.inv->Vdc = bp3_control_pt->current_control->c_loop_inv3.Vdc_mes;
-			bp3_control_pt->current_control->c_loop_inv4.inv->Vdc = bp3_control_pt->current_control->c_loop_inv4.Vdc_mes;
-		}
+
+		bp3_control_pt_1->bp3_v_control.theta_rm_mes = 1.0*(theta);
+		get_all_inverter_current_abc(bp3_control_pt_1->current_control);
+		get_all_inverter_Vdc(bp3_control_pt_1->current_control);
 		if(pwm_is_enabled()){
-			bp3_controlloop(bp3_control_pt);}
+			bp3_controlloop(bp3_control_pt);
+			bp3_controlloop(bp3_control_pt_1);}
 		set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv1.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv1.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv1.inv);
 		set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv2.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv2.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv2.inv);
-
+		set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv3.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv3.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv3.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv3.inv);
+		set_line_volts_three_phase(bp3_control_pt->current_control->c_loop_inv4.vabc_ref[0], bp3_control_pt->current_control->c_loop_inv4.vabc_ref[1], bp3_control_pt->current_control->c_loop_inv4.vabc_ref[2], bp3_control_pt->current_control->c_loop_inv4.inv);
 
 	}
 

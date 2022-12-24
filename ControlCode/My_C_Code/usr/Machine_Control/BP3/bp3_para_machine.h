@@ -69,5 +69,6 @@ typedef struct para_bp3{
 
 
 para_bp3 *get_para_bp3(void);
+para_bp3 *get_para_bp3_1(void);
 void update_para_bp3_activedamping(para_bp3 *data, double id);
 #endif // HARDWARE_H
